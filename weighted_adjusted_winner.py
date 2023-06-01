@@ -188,7 +188,10 @@ else:
     st.write("⏳ Run the Weight-Adjusted Picker (WEF(x,1-x))...")
     
     with st.spinner('Executing...'):
-        time.sleep(n * m * 0.01)    
+        if n * m * 0.01 > 3:
+            time.sleep(3)
+        else:
+            time.sleep(n * m * 0.01)
 
     start_time = time.time()
     outcomes = wef1x_algorithm(x, m, n, weights, preferences)
