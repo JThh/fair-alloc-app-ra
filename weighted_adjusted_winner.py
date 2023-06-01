@@ -147,11 +147,9 @@ st.sidebar.markdown(
     <h3>Follow these steps to use the app:</h3>
 
     <ol>
-        <li>Enter the number of items (m) and agents (n) in the input fields on the left.</li>
-        <li>The app will generate agent preferences and run the algorithm.</li>
-        <li>The outcomes will be displayed in a table.</li>
-        <li>You can click the <strong>"Run WEF1 Checker"</strong> button to perform a WEF1 check.</li>
-        <li>To download the outcomes as a JSON file, click the link at the bottom.</li>
+        <li>Specify the number of items (m) and agents (n) using the number input boxes.</li>
+        <li>Choose to either upload a preferences file or edit the random preferences.</li>
+        <li>You can download the outcomes as a JSON file or the preferences as a CSV file using the provided links.</li>
     </ol>
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
@@ -192,9 +190,6 @@ else:
     
     with st.spinner('Executing...'):
         time.sleep(n * m * 0.01)    
-    # for i in range(50):
-    #     time.sleep(0.025)
-    #     progress_bar.progress(i / 50)
 
     start_time = time.time()
     outcomes = wef1x_algorithm(x, m, n, weights, preferences)
