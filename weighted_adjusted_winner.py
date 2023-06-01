@@ -203,8 +203,10 @@ else:
 
     st.write("🎉 Outcomes:")
     outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
-    outcomes_df = pd.DataFrame(outcomes, columns=['Agent', 'Items'])
-    outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x: ', '.join(map(str, x)))
+    outcomes_df = pd.DataFrame(outcomes, columns=['Agents', 'Items'])
+    outcomes_df['Agents'] += 1
+    outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : [_x + 1 for _x in x])
+    outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : ', '.join(map(str, x)))
     st.table(outcomes_df)
     
     # Print timing results
