@@ -1,6 +1,5 @@
-import base64
 from collections import defaultdict
-from functools import lru_cache
+import base64
 import json
 import time
 
@@ -174,7 +173,7 @@ if m < n:
 else:
     weights = np.arange(1, n+1)
     
-    st.write("Agent Preferences:")
+    st.write("Agent Preferences (copyable from sheets):")
     preferences = load_preferences(m, n, upload_preferences)
     edited_prefs = st.experimental_data_editor(preferences, key="data_editor")
     # Convert to numpy arrays
