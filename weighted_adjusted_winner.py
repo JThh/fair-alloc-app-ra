@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+
 # Custom CSS styles
 st.markdown(
     """
@@ -14,9 +15,16 @@ st.markdown(
     .header {
         color: #28517f;
         font-size: 40px;
-        padding: 30px 0;
+        padding: 20px 0 10px 0;
         text-align: center;
         font-weight: bold;
+    }
+    .subheader {
+        color: #28517f;
+        font-size: 20px;
+        margin-bottom: 12px;
+        text-align: center;
+        font-style: italic;
     }
     .sidebar {
         padding: 20px;
@@ -66,6 +74,14 @@ def load_preferences(m, n, upload_preferences):
                                             index=[f"Agent {i+1}" for i in range(n)])
     return preferences_default
 
+@st.cache_data
+def load_weights(n, unweighted=False):
+    if unweighted:
+        weights = np.ones(n)
+    else:
+        weights = np.arange(1, n+1)
+    return pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['weights'])
+
 # def wef1_po_algorithm(x, m, n, weights, preferences):
 #     # Implementation of WEF1+PO algorithm
 #     # Add your code here
@@ -113,6 +129,9 @@ def wef1x_checker(outcomes, x, m, n, weights, preferences):
 # Set the title and layout of the web application
 st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>', unsafe_allow_html=True)
 
+# Subheader
+st.markdown('<h2 class="subheader">Developed by Jiatong Han @ NUS</h2>', unsafe_allow_html=True)
+
 # Insert header image
 st.sidebar.image("./head_image.png", use_column_width=True, caption='Image Credit: Fulfillment.com')
 
@@ -159,24 +178,37 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-
 # Add input components
 col1, col2, col3 = st.columns(3)
 m = col1.number_input("Number of goods (m)", min_value=2, value=10, step=1)
 n = col2.number_input("Number of agents (n)", min_value=2, step=1)
-x = col3.slider("Choose a value for x in WEF(x,1-x)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+x = col3.slider("Choose a value for x in WEF(x, 1-x)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
-upload_preferences = st.file_uploader(f"Upload Preferences of shape ({n}, {m})", type=['csv'])
+upload_preferences = None
+unweighted = False
+
+col1, col2 = st.columns([0.5, 0.5])
+with col1:
+    if st.checkbox("⭐ Symmetric Agents (Unweighted Settings)"):
+        unweighted = True
+
+with col2:
+    if st.checkbox("⭐ Upload Local Preferences CSV"):
+        upload_preferences = st.file_uploader(f"Upload Preferences of shape ({n}, {m})", type=['csv'])
 
 if m < n:
     st.warning("The number of goods (m) must be equal to or greater than the number of agents (n).")
 else:
-    weights = np.arange(1, n+1)
-    
-    st.write("Agent Preferences (copyable from sheets):")
+    # Agent Weights
+    st.write("🌟 Agent Weights:")
+    weights = load_weights(n, unweighted)
+    edited_ws = st.experimental_data_editor(weights.T, key="weight_editor")
+    weights = edited_ws.values[0]
+
+    # Agent Preferences
+    st.write("📊 Agent Preferences (copyable from sheets):")
     preferences = load_preferences(m, n, upload_preferences)
-    edited_prefs = st.experimental_data_editor(preferences, key="data_editor")
-    # Convert to numpy arrays
+    edited_prefs = st.experimental_data_editor(preferences, key="pref_editor")
     preferences = edited_prefs.values
     
     # Download preferences as CSV
@@ -185,47 +217,35 @@ else:
     href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
     st.markdown(href, unsafe_allow_html=True)
 
-    st.write("⏳ Run the Weight-Adjusted Picker (WEF(x,1-x))...")
-    
-    with st.spinner('Executing...'):
-        if n * m * 0.01 > 3:
-            time.sleep(3)
-        else:
-            time.sleep(n * m * 0.01)
+    start_algo = st.button("⏳ Execute Weight-Adjusted Picker Algorithm...")    
+    if start_algo:
+        with st.spinner('Executing...'):
+            if n * m * 0.01 > 3:
+                time.sleep(3)
+            else:
+                time.sleep(n * m * 0.01)
 
-    start_time = time.time()
-    outcomes = wef1x_algorithm(x, m, n, weights, preferences)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
+        start_time = time.time()
+        outcomes = wef1x_algorithm(x, m, n, weights, preferences)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
 
-    st.write("🎉 Outcomes:")
-    outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
-    outcomes_df = pd.DataFrame(outcomes, columns=['Agents', 'Items'])
-    outcomes_df['Agents'] += 1
-    outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : [_x + 1 for _x in x])
-    outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : ', '.join(map(str, x)))
-    st.table(outcomes_df)
-    
-    # Print timing results
-    st.write("⏱️ Timing Results:")
-    st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
-
-    # st.warning("⚠️ Running the WEF Checker takes exponential time!")
-
-    # if st.button(f"Run WEF({x}, {1-x}) Checker"):
-    #     st.write(f"Running WEF Checker...")
-    #     wef1x_checker(outcomes, x, m, n, weights, preferences)
+        st.write("🎉 Outcomes:")
+        outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
+        outcomes_df = pd.DataFrame(outcomes, columns=['Agents', 'Items'])
+        outcomes_df['Agents'] += 1
+        outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : [_x + 1 for _x in x])
+        outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : ', '.join(map(str, x)))
+        st.table(outcomes_df)
         
-    # Download outcomes in JSON format
-    outcomes_json = json.dumps([oc[1] for oc in outcomes], indent=4)
-    st.markdown("### Download Outcomes as JSON")
-    b64 = base64.b64encode(outcomes_json.encode()).decode()
-    href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
-    st.markdown(href, unsafe_allow_html=True)
-    st.json(outcomes_json)
-    # st.download_button(
-    #     label="Download Allocations",
-    #     file_name="outcomes.json",
-    #     mime="application/json",
-    #     data=outcomes_json,
-    # )
+        # Print timing results
+        st.write(f"⏱️ Timing Results:")
+        st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+            
+        # Download outcomes in JSON format
+        outcomes_json = json.dumps([oc[1] for oc in outcomes_df.to_numpy()], indent=4)
+        st.markdown("### Download Outcomes as JSON")
+        b64 = base64.b64encode(outcomes_json.encode()).decode()
+        href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
+        st.markdown(href, unsafe_allow_html=True)
+        st.json(outcomes_json)
