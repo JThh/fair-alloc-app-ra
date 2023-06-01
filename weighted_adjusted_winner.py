@@ -8,6 +8,9 @@ import pandas as pd
 import streamlit as st
 
 
+# Set default layout to wide mode
+st.set_page_config(layout="wide")
+
 # Custom CSS styles
 st.markdown(
     """
