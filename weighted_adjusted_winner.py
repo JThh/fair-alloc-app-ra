@@ -1,6 +1,7 @@
 from collections import defaultdict
 from functools import lru_cache
 import json
+import time
 
 import numpy as np
 import pandas as pd
@@ -169,16 +170,28 @@ else:
 
     if n == 2:
         st.write("Running Weighted Adjust Winner (WEF1+PO) algorithm...")
+        # with st.beta_expander("The Algorithm"):
+        #     st.write("")
+        start_time = time.time()
         outcomes = wef1_po_algorithm(m, n, weights, preferences)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
     else:
         st.write("Pick the Least Weight-Adjusted Frequent Picker (WEF1)...")
+        start_time = time.time()
         outcomes = wef1_algorithm(m, n, weights, preferences)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
 
     st.write("🎉 Outcomes:")
     outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
     outcomes_df = pd.DataFrame(outcomes, columns=['Agent', 'Items'])
     outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x: ', '.join(map(str, x)))
     st.table(outcomes_df)
+    
+    # Print timing results
+    st.write("⏱️ Timing Results:")
+    st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 
     # for agent_id, item_list in outcomes.items():
     #     st.write(f"{agent_id}: {sorted(item_list)}")
