@@ -237,7 +237,7 @@ else:
     weights = load_weights(n, unweighted)
     edited_ws = st.data_editor(weights.T, key="weight_editor")
     weights = edited_ws.values[0]
-    invalid_weights = any((w < 1 or w >= 1000) for w in weights)
+    invalid_weights = any((w < 1 or w > 1000) for w in weights)
     if invalid_weights:
         st.error("Invalid weight values. Please enter positive integers less than 1000.")
         st.stop()
@@ -247,7 +247,7 @@ else:
     preferences = load_preferences(m, n, upload_preferences)
     edited_prefs = st.data_editor(preferences, key="pref_editor")
     preferences = edited_prefs.values
-    invalid_prefs = any((p < 1 or p >= 100) for p in preferences.flatten())
+    invalid_prefs = any((p < 1 or p > 100) for p in preferences.flatten())
     if invalid_prefs:
         st.error("Invalid preference values. Please enter positive integers less than 100.")
         st.stop()
