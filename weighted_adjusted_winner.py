@@ -382,10 +382,9 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
-# Add footer section
-st.sidebar.markdown(
+st.markdown(
     """
-    <div class="footer" style="margin-top: auto; font-size: 12px; color: #777777;">
+    <div class="footer" style="padding-top: 200px; margin-top: auto; text-align: left; font-size: 10px; color: #777777;">
     <p>Developed by <a href="https://www.linkedin.com/in/jiatong-han-06636419b/" target="_blank">Jiatong Han</a>, 
     kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksumpong</a></p>
     <p>&copy; 2023. All rights reserved.</p>
