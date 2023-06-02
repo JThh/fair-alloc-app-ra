@@ -18,7 +18,7 @@ st.markdown(
     .header {
         color: #28517f;
         font-size: 40px;
-        padding: 20px 0 10px 0;
+        padding: 20px 0 20px 0;
         text-align: center;
         font-weight: bold;
     }
@@ -106,7 +106,7 @@ def load_weights(n, unweighted=False):
         weights = np.ones(n)
     else:
         weights = np.arange(1, n+1)
-    return pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['weights'])
+    return pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['Weights'])
 
 # def wef1_po_algorithm(x, m, n, weights, preferences):
 #     # Implementation of WEF1+PO algorithm
@@ -156,7 +156,7 @@ def wef1x_checker(outcomes, x, m, n, weights, preferences):
 st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>', unsafe_allow_html=True)
 
 # Subheader
-st.markdown('<h2 class="subheader">Developed by Jiatong Han @ NUS</h2>', unsafe_allow_html=True)
+# st.markdown('<h2 class="subheader">Developed by Jiatong Han @ NUS</h2>', unsafe_allow_html=True)
 
 # Insert header image
 st.sidebar.image("./head_image.png", use_column_width=True, caption='Image Credit: Fulfillment.com')
@@ -204,6 +204,7 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+
 # Add input components
 col1, col2, col3 = st.columns(3)
 m = col1.number_input("Number of goods (m)", min_value=2, value=10, step=1)
@@ -226,16 +227,24 @@ if m < n:
     st.warning("The number of goods (m) must be equal to or greater than the number of agents (n).")
 else:
     # Agent Weights
-    st.write("🌟 Agent Weights:")
+    st.write("🌟 Agent Weights (1-1000):")
     weights = load_weights(n, unweighted)
     edited_ws = st.experimental_data_editor(weights.T, key="weight_editor")
     weights = edited_ws.values[0]
+    invalid_weights = any((w < 1 or w >= 1000) for w in weights)
+    if invalid_weights:
+        st.error("Invalid weight values. Please enter positive integers less than 1000.")
+        st.stop()
 
     # Agent Preferences
-    st.write("📊 Agent Preferences (copyable from sheets):")
+    st.write("📊 Agent Preferences (1-100, copyable from local sheets):")
     preferences = load_preferences(m, n, upload_preferences)
     edited_prefs = st.experimental_data_editor(preferences, key="pref_editor")
     preferences = edited_prefs.values
+    invalid_prefs = any((p < 1 or p >= 100) for p in preferences.flatten())
+    if invalid_prefs:
+        st.error("Invalid preference values. Please enter positive integers less than 100.")
+        st.stop()
     
     # Download preferences as CSV
     preferences_csv = edited_prefs.to_csv(index=False)
@@ -271,7 +280,7 @@ else:
             <div class="information-card-content">
                 <h2 class="information-card-header">Information</h2>
                 <p class="information-card-text">
-                    The Weighted Adjusted Winner algorithm is used for goods allocation in situations where the items are indivisible.
+                    The  Weighted Picking Sequence algorithm is used for goods allocation in situations where the items are indivisible.
                     It provides a method to allocate goods to agents in a way that balances fairness and efficiency.
                 </p>
                 <h3 class="information-card-header">Algorithm Overview</h3>
@@ -284,23 +293,23 @@ else:
                 </p>
                 <h3 class="information-card-header">Fairness Considerations</h3>
                 <p class="information-card-text">
-                    The Weighted Adjusted Winner algorithm incorporates fairness notions by dynamically adjusting the weights of agents during the allocation process.
+                    The Weighted Picking Sequence algorithm incorporates fairness notions by dynamically adjusting the weights of agents during the allocation process.
                     By giving higher weights to agents with fewer allocated items, the algorithm aims to balance the distribution of goods among agents.
                     This helps prevent situations where some agents receive a disproportionate number of items, leading to unfair outcomes.
                 </p>
                 <h3 class="information-card-header">Efficiency Trade-offs</h3>
                 <p class="information-card-text">
-                    The Weighted Adjusted Winner algorithm also considers efficiency by allocating items to agents based on their preferences.
+                    The  Weighted Picking Sequence algorithm also considers efficiency by allocating items to agents based on their preferences.
                     By allocating items to agents who value them the most, the algorithm aims to maximize overall utility and satisfaction.
                     However, achieving perfect efficiency may not always be possible while ensuring fairness.
                     Trade-offs between efficiency and fairness are inherent in the allocation process, and the algorithm seeks to strike a balance between these objectives.
                 </p>
                 <h3 class="information-card-header">Mathematical Formulation</h3>
                 <p class="information-card-text">
-                    The Weighted Adjusted Winner algorithm can be represented using the following formula:
+                    The Weighted Picking Sequence algorithm can be represented using the following formula:
                 </p>
                 <p class="information-card-formula">
-                    Weighted_Adjusted_Winner = argmin<sub>i ∈ N</sub> {(t<sub>i</sub> + (1 - x)) / w<sub>i</sub>}
+                    next_pick = argmin<sub>i ∈ N</sub> {(t<sub>i</sub> + (1 - x)) / w<sub>i</sub>}
                 </p>
                 <p class="information-card-text">
                     Where:
@@ -311,7 +320,7 @@ else:
                     <li>N is the set of agents</li>
                 </ul>
                 <p class="information-card-text">
-                    For a detailed explanation of the Weighted Adjusted Winner algorithm for WEF(x, 1-x) and its theoretical foundations, please refer to the following paper:
+                    For a detailed explanation of the Weighted Picking Sequence algorithm for WEF(x, 1-x) and its theoretical foundations, please refer to the following paper:
                 </p>
                 <p class="information-card-citation">
                    Mithun Chakraborty, Erel Segal-Halevi, and Warut Suksompong. 2022. Weighted Fairness Notions for Indivisible Items Revisited. Proceedings of the 36th AAAI Conference on Artificial Intelligence (AAAI)(2022), 4949–4956.
@@ -321,7 +330,7 @@ else:
             unsafe_allow_html=True
         )
 
-    start_algo = st.button("⏳ Execute Weighted Adjusted Winner Algorithm...")    
+    start_algo = st.button("⏳ Run Weighted Picking Sequence Algorithm ")    
     if start_algo:
         with st.spinner('Executing...'):
             if n * m * 0.01 > 3:
@@ -338,18 +347,43 @@ else:
         outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
         outcomes_df = pd.DataFrame(outcomes, columns=['Agents', 'Items'])
         outcomes_df['Agents'] += 1
+        outcomes_df['Agents'] = outcomes_df['Agents'].apply(str)
         outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : [_x + 1 for _x in x])
         outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : ', '.join(map(str, x)))
+        
         st.table(outcomes_df)
         
         # Print timing results
         st.write(f"⏱️ Timing Results:")
         st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+        
+        print({otc[0]: otc[1] for otc in outcomes_df.to_numpy()})
             
         # Download outcomes in JSON format
-        outcomes_json = json.dumps([oc[1] for oc in outcomes_df.to_numpy()], indent=4)
+        outcomes_json = json.dumps({otc[0]: otc[1] for otc in outcomes_df.to_numpy()}, indent=4)
         st.markdown("### Download Outcomes as JSON")
         b64 = base64.b64encode(outcomes_json.encode()).decode()
         href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
         st.markdown(href, unsafe_allow_html=True)
         st.json(outcomes_json)
+
+
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
+# Add footer section
+st.sidebar.markdown(
+    """
+    <div class="footer">
+    <p>Developed by <a href="https://www.linkedin.com/in/jiatong-han-06636419b/" target="_blank">Jiatong Han</a>, 
+    kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksumpong</a></p>
+    <p>&copy; 2023. All rights reserved.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
