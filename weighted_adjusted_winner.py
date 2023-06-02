@@ -8,8 +8,12 @@ import pandas as pd
 import streamlit as st
 
 
-# Set default layout to wide mode
-st.set_page_config(layout="wide")
+# Set page configuration
+st.set_page_config(
+    page_title="Weighted Fairness App",
+    page_icon="icon.png",
+    layout="wide",
+)
 
 # Custom CSS styles
 st.markdown(
@@ -379,7 +383,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Add footer section
 st.sidebar.markdown(
     """
-    <div class="footer">
+    <div class="footer" style="margin-top: auto; font-size: 12px; color: #777777;">
     <p>Developed by <a href="https://www.linkedin.com/in/jiatong-han-06636419b/" target="_blank">Jiatong Han</a>, 
     kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksumpong</a></p>
     <p>&copy; 2023. All rights reserved.</p>
