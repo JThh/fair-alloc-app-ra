@@ -54,6 +54,29 @@ st.markdown(
         color: #777777;
         margin-top: 20px;
     }
+    .information-card-content {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .information-card-text {
+        font-weight: bold;
+        color: #28517f;
+        margin-bottom: 10px;
+    }
+
+    .information-card-list {
+        list-style-type: decimal;
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+
+    .information-card-disclaimer {
+        font-size: 12px;
+        color: #777777;
+        margin-top: 20px;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -219,8 +242,86 @@ else:
     b64 = base64.b64encode(preferences_csv.encode()).decode()
     href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
     st.markdown(href, unsafe_allow_html=True)
+    
+    # Add expandable information card
+    with st.expander("ℹ️ Information", expanded=False):
+        st.markdown(
+            """
+            <style>
+            .information-card-content {
+                margin-top: 20px;
+            }
+            .information-card-text {
+                font-size: 14px;
+                line-height: 1.5;
+                color: #555555;
+            }
+            .information-card-citation {
+                font-size: 12px;
+                font-style: italic;
+                color: #777777;
+            }
+            .information-card-formula {
+                font-size: 14px;
+                line-height: 1.5;
+                color: #555555;
+                font-weight: bold;
+            }
+            </style>
+            <div class="information-card-content">
+                <h2 class="information-card-header">Information</h2>
+                <p class="information-card-text">
+                    The Weighted Adjusted Winner algorithm is used for goods allocation in situations where the items are indivisible.
+                    It provides a method to allocate goods to agents in a way that balances fairness and efficiency.
+                </p>
+                <h3 class="information-card-header">Algorithm Overview</h3>
+                <p class="information-card-text">
+                    The algorithm starts with each agent's initial weights. These weights represent the relative importance or priority of the agents in the allocation process.
+                    The algorithm then iteratively selects an item to allocate and assigns it to the agent who values it the most based on their preferences.
+                    The weights of the agents are adjusted after each allocation to reflect the items already allocated to them.
+                    This adjustment ensures that agents with fewer allocated items are given higher weights to maintain fairness in subsequent allocations.
+                    The process continues until all items are allocated or no further allocations can be made while satisfying certain fairness criteria.
+                </p>
+                <h3 class="information-card-header">Fairness Considerations</h3>
+                <p class="information-card-text">
+                    The Weighted Adjusted Winner algorithm incorporates fairness notions by dynamically adjusting the weights of agents during the allocation process.
+                    By giving higher weights to agents with fewer allocated items, the algorithm aims to balance the distribution of goods among agents.
+                    This helps prevent situations where some agents receive a disproportionate number of items, leading to unfair outcomes.
+                </p>
+                <h3 class="information-card-header">Efficiency Trade-offs</h3>
+                <p class="information-card-text">
+                    The Weighted Adjusted Winner algorithm also considers efficiency by allocating items to agents based on their preferences.
+                    By allocating items to agents who value them the most, the algorithm aims to maximize overall utility and satisfaction.
+                    However, achieving perfect efficiency may not always be possible while ensuring fairness.
+                    Trade-offs between efficiency and fairness are inherent in the allocation process, and the algorithm seeks to strike a balance between these objectives.
+                </p>
+                <h3 class="information-card-header">Mathematical Formulation</h3>
+                <p class="information-card-text">
+                    The Weighted Adjusted Winner algorithm can be represented using the following formula:
+                </p>
+                <p class="information-card-formula">
+                    Weighted_Adjusted_Winner = argmin<sub>i ∈ N</sub> {(t<sub>i</sub> + (1 - x)) / w<sub>i</sub>}
+                </p>
+                <p class="information-card-text">
+                    Where:
+                </p>
+                <ul class="information-card-text">
+                    <li>w<sub>i</sub> is the weight of agent i</li>
+                    <li>t<sub>i</sub> is the number of times agent i has picked so far</li>
+                    <li>N is the set of agents</li>
+                </ul>
+                <p class="information-card-text">
+                    For a detailed explanation of the Weighted Adjusted Winner algorithm for WEF(x, 1-x) and its theoretical foundations, please refer to the following paper:
+                </p>
+                <p class="information-card-citation">
+                   Mithun Chakraborty, Erel Segal-Halevi, and Warut Suksompong. 2022. Weighted Fairness Notions for Indivisible Items Revisited. Proceedings of the 36th AAAI Conference on Artificial Intelligence (AAAI)(2022), 4949–4956.
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    start_algo = st.button("⏳ Execute Weight-Adjusted Picker Algorithm...")    
+    start_algo = st.button("⏳ Execute Weighted Adjusted Winner Algorithm...")    
     if start_algo:
         with st.spinner('Executing...'):
             if n * m * 0.01 > 3:
