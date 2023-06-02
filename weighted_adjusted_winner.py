@@ -233,7 +233,7 @@ else:
     # Agent Weights
     st.write("🌟 Agent Weights (1-1000):")
     weights = load_weights(n, unweighted)
-    edited_ws = st.experimental_data_editor(weights.T, key="weight_editor")
+    edited_ws = st.data_editor(weights.T, key="weight_editor")
     weights = edited_ws.values[0]
     invalid_weights = any((w < 1 or w >= 1000) for w in weights)
     if invalid_weights:
@@ -243,7 +243,7 @@ else:
     # Agent Preferences
     st.write("📊 Agent Preferences (1-100, copyable from local sheets):")
     preferences = load_preferences(m, n, upload_preferences)
-    edited_prefs = st.experimental_data_editor(preferences, key="pref_editor")
+    edited_prefs = st.data_editor(preferences, key="pref_editor")
     preferences = edited_prefs.values
     invalid_prefs = any((p < 1 or p >= 100) for p in preferences.flatten())
     if invalid_prefs:
@@ -266,8 +266,8 @@ else:
             }
             .information-card-text {
                 font-size: 14px;
-                line-height: 1.5;
-                color: #555555;
+                line-height: 1.6;
+                color: var(--text-color);
             }
             .information-card-citation {
                 font-size: 12px;
