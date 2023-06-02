@@ -373,14 +373,13 @@ else:
         st.markdown(href, unsafe_allow_html=True)
         st.json(outcomes_json)
 
-        # footer {visibility: hidden;}
-
-# hide_streamlit_style = """
-#     <style>
-#         #MainMenu {visibility: hidden;}
-#     </style>
-# """
-# st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 st.markdown(
     """
