@@ -196,13 +196,15 @@ st.sidebar.markdown(
 
     <ol>
         <li>Specify the number of items (m) and agents (n) using the number input boxes.</li>
-        <li>Choose to either upload a preferences file or edit the random preferences.</li>
+        <li>Choose to either upload a preferences file or edit the  preferences.</li>
+        <li>Click the 'Run Algorithm' button to start the algorithm.</li>
         <li>You can download the outcomes as a JSON file or the preferences as a CSV file using the provided links.</li>
     </ol>
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
 
-    <p><em>Image Credit: <a href="https://www.thefulfillmentlab.com/blog/product-allocation">Image Source</a></em></p>
+    <p><em>Image Credit: <a href="https://www.thefulfillmentlab.com/blog/product-allocation">Image Source</a></em>.
+    <em>Icon Credit: <a href="https://www.flaticon.com/free-icon/orange_135620">Icon Source</a></em>.</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -266,7 +268,7 @@ else:
             }
             .information-card-text {
                 font-size: 14px;
-                line-height: 1.6;
+                line-height: 1.5;
                 color: var(--text-color);
             }
             .information-card-citation {
