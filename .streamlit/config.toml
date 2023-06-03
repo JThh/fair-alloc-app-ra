@@ -1,0 +1,7 @@
+[server]
+headless = true
+enableCORS=false
+port = 5000
+
+[theme]
+base="light"
