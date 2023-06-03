@@ -190,7 +190,7 @@ theme_colors = light_mode if theme_mode == "Light" else dark_mode
 st.sidebar.markdown(
     f"""
     <div class="guide" style="background-color: {theme_colors['guide-background-color']}; color: {theme_colors['guide-color']}">
-    <p>This app calculates outcomes using the Weighted Adjusted Winner algorithm.</p>
+    <p>This app calculates outcomes using the Weighted Picking Sequence algorithm.</p>
 
     <h3>Follow these steps to use the app:</h3>
 
