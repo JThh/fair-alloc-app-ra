@@ -403,7 +403,7 @@ else:
                             # width="medium",
                         ),
                         "Agents": st.column_config.ListColumn(
-                            "Agents",
+                            "Agent",
                             help="The list of agents that get allocated",
                             # width="medium",
                         ),
