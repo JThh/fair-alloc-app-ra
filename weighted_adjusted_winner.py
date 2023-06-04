@@ -3,6 +3,7 @@ import base64
 import json
 from re import I
 import time
+from turtle import onclick
 
 import numpy as np
 import pandas as pd
@@ -208,6 +209,8 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+def uncheck_callback():
+    st.session_state.weight_checkbox = False
 
 # Add input components
 col1, col2, col3 = st.columns(3)
@@ -220,7 +223,9 @@ unweighted = False
 
 col1, col2 = st.columns([0.5, 0.5])
 with col1:
-    if st.checkbox("⭐ Symmetric Agents (Unweighted Settings)"):
+    if st.checkbox("⭐ Symmetric Agents (Unweighted Settings)", 
+                   key='weight_checkbox', 
+                   value=False):
         unweighted = True
 
 with col2:
@@ -245,6 +250,7 @@ else:
                                         format="%d",
                                     )
                                 for i in range(1, n+1)},
+                                on_change=uncheck_callback,
                                )
     weights = edited_ws.values[0]
     # invalid_weights = any((w < 1 or w > 1000) for w in weights)
