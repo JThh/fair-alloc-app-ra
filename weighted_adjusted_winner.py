@@ -1,6 +1,7 @@
 from collections import defaultdict
 import base64
 import json
+from re import I
 import time
 
 import numpy as np
@@ -63,19 +64,16 @@ st.markdown(
         font-size: 16px;
         line-height: 1.6;
     }
-
     .information-card-text {
         font-weight: bold;
         color: #28517f;
         margin-bottom: 10px;
     }
-
     .information-card-list {
         list-style-type: decimal;
         margin-left: 20px;
         margin-bottom: 10px;
     }
-
     .information-card-disclaimer {
         font-size: 12px;
         color: #777777;
@@ -213,8 +211,8 @@ st.sidebar.markdown(
 
 # Add input components
 col1, col2, col3 = st.columns(3)
-m = col1.number_input("Number of goods (m)", min_value=2, value=10, step=1)
-n = col2.number_input("Number of agents (n)", min_value=2, step=1)
+n = col1.number_input("Number of agents (n)", min_value=2, step=1)
+m = col2.number_input("Number of goods (m)", min_value=2, value=10, step=1)
 x = col3.slider("Choose a value for x in WEF(x, 1-x)", min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
 upload_preferences = None
@@ -235,22 +233,46 @@ else:
     # Agent Weights
     st.write("🌟 Agent Weights (1-1000):")
     weights = load_weights(n, unweighted)
-    edited_ws = st.data_editor(weights.T, key="weight_editor")
+    edited_ws = st.data_editor(weights.T, 
+                                key="weight_editor",
+                                column_config={
+                                    f"Agent {i}": st.column_config.NumberColumn(
+                                        f"Agent {i}",
+                                        help=f"Agent {i}'s Weight",
+                                        min_value=1,
+                                        max_value=1000,
+                                        step=1,
+                                        format="%d",
+                                    )
+                                for i in range(1, n+1)},
+                               )
     weights = edited_ws.values[0]
-    invalid_weights = any((w < 1 or w > 1000) for w in weights)
-    if invalid_weights:
-        st.error("Invalid weight values. Please enter positive integers less than 1000.")
-        st.stop()
+    # invalid_weights = any((w < 1 or w > 1000) for w in weights)
+    # if invalid_weights:
+    #     st.error("Invalid weight values. Please enter positive integers less than or equal to 1000.")
+    #     st.stop()
 
     # Agent Preferences
-    st.write("📊 Agent Preferences (1-100, copyable from local sheets):")
+    st.write("📊 Agent Preferences (1-1000, copyable from local sheets):")
     preferences = load_preferences(m, n, upload_preferences)
-    edited_prefs = st.data_editor(preferences, key="pref_editor")
+    edited_prefs = st.data_editor(preferences, 
+                                key="pref_editor",
+                                column_config={
+                                    f"Item {j}": st.column_config.NumberColumn(
+                                        f"Item {j}",
+                                        help=f"Agents' Preferences towards Item {j}",
+                                        min_value=1,
+                                        max_value=1000,
+                                        step=1,
+                                        format="%d",
+                                    )
+                                for j in range(1, m+1)},
+                                )
     preferences = edited_prefs.values
-    invalid_prefs = any((p < 1 or p > 100) for p in preferences.flatten())
-    if invalid_prefs:
-        st.error("Invalid preference values. Please enter positive integers less than 100.")
-        st.stop()
+    # invalid_prefs = any((p < 1 or p > 1000) for p in preferences.flatten())
+    # if invalid_prefs:
+    #     st.error("Invalid preference values. Please enter positive integers less than or equal to 1000.")
+    #     st.stop()
     
     # Download preferences as CSV
     preferences_csv = edited_prefs.to_csv(index=False)
@@ -357,7 +379,37 @@ else:
         outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : [_x + 1 for _x in x])
         outcomes_df['Items'] = outcomes_df['Items'].apply(lambda x : ', '.join(map(str, x)))
         
-        st.table(outcomes_df)
+        # Sort the table
+        outcomes_df = outcomes_df.sort_values(['Agents','Items'])
+        
+        # # CSS to inject contained in a string
+        # hide_table_row_index = """
+        #             <style>
+        #             thead tr th:first-child {display:none}
+        #             tbody th {display:none}
+        #             </style>
+        #             """
+
+        # # Inject CSS with Markdown
+        # st.markdown(hide_table_row_index, unsafe_allow_html=True)
+
+        # Display a static table
+        # st.table(outcomes_df)
+        st.data_editor(outcomes_df, 
+                    column_config={
+                        "Items": st.column_config.ListColumn(
+                            "Items",
+                            help="The list of items allocated to agents",
+                            # width="medium",
+                        ),
+                        "Agents": st.column_config.ListColumn(
+                            "Agents",
+                            help="The list of agents that get allocated",
+                            # width="medium",
+                        ),
+                    },
+                    hide_index=True,
+                )
         
         # Print timing results
         st.write(f"⏱️ Timing Results:")
@@ -385,7 +437,7 @@ st.markdown(
     """
     <div class="footer" style="padding-top: 200px; margin-top: auto; text-align: left; font-size: 10px; color: #777777;">
     <p>Developed by <a href="https://www.linkedin.com/in/jiatong-han-06636419b/" target="_blank">Jiatong Han</a>, 
-    kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksumpong</a></p>
+    kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksompong</a></p>
     <p>&copy; 2023. All rights reserved.</p>
     </div>
     """,
