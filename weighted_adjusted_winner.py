@@ -312,6 +312,12 @@ with st.spinner("Updating..."):
 
 weights = edited_ws.values[0]
 
+# Download weights as CSV
+weights_csv = edited_ws.to_csv()
+b64 = base64.b64encode(weights_csv.encode()).decode()
+href = f'<a href="data:file/csv;base64,{b64}" download="weights.csv">Download Weights CSV</a>'
+st.markdown(href, unsafe_allow_html=True)
+
 # Agent Preferences
 st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 preferences = load_preferences(m, n, upload_preferences)
@@ -341,7 +347,7 @@ with st.spinner('Updating...'):
 preferences = edited_prefs.values
 
 # Download preferences as CSV
-preferences_csv = edited_prefs.to_csv(index=False)
+preferences_csv = edited_prefs.to_csv()
 b64 = base64.b64encode(preferences_csv.encode()).decode()
 href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
