@@ -269,7 +269,7 @@ st.sidebar.markdown(
     <h3>Follow these steps to use the app:</h3>
 
     <ol>
-        <li>Specify the number of items (m) and agents (n) using the number input boxes.</li>
+        <li>Specify the number of agents (n) and items (m) using the number input boxes.</li>
         <li>Choose to either upload a preferences file or edit the  preferences.</li>
         <li>Click the 'Run Algorithm' button to start the algorithm.</li>
         <li>You can download the outcomes as a JSON file or the preferences as a CSV file using the provided links.</li>
@@ -289,7 +289,7 @@ col1, col2, col3 = st.columns(3)
 n = col1.number_input("Number of agents (n)",
                       min_value=2, max_value=100, step=1)
 m = col2.number_input("Number of goods (m)", min_value=2,
-                      max_value=1000, value=10, step=1)
+                      max_value=1000, value=6, step=1)
 x = col3.slider("Choose a value for x in WEF(x, 1-x)",
                 min_value=0.0, max_value=1.0, value=0.5, step=0.01)
 
@@ -322,7 +322,7 @@ edited_ws = st.data_editor(weights.T,
                                    f"Agent {i}",
                                    help=f"Agent {i}'s Weight",
                                    max_chars=4,
-                                   validate=r"^(?:[1-9]\d{0,2}|1000)$",
+                                   validate=r"^(?:[1-9]\d{0,2}(?:\.\d+)?|1000(?:\.0+)?)$",
                                    required=True,
                                )
                                for i in range(1, n+1)},
@@ -349,14 +349,15 @@ for col in preferences.columns:
 edited_prefs = st.data_editor(preferences,
                               key="pref_editor",
                               column_config={
-                                  f"Item {j}": st.column_config.TextColumn(
+                                  f"Item {j}": st.column_config.NumberColumn(
                                       f"Item {j}",
                                       help=f"Agents' Preferences towards Item {j}",
-                                      max_chars=4,
-                                      validate=r"^(?:1000|[0-9]{1,3})$",
-                                      # min_value=0,
-                                      # max_value=1000,
-                                      # step=1,
+                                    #   max_chars=4,
+                                    #   validate=r"^(?:[1-9]\d{0,2}(?:\.\d+)?|1000(?:\.0+)?)$",
+                                      min_value=0,
+                                      max_value=1000,
+                                      step=1,
+                                      format="%d",
                                       required=True,
                                   )
                                   for j in range(1, m+1)},
@@ -446,7 +447,7 @@ with st.expander("ℹ️ Information", expanded=False):
                 For a detailed explanation of the Weighted Picking Sequence algorithm for WEF(x, 1-x) and its theoretical foundations, please refer to the following paper:
             </p>
             <p class="information-card-citation">
-                Mithun Chakraborty, Erel Segal-Halevi, and Warut Suksompong. 2022. Weighted Fairness Notions for Indivisible Items Revisited. Proceedings of the 36th AAAI Conference on Artificial Intelligence (AAAI)(2022), 4949–4956.
+                Mithun Chakraborty, Erel Segal-Halevi, and Warut Suksompong. 2022. <a href="https://arxiv.org/pdf/2112.04166.pdf" target="_blank">Weighted Fairness Notions for Indivisible Items Revisited.</a> Proceedings of the 36th AAAI Conference on Artificial Intelligence (AAAI)(2022), 4949–4956.
             </p>
         </div>
         """,
