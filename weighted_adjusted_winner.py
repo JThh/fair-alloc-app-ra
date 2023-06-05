@@ -1,9 +1,7 @@
 from collections import defaultdict
 import base64
 import json
-from re import I
 import time
-from turtle import onclick
 
 import numpy as np
 import pandas as pd
@@ -250,7 +248,7 @@ else:
                                         format="%d",
                                     )
                                 for i in range(1, n+1)},
-                                on_change=uncheck_callback,
+                                # on_change=uncheck_callback,
                                )
     weights = edited_ws.values[0]
     # invalid_weights = any((w < 1 or w > 1000) for w in weights)
@@ -259,7 +257,7 @@ else:
     #     st.stop()
 
     # Agent Preferences
-    st.write("📊 Agent Preferences (1-1000, copyable from local sheets):")
+    st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
     preferences = load_preferences(m, n, upload_preferences)
     edited_prefs = st.data_editor(preferences, 
                                 key="pref_editor",
@@ -267,7 +265,7 @@ else:
                                     f"Item {j}": st.column_config.NumberColumn(
                                         f"Item {j}",
                                         help=f"Agents' Preferences towards Item {j}",
-                                        min_value=1,
+                                        min_value=0,
                                         max_value=1000,
                                         step=1,
                                         format="%d",
@@ -406,12 +404,6 @@ else:
                         "Items": st.column_config.ListColumn(
                             "Items",
                             help="The list of items allocated to agents",
-                            # width="medium",
-                        ),
-                        "Agents": st.column_config.ListColumn(
-                            "Agent",
-                            help="The list of agents that get allocated",
-                            # width="medium",
                         ),
                     },
                     hide_index=True,
