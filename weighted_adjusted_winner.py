@@ -1,5 +1,6 @@
 from collections import defaultdict
 import base64
+from functools import partial
 import json
 import os
 import time
@@ -168,8 +169,16 @@ def load_weights(n, unweighted=False):
     weights = pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['Weights'], dtype=int)
     return weights
 
-def uncheck_callback():
+def wchange_callback(weights):
     st.session_state.weight_checkbox = False
+    for col in weights.columns:
+        weights[col] = weights[col].map(lambda x:int(float(x)))
+    st.session_state.weights = weights
+    
+def pchange_callback(preferences):
+    for col in preferences.columns:
+        preferences[col] = preferences[col].apply(lambda x:int(float(x)))
+    st.session_state.preferences = preferences
 
 def wef1x_algorithm(x, m, n, weights, preferences):
     # Implementation of WEF1 algorithm
@@ -271,7 +280,6 @@ with col1:
                    key='weight_checkbox', 
                    value=st.session_state.weight_checkbox 
                     if hasattr(st.session_state, "weight_checkbox") else False)
-    del st.session_state["weight_checkbox"]
 with col2:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(f"Upload Preferences of shape ({n}, {m})", type=['csv'])
@@ -295,11 +303,11 @@ edited_ws = st.data_editor(weights.T,
                                     required=True,
                                 )
                             for i in range(1, n+1)},
-                            on_change=uncheck_callback,
+                            on_change=partial(wchange_callback, weights),
                             )
 with st.spinner("Updating..."):
     for col in edited_ws.columns:
-        edited_ws[col] = edited_ws[col].apply(lambda x:int(float(x)))
+        edited_ws[col] = edited_ws[col].map(lambda x:int(float(x)))
     st.session_state.weights = edited_ws.T
 
 weights = edited_ws.values[0]
@@ -307,8 +315,6 @@ weights = edited_ws.values[0]
 # Agent Preferences
 st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 preferences = load_preferences(m, n, upload_preferences)
-
-# Strong assertiont that preferences are of type pd.dataframe
 for col in preferences.columns:
     preferences[col] = preferences[col].map(str)
 edited_prefs = st.data_editor(preferences, 
@@ -319,9 +325,13 @@ edited_prefs = st.data_editor(preferences,
                                     help=f"Agents' Preferences towards Item {j}",
                                     max_chars=4,
                                     validate=r"^(?:1000|[0-9]{1,3})$",
+                                    # min_value=0,
+                                    # max_value=1000,
+                                    # step=1,
                                     required=True,
                                 )
                             for j in range(1, m+1)},
+                            on_change=partial(pchange_callback, preferences),
                             )
 with st.spinner('Updating...'):
     for col in edited_prefs.columns:
