@@ -1,6 +1,7 @@
 from collections import defaultdict
 import base64
 import json
+import os
 import time
 
 import numpy as np
@@ -83,8 +84,49 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-@st.cache_data
+
 def load_preferences(m, n, upload_preferences):
+    if hasattr(st.session_state, "preferences"):
+        if upload_preferences:
+            preferences_default = None
+            # Load the user-uploaded preferences file
+            try:
+                preferences_default = pd.read_csv(upload_preferences)
+                if preferences_default.shape != (n, m):
+                    x, y = preferences_default.shape
+                    st.session_state.preferences.iloc[:x, :y] = preferences_default
+                else:
+                    st.session_state.preferences = pd.DataFrame(preferences_default, 
+                                                                columns=st.session_state.preferences.columns,
+                                                                index=st.session_state.preferences.index)
+                return st.session_state.preferences
+            except Exception as e:
+                st.error(f"An error occurred while loading the preferences file.")
+                st.stop()
+        old_n = st.session_state.preferences.shape[0]
+        old_m = st.session_state.preferences.shape[1]
+        if n <= old_n and m <= old_m:
+            st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
+            return st.session_state.preferences
+        elif n > old_n:
+            st.session_state.preferences = pd.concat([st.session_state.preferences, 
+                                                    pd.DataFrame(np.random.randint(1, 100, (n - old_n, m)), 
+                                                                 columns=[f"Item {i+1}" for i in range(m)], 
+                                                                 index=[f"Agent {i+1}" for i in range(old_n, n)])], 
+                                                     axis=0)
+            return st.session_state.preferences
+        elif m > old_m:
+            st.session_state.preferences = pd.concat([st.session_state.preferences, 
+                                                    pd.DataFrame(np.random.randint(1, 100, (n, m - old_m)), 
+                                                                 columns=[f"Item {i+1}" for i in range(old_m, m)], 
+                                                                 index=[f"Agent {i+1}" for i in range(n)])], 
+                                                     axis=1)
+            return st.session_state.preferences
+        else:
+            st.session_state.preferences = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Item {i+1}" for i in range(m)], 
+                                            index=[f"Agent {i+1}" for i in range(n)])
+            return st.session_state.preferences
+    
     if upload_preferences:
         preferences_default = None
         # Load the user-uploaded preferences file
@@ -99,38 +141,35 @@ def load_preferences(m, n, upload_preferences):
     else:
         preferences_default = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Item {i+1}" for i in range(m)], 
                                             index=[f"Agent {i+1}" for i in range(n)])
-    return preferences_default
+    st.session_state.preferences = preferences_default
+    return st.session_state.preferences
 
-@st.cache_data
 def load_weights(n, unweighted=False):
     if hasattr(st.session_state, "weights"):
+        if unweighted:
+            weights = np.ones(n)
+            weights = pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['Weights'], dtype=int)
+            return weights
         if n < st.session_state.weights.shape[0]:
-            st.session_state.weights = st.session_state.weights.iloc[:n, :]
-            return st.session_state.weights
+            weights = st.session_state.weights.iloc[:n, :]
+            return weights
         else:
             old_n = st.session_state.weights.shape[0]
-            st.session_state.weights = pd.concat([st.session_state.weights, 
+            weights = pd.concat([st.session_state.weights, 
                                                     pd.DataFrame(
                                                         np.arange(old_n+1, n+1),
                                                         index=[f"Agent {i}" for i in range(old_n+1, n+1)],
-                                                        columns=['Weights'])], axis=0)
-            return st.session_state.weights
+                                                        columns=['Weights'], dtype=int)], axis=0)
+            return weights
     if unweighted:
         weights = np.ones(n)
     else:
         weights = np.arange(1, n+1)
-    st.session_state.weights = pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['Weights'])
-    return st.session_state.weights
-    
-# def wef1_po_algorithm(x, m, n, weights, preferences):
-#     # Implementation of WEF1+PO algorithm
-#     # Add your code here
-#     objects = sorted(list(range(m)), key=lambda x:preferences[0][x] / preferences[1][x], reverse=True)
-#     d = 1
-#     while sum([preferences[0][objects[i]] for i in range(d+1)]) / weights[0] \
-#             < sum([preferences[0][objects[j]] for j in range(d+2, m)]) / weights[1]:
-#         d += 1
-#     return {0: objects[:d+1], 1:  objects[d+1:]}
+    weights = pd.DataFrame(weights, index=[f'Agent {i+1}' for i in range(n)], columns=['Weights'], dtype=int)
+    return weights
+
+def uncheck_callback():
+    st.session_state.weight_checkbox = False
 
 def wef1x_algorithm(x, m, n, weights, preferences):
     # Implementation of WEF1 algorithm
@@ -168,9 +207,6 @@ def wef1x_checker(outcomes, x, m, n, weights, preferences):
 
 # Set the title and layout of the web application
 st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>', unsafe_allow_html=True)
-
-# Subheader
-# st.markdown('<h2 class="subheader">Developed by Jiatong Han @ NUS</h2>', unsafe_allow_html=True)
 
 # Insert header image
 st.sidebar.image("./head_image.png", use_column_width=True, caption='Image Credit: Fulfillment.com')
@@ -220,9 +256,6 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-def uncheck_callback():
-    st.session_state.weight_checkbox = False
-
 # Add input components
 col1, col2, col3 = st.columns(3)
 n = col1.number_input("Number of agents (n)", min_value=2, max_value=100, step=1)
@@ -234,51 +267,67 @@ unweighted = False
 
 col1, col2 = st.columns([0.5, 0.5])
 with col1:
-    if st.checkbox("⭐ Symmetric Agents (Unweighted Settings)", 
+    unweighted = st.checkbox("⭐ Symmetric Agents (Unweighted Settings)", 
                    key='weight_checkbox', 
-                   value=False):
-        unweighted = True
-
+                   value=st.session_state.weight_checkbox 
+                    if hasattr(st.session_state, "weight_checkbox") else False)
+    del st.session_state["weight_checkbox"]
 with col2:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(f"Upload Preferences of shape ({n}, {m})", type=['csv'])
 
 # Agent Weights
 st.write("🌟 Agent Weights (1-1000):")
-weights = load_weights(n, unweighted)
+with st.spinner("Loading..."):
+    weights = load_weights(n, unweighted)
+    st.session_state.weights = weights
+    for col in weights.columns:
+        weights[col] = weights[col].map(str)
+
 edited_ws = st.data_editor(weights.T, 
                             key="weight_editor",
                             column_config={
-                                f"Agent {i}": st.column_config.NumberColumn(
+                                f"Agent {i}": st.column_config.TextColumn(
                                     f"Agent {i}",
                                     help=f"Agent {i}'s Weight",
-                                    min_value=1,
-                                    max_value=1000,
-                                    step=1,
+                                    max_chars=4,
+                                    validate=r"^(?:[1-9]\d{0,2}|1000)$",
                                     required=True,
                                 )
                             for i in range(1, n+1)},
-                            # on_change=uncheck_callback,
+                            on_change=uncheck_callback,
                             )
-st.session_state.weights = edited_ws.T
+with st.spinner("Updating..."):
+    for col in edited_ws.columns:
+        edited_ws[col] = edited_ws[col].apply(lambda x:int(float(x)))
+    st.session_state.weights = edited_ws.T
+
 weights = edited_ws.values[0]
 
 # Agent Preferences
 st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 preferences = load_preferences(m, n, upload_preferences)
+
+# Strong assertiont that preferences are of type pd.dataframe
+for col in preferences.columns:
+    preferences[col] = preferences[col].map(str)
 edited_prefs = st.data_editor(preferences, 
                             key="pref_editor",
                             column_config={
-                                f"Item {j}": st.column_config.NumberColumn(
+                                f"Item {j}": st.column_config.TextColumn(
                                     f"Item {j}",
                                     help=f"Agents' Preferences towards Item {j}",
-                                    min_value=0,
-                                    max_value=1000,
-                                    step=1,
+                                    max_chars=4,
+                                    validate=r"^(?:1000|[0-9]{1,3})$",
                                     required=True,
                                 )
                             for j in range(1, m+1)},
                             )
+with st.spinner('Updating...'):
+    for col in edited_prefs.columns:
+        edited_prefs[col] = edited_prefs[col].apply(lambda x:int(float(x)))
+    st.session_state.preferences = edited_prefs
+
 preferences = edited_prefs.values
 
 # Download preferences as CSV
@@ -369,7 +418,7 @@ start_algo = st.button("⏳ Run Weighted Picking Sequence Algorithm ")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
-            time.sleep(3)
+            time.sleep(2)
         else:
             time.sleep(n * m * 0.01)
 
@@ -410,6 +459,7 @@ if start_algo:
                         "Agent",
                         help="The list of agents that get allocated",
                         step=1,
+                        disabled=True,
                     ),
                     "Items": st.column_config.ListColumn(
                         "Items",
