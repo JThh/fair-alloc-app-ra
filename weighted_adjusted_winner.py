@@ -181,14 +181,14 @@ def load_weights(n, unweighted=False):
 
 def wchange_callback(weights):
     st.session_state.weight_checkbox = False
-    for col in weights.columns:
-        weights[col] = weights[col].map(lambda x: int(float(x)))
+    # for col in weights.columns:
+    #     weights[col] = weights[col].map(lambda x: int(float(x)))
     st.session_state.weights = weights
 
 
 def pchange_callback(preferences):
-    for col in preferences.columns:
-        preferences[col] = preferences[col].apply(lambda x: int(float(x)))
+    # for col in preferences.columns:
+    #     preferences[col] = preferences[col].apply(lambda x: int(float(x)))
     st.session_state.preferences = preferences
 
 
@@ -312,25 +312,30 @@ st.write("🌟 Agent Weights (1-1000):")
 with st.spinner("Loading..."):
     weights = load_weights(n, unweighted)
     st.session_state.weights = weights
-    for col in weights.columns:
-        weights[col] = weights[col].map(str)
+    # for col in weights.columns:
+    #     weights[col] = weights[col].map(str)
 
 edited_ws = st.data_editor(weights.T,
                            key="weight_editor",
                            column_config={
-                               f"Agent {i}": st.column_config.TextColumn(
-                                   f"Agent {i}",
-                                   help=f"Agent {i}'s Weight",
-                                   max_chars=4,
-                                   validate=r"^(?:[1-9]\d{0,2}(?:\.\d+)?|1000(?:\.0+)?)$",
-                                   required=True,
+                               f"Agent {i}": st.column_config.NumberColumn(
+                                    f"Agent {i}",
+                                    help=f"Agent {i}'s Weight",
+                                    min_value=1,
+                                    max_value=1000,
+                                    width='medium',  # Set the desired width here
+                                    step=1,
+                                    format="%d",
+                                    required=True,
+                                #    max_chars=4,
+                                #    validate=r"^(?:[1-9]\d{0,2}|1000)$",
                                )
                                for i in range(1, n+1)},
                            on_change=partial(wchange_callback, weights),
                            )
 with st.spinner("Updating..."):
-    for col in edited_ws.columns:
-        edited_ws[col] = edited_ws[col].map(lambda x: int(float(x)))
+    # for col in edited_ws.columns:
+    #     edited_ws[col] = edited_ws[col].map(lambda x: int(float(x)))
     st.session_state.weights = edited_ws.T
 
 weights = edited_ws.values[0]
@@ -344,8 +349,8 @@ st.markdown(href, unsafe_allow_html=True)
 # Agent Preferences
 st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 preferences = load_preferences(m, n, upload_preferences)
-for col in preferences.columns:
-    preferences[col] = preferences[col].map(str)
+# for col in preferences.columns:
+#     preferences[col] = preferences[col].map(str)
 edited_prefs = st.data_editor(preferences,
                               key="pref_editor",
                               column_config={
@@ -353,9 +358,10 @@ edited_prefs = st.data_editor(preferences,
                                       f"Item {j}",
                                       help=f"Agents' Preferences towards Item {j}",
                                     #   max_chars=4,
-                                    #   validate=r"^(?:[1-9]\d{0,2}(?:\.\d+)?|1000(?:\.0+)?)$",
+                                    #   validate=r"^(?:[1-9]\d{0,2}|1000)$",
                                       min_value=0,
                                       max_value=1000,
+                                      width='medium',
                                       step=1,
                                       format="%d",
                                       required=True,
@@ -364,8 +370,8 @@ edited_prefs = st.data_editor(preferences,
                               on_change=partial(pchange_callback, preferences),
                               )
 with st.spinner('Updating...'):
-    for col in edited_prefs.columns:
-        edited_prefs[col] = edited_prefs[col].apply(lambda x: int(float(x)))
+    # for col in edited_prefs.columns:
+    #     edited_prefs[col] = edited_prefs[col].apply(lambda x: int(float(x)))
     st.session_state.preferences = edited_prefs
 
 preferences = edited_prefs.values
@@ -466,6 +472,8 @@ if start_algo:
     outcomes = wef1x_algorithm(x, m, n, weights, preferences)
     end_time = time.time()
     elapsed_time = end_time - start_time
+    
+    st.balloons()
 
     st.write("🎉 Outcomes:")
     outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
