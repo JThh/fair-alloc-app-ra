@@ -475,7 +475,6 @@ if start_algo:
                         "Agent",
                         help="The list of agents that get allocated",
                         step=1,
-                        disabled=True,
                     ),
                     "Items": st.column_config.ListColumn(
                         "Items",
@@ -483,6 +482,7 @@ if start_algo:
                     ),
                 },
                 hide_index=True,
+                disabled=True,
             )
     
     # Print timing results
