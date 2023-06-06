@@ -473,7 +473,7 @@ if start_algo:
     end_time = time.time()
     elapsed_time = end_time - start_time
     
-    # st.balloons()
+    st.balloons()
 
     st.write("🎉 Outcomes:")
     outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
