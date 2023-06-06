@@ -181,14 +181,14 @@ def load_weights(n, unweighted=False):
 
 def wchange_callback(weights):
     st.session_state.weight_checkbox = False
-    # for col in weights.columns:
-    #     weights[col] = weights[col].map(lambda x: int(float(x)))
+    for col in weights.columns:
+        weights[col] = weights[col].map(lambda x: int(round(float(x))))
     st.session_state.weights = weights
 
 
 def pchange_callback(preferences):
-    # for col in preferences.columns:
-    #     preferences[col] = preferences[col].apply(lambda x: int(float(x)))
+    for col in preferences.columns:
+        preferences[col] = preferences[col].apply(lambda x: int(round(float(x))))
     st.session_state.preferences = preferences
 
 
@@ -321,10 +321,10 @@ edited_ws = st.data_editor(weights.T,
                                f"Agent {i}": st.column_config.NumberColumn(
                                     f"Agent {i}",
                                     help=f"Agent {i}'s Weight",
-                                    min_value=1,
-                                    max_value=1000,
-                                    width='medium',  # Set the desired width here
-                                    step=1,
+                                    min_value=1.0,
+                                    max_value=1000.0,
+                                    # width='medium',  # Set the desired width here
+                                    step=0.1,
                                     format="%d",
                                     required=True,
                                 #    max_chars=4,
@@ -334,8 +334,8 @@ edited_ws = st.data_editor(weights.T,
                            on_change=partial(wchange_callback, weights),
                            )
 with st.spinner("Updating..."):
-    # for col in edited_ws.columns:
-    #     edited_ws[col] = edited_ws[col].map(lambda x: int(float(x)))
+    for col in edited_ws.columns:
+        edited_ws[col] = edited_ws[col].map(lambda x: int(round(float(x))))
     st.session_state.weights = edited_ws.T
 
 weights = edited_ws.values[0]
@@ -359,10 +359,10 @@ edited_prefs = st.data_editor(preferences,
                                       help=f"Agents' Preferences towards Item {j}",
                                     #   max_chars=4,
                                     #   validate=r"^(?:[1-9]\d{0,2}|1000)$",
-                                      min_value=0,
-                                      max_value=1000,
-                                      width='medium',
-                                      step=1,
+                                      min_value=0.0,
+                                      max_value=1000.0,
+                                    #   width='medium',
+                                      step=0.1,
                                       format="%d",
                                       required=True,
                                   )
@@ -370,8 +370,8 @@ edited_prefs = st.data_editor(preferences,
                               on_change=partial(pchange_callback, preferences),
                               )
 with st.spinner('Updating...'):
-    # for col in edited_prefs.columns:
-    #     edited_prefs[col] = edited_prefs[col].apply(lambda x: int(float(x)))
+    for col in edited_prefs.columns:
+        edited_prefs[col] = edited_prefs[col].apply(lambda x: int(round(float(x))))
     st.session_state.preferences = edited_prefs
 
 preferences = edited_prefs.values
