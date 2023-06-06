@@ -188,7 +188,8 @@ def wchange_callback(weights):
 
 def pchange_callback(preferences):
     for col in preferences.columns:
-        preferences[col] = preferences[col].apply(lambda x: int(round(float(x))))
+        preferences[col] = preferences[col].apply(
+            lambda x: int(round(float(x))))
     st.session_state.preferences = preferences
 
 
@@ -307,38 +308,72 @@ with col2:
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
 
+col1, col2, col3 = st.columns([0.2, 0.2, 0.3])
+
 # Agent Weights
-st.write("🌟 Agent Weights (1-1000):")
+with col1:
+    st.write("🌟 Agent Weights (1-1000):")
+
 with st.spinner("Loading..."):
     weights = load_weights(n, unweighted)
     st.session_state.weights = weights
     # for col in weights.columns:
     #     weights[col] = weights[col].map(str)
 
-edited_ws = st.data_editor(weights.T,
-                           key="weight_editor",
-                           column_config={
-                               f"Agent {i}": st.column_config.NumberColumn(
-                                    f"Agent {i}",
-                                    help=f"Agent {i}'s Weight",
-                                    min_value=1,
-                                    max_value=1000,
-                                    # width='medium',  # Set the desired width here
-                                    step=1,
-                                    format="%d",
-                                    required=True,
-                                #    max_chars=4,
-                                #    validate=r"^(?:[1-9]\d{0,2}|1000)$",
+to_edit_w = False
+
+with col2:
+    to_edit_w = st.checkbox("Edit Weights")
+
+if to_edit_w:
+    edited_ws = st.data_editor(weights.T,
+                               key="weight_editor",
+                               column_config={
+                                   f"Agent {i}": st.column_config.NumberColumn(
+                                       f"Agent {i}",
+                                       help=f"Agent {i}'s Weight",
+                                       min_value=1,
+                                       max_value=1000,
+                                       width='medium',  # Set the desired width here
+                                       step=1,
+                                       format="%d",
+                                       required=True,
+                                       #    max_chars=4,
+                                       #    validate=r"^(?:[1-9]\d{0,2}|1000)$",
+                                   )
+                                   for i in range(1, n+1)
+                               }
+                               |
+                               {
+                                   "_index": st.column_config.Column(
+                                       "💡 Hint",
+                                       help="Support copy-paste from Excel sheets and bulk edits",
+                                       disabled=True,
+                                   ),
+                               },
+                               on_change=partial(wchange_callback, weights),
                                )
-                               for i in range(1, n+1)},
-                           on_change=partial(wchange_callback, weights),
-                           )
-with st.spinner("Updating..."):
-    for col in edited_ws.columns:
-        edited_ws[col] = edited_ws[col].map(lambda x: int(round(float(x))))
-    st.session_state.weights = edited_ws.T
+    with st.spinner("Updating..."):
+        for col in edited_ws.columns:
+            edited_ws[col] = edited_ws[col].map(lambda x: int(round(float(x))))
+        st.session_state.weights = edited_ws.T
+else:
+    edited_ws = weights.T
+    st.dataframe(edited_ws)
 
 weights = edited_ws.values[0]
+
+# with col3:
+#     edited_ws['Variations'] = edited_ws.values.tolist()
+#     st.line_chart(edited_ws['Variations'])
+    # print(edited_ws['Variations'])
+    # st.dataframe(edited_ws['Variations'],
+    #              column_config={
+    #                 "Variations": st.column_config.LineChartColumn(
+    #                     "Agent Weights Variations", y_min=0, y_max=1000
+    #                 ),
+    #              },
+    #              hide_index=True)
 
 # Download weights as CSV
 weights_csv = edited_ws.to_csv()
@@ -347,32 +382,60 @@ href = f'<a href="data:file/csv;base64,{b64}" download="weights.csv">Download We
 st.markdown(href, unsafe_allow_html=True)
 
 # Agent Preferences
-st.write("📊 Agent Preferences (0-1000, support copy-paste and bulk edits):")
+col1, col2, col3 = st.columns([0.2, 0.2, 0.3])
+
+with col1:
+    st.write("📊 Agent Preferences (0-1000):")
+
 preferences = load_preferences(m, n, upload_preferences)
 # for col in preferences.columns:
 #     preferences[col] = preferences[col].map(str)
 
-edited_prefs = st.data_editor(preferences,
-                              key="pref_editor",
-                              column_config={
-                                  f"Item {j}": st.column_config.NumberColumn(
-                                      f"Item {j}",
-                                      help=f"Agents' Preferences towards Item {j}",
-                                    #   max_chars=4,
-                                    #   validate=r"^(?:[1-9]\d{0,2}|1000)$",
-                                      min_value=0,
-                                      max_value=1000,
-                                      step=1,
-                                      format="%d",
-                                      required=True,
+to_edit_p = False
+
+with col2:
+    to_edit_p = st.checkbox("Edit Preferences")
+
+if to_edit_p:
+    edited_prefs = st.data_editor(preferences,
+                                  key="pref_editor",
+                                  use_container_width=True,
+                                  column_config={
+                                      f"Item {j}": st.column_config.NumberColumn(
+                                          f"Item {j}",
+                                          help=f"Agents' Preferences towards Item {j}",
+                                          #   max_chars=4,
+                                          #   validate=r"^(?:[1-9]\d{0,2}|1000)$",
+                                          width='medium',  # Set the desired width here
+                                          min_value=0,
+                                          max_value=1000,
+                                          step=1,
+                                          format="%d",
+                                          required=True,
+                                      )
+                                      for j in range(1, m+1)
+                                  }
+                                  |
+                                  {
+                                      "_index": st.column_config.Column(
+                                          "💡 Hint",
+                                          help="Support copy-paste from Excel sheets and bulk edits",
+                                          disabled=True,
+                                      ),
+                                  },
+                                  on_change=partial(
+                                      pchange_callback, preferences),
                                   )
-                                  for j in range(1, m+1)},
-                              on_change=partial(pchange_callback, preferences),
-                              )
-with st.spinner('Updating...'):
-    for col in edited_prefs.columns:
-        edited_prefs[col] = edited_prefs[col].apply(lambda x: int(round(float(x))))
-    st.session_state.preferences = edited_prefs
+    with st.spinner('Updating...'):
+        for col in edited_prefs.columns:
+            edited_prefs[col] = edited_prefs[col].apply(
+                lambda x: int(round(float(x))))
+        st.session_state.preferences = edited_prefs
+else:
+    # Apply CSS styling to increase the font size
+    st.markdown('<style>div[data-baseweb="typography"] { font-size: 16px !important; }</style>', unsafe_allow_html=True)
+    edited_prefs = preferences
+    st.dataframe(preferences)
 
 preferences = edited_prefs.values
 
@@ -472,8 +535,6 @@ if start_algo:
     outcomes = wef1x_algorithm(x, m, n, weights, preferences)
     end_time = time.time()
     elapsed_time = end_time - start_time
-    
-    st.balloons()
 
     st.write("🎉 Outcomes:")
     outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
