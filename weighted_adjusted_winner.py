@@ -347,7 +347,7 @@ href = f'<a href="data:file/csv;base64,{b64}" download="weights.csv">Download We
 st.markdown(href, unsafe_allow_html=True)
 
 # Agent Preferences
-st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
+st.write("📊 Agent Preferences (0-1000, support Excel behaviors):")
 preferences = load_preferences(m, n, upload_preferences)
 # for col in preferences.columns:
 #     preferences[col] = preferences[col].map(str)
