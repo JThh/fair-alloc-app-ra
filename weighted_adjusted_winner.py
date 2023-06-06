@@ -323,7 +323,7 @@ with st.spinner("Loading..."):
 to_edit_w = False
 
 with col2:
-    to_edit_w = st.checkbox("Edit Weights")
+    to_edit_w = st.checkbox("Edit Weights Mode", key="w_edit")
 
 if to_edit_w:
     edited_ws = st.data_editor(weights.T,
@@ -394,7 +394,7 @@ preferences = load_preferences(m, n, upload_preferences)
 to_edit_p = False
 
 with col2:
-    to_edit_p = st.checkbox("Edit Preferences")
+    to_edit_p = st.checkbox("Edit Preferences Mode")
 
 if to_edit_p:
     edited_prefs = st.data_editor(preferences,
@@ -432,8 +432,6 @@ if to_edit_p:
                 lambda x: int(round(float(x))))
         st.session_state.preferences = edited_prefs
 else:
-    # Apply CSS styling to increase the font size
-    st.markdown('<style>div[data-baseweb="typography"] { font-size: 16px !important; }</style>', unsafe_allow_html=True)
     edited_prefs = preferences
     st.dataframe(preferences)
 
