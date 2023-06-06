@@ -321,10 +321,10 @@ edited_ws = st.data_editor(weights.T,
                                f"Agent {i}": st.column_config.NumberColumn(
                                     f"Agent {i}",
                                     help=f"Agent {i}'s Weight",
-                                    min_value=1.0,
-                                    max_value=1000.0,
+                                    min_value=1,
+                                    max_value=1000,
                                     # width='medium',  # Set the desired width here
-                                    step=0.1,
+                                    step=1,
                                     format="%d",
                                     required=True,
                                 #    max_chars=4,
@@ -351,6 +351,7 @@ st.write("📊 Agent Preferences (0-1000, support copy-paste and bulk edits):")
 preferences = load_preferences(m, n, upload_preferences)
 # for col in preferences.columns:
 #     preferences[col] = preferences[col].map(str)
+
 edited_prefs = st.data_editor(preferences,
                               key="pref_editor",
                               column_config={
@@ -359,10 +360,9 @@ edited_prefs = st.data_editor(preferences,
                                       help=f"Agents' Preferences towards Item {j}",
                                     #   max_chars=4,
                                     #   validate=r"^(?:[1-9]\d{0,2}|1000)$",
-                                      min_value=0.0,
-                                      max_value=1000.0,
-                                    #   width='medium',
-                                      step=0.1,
+                                      min_value=0,
+                                      max_value=1000,
+                                      step=1,
                                       format="%d",
                                       required=True,
                                   )
