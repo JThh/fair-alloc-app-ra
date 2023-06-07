@@ -181,14 +181,14 @@ def load_weights(n, unweighted=False):
 def wchange_callback(weights):
     st.session_state.weight_checkbox = False
     for col in weights.columns:
-        weights[col] = weights[col].map(lambda x: int(round(float(x))))
+        weights[col] = weights[col].map(lambda x: int(float(x)))
     st.session_state.weights = weights
 
 
 def pchange_callback(preferences):
     for col in preferences.columns:
         preferences[col] = preferences[col].apply(
-            lambda x: int(round(float(x))))
+            lambda x: int(float(x)))
     st.session_state.preferences = preferences
 
 
@@ -307,10 +307,6 @@ with col2:
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
 
-# col1, col2, col3 = st.columns([0.2, 0.2, 0.3])
-
-# Agent Weights
-# with col1:
 st.write("🌟 Agent Weights (1-1000):")
 
 with st.spinner("Loading..."):
@@ -319,12 +315,6 @@ with st.spinner("Loading..."):
     for col in weights.columns:
         weights[col] = weights[col].map(str)
 
-# to_edit_w = False
-
-# with col2:
-#     to_edit_w = st.checkbox("Edit Weights Mode", key="w_edit")
-
-# if to_edit_w:
 edited_ws = st.data_editor(weights.T,
                             key="weight_editor",
                             column_config={
@@ -356,9 +346,7 @@ with st.spinner("Updating..."):
     for col in edited_ws.columns:
         edited_ws[col] = edited_ws[col].map(lambda x: int(round(float(x))))
     st.session_state.weights = edited_ws.T
-# else:
-#     edited_ws = weights.T
-#     st.dataframe(edited_ws)
+
 
 weights = edited_ws.values[0]
 
@@ -381,21 +369,12 @@ href = f'<a href="data:file/csv;base64,{b64}" download="weights.csv">Download We
 st.markdown(href, unsafe_allow_html=True)
 
 # Agent Preferences
-# col1, col2, col3 = st.columns([0.2, 0.2, 0.3])
-
-# with col1:
 st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 
 preferences = load_preferences(m, n, upload_preferences)
 for col in preferences.columns:
     preferences[col] = preferences[col].map(str)
 
-# to_edit_p = False
-
-# with col2:
-#     to_edit_p = st.checkbox("Edit Preferences Mode")
-
-# if to_edit_p:
 edited_prefs = st.data_editor(preferences,
                                 key="pref_editor",
                                 column_config={
@@ -427,11 +406,8 @@ edited_prefs = st.data_editor(preferences,
 with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
-            lambda x: int(round(float(x))))
+            lambda x: int(float(x)))
     st.session_state.preferences = edited_prefs
-# else:
-#     edited_prefs = preferences
-#     st.dataframe(preferences)
 
 preferences = edited_prefs.values
 
