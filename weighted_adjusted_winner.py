@@ -384,7 +384,7 @@ st.markdown(href, unsafe_allow_html=True)
 # col1, col2, col3 = st.columns([0.2, 0.2, 0.3])
 
 # with col1:
-st.write("📊 Agent Preferences (0-1000):")
+st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
 
 preferences = load_preferences(m, n, upload_preferences)
 for col in preferences.columns:
@@ -398,14 +398,13 @@ for col in preferences.columns:
 # if to_edit_p:
 edited_prefs = st.data_editor(preferences,
                                 key="pref_editor",
-                                use_container_width=True,
                                 column_config={
                                     f"Item {j}": st.column_config.TextColumn(
                                         f"Item {j}",
                                         help=f"Agents' Preferences towards Item {j}",
                                         max_chars=4,
                                         validate=r"^(?:[1-9]\d{0,2}|1000)$",
-                                        # width='medium',  # Set the desired width here
+                                        # width='small',  # Set the desired width here
                                         # min_value=0,
                                         # max_value=1000,
                                         # step=1,
