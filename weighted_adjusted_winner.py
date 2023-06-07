@@ -382,7 +382,7 @@ edited_prefs = st.data_editor(preferences,
                                         f"Item {j}",
                                         help=f"Agents' Preferences towards Item {j}",
                                         max_chars=4,
-                                        validate=r"^(?:[1-9]\d{0,2}|1000)$",
+                                        validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
                                         # width='small',  # Set the desired width here
                                         # min_value=0,
                                         # max_value=1000,
