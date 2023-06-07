@@ -91,7 +91,7 @@ def load_preferences(m, n, upload_preferences):
             preferences_default = None
             # Load the user-uploaded preferences file
             try:
-                preferences_default = pd.read_csv(upload_preferences)
+                preferences_default = pd.read_csv(upload_preferences, index_col=0)
                 if preferences_default.shape != (n, m):
                     x, y = preferences_default.shape
                     st.session_state.preferences.iloc[:x,
