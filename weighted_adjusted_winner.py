@@ -564,7 +564,7 @@ if start_algo:
                     else:
                         output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, \
                             who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s \
-                                bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x}, {1-x}) \
+                                bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x:.2f}, {1-x:.2f}) \
                                     because ({sum(preferences[i][bi])} + {1-x} * {max(preferences[i][bj])}) / {weights[i]} \
                                         = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} \
                                         > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} \
