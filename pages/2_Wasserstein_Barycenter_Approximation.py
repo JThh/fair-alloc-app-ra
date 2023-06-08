@@ -1,8 +1,8 @@
 import math
+from tqdm import tqdm
 
 import streamlit as st
 from torch.optim import Adam
-from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import torch
