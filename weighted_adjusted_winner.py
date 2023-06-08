@@ -560,7 +560,7 @@ if start_algo:
                 else:
                     bi, bj = outcomes[i], outcomes[j]
                     if sum(preferences[i][bj]) == 0:
-                        output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n"
+                        output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n\n"
                     else:
                         output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, \
                             who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s \
