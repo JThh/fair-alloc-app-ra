@@ -91,7 +91,8 @@ def load_preferences(m, n, upload_preferences):
             preferences_default = None
             # Load the user-uploaded preferences file
             try:
-                preferences_default = pd.read_csv(upload_preferences, index_col=0)
+                preferences_default = pd.read_csv(
+                    upload_preferences, index_col=0)
                 if preferences_default.shape != (n, m):
                     x, y = preferences_default.shape
                     st.session_state.preferences.iloc[:x,
@@ -316,32 +317,32 @@ with st.spinner("Loading..."):
         weights[col] = weights[col].map(str)
 
 edited_ws = st.data_editor(weights.T,
-                            key="weight_editor",
-                            column_config={
-                                f"Agent {i}": st.column_config.TextColumn(
-                                    f"Agent {i}",
-                                    help=f"Agent {i}'s Weight",
-                                    # min_value=1,
-                                    # max_value=1000,
-                                    # width='medium',  # Set the desired width here
-                                    # step=1,
-                                    # format="%d",
-                                    required=True,
-                                    max_chars=4,
-                                    validate=r"^(?:[1-9]\d{0,2}|1000)$",
-                                )
-                                for i in range(1, n+1)
-                            }
-                            |
-                            {
-                                "_index": st.column_config.Column(
-                                    "💡 Hint",
-                                    help="Support copy-paste from Excel sheets and bulk edits",
-                                    disabled=True,
-                                ),
-                            },
-                            on_change=partial(wchange_callback, weights),
-                            )
+                           key="weight_editor",
+                           column_config={
+                               f"Agent {i}": st.column_config.TextColumn(
+                                   f"Agent {i}",
+                                   help=f"Agent {i}'s Weight",
+                                   # min_value=1,
+                                   # max_value=1000,
+                                   # width='medium',  # Set the desired width here
+                                   # step=1,
+                                   # format="%d",
+                                   required=True,
+                                   max_chars=4,
+                                   validate=r"^(?:[1-9]\d{0,2}|1000)$",
+                               )
+                               for i in range(1, n+1)
+                           }
+                           |
+                           {
+                               "_index": st.column_config.Column(
+                                   "💡 Hint",
+                                   help="Support copy-paste from Excel sheets and bulk edits",
+                                   disabled=True,
+                               ),
+                           },
+                           on_change=partial(wchange_callback, weights),
+                           )
 with st.spinner("Updating..."):
     for col in edited_ws.columns:
         edited_ws[col] = edited_ws[col].map(lambda x: int(round(float(x))))
@@ -353,14 +354,14 @@ weights = edited_ws.values[0]
 # with col3:
 #     edited_ws['Variations'] = edited_ws.values.tolist()
 #     st.line_chart(edited_ws['Variations'])
-    # print(edited_ws['Variations'])
-    # st.dataframe(edited_ws['Variations'],
-    #              column_config={
-    #                 "Variations": st.column_config.LineChartColumn(
-    #                     "Agent Weights Variations", y_min=0, y_max=1000
-    #                 ),
-    #              },
-    #              hide_index=True)
+# print(edited_ws['Variations'])
+# st.dataframe(edited_ws['Variations'],
+#              column_config={
+#                 "Variations": st.column_config.LineChartColumn(
+#                     "Agent Weights Variations", y_min=0, y_max=1000
+#                 ),
+#              },
+#              hide_index=True)
 
 # Download weights as CSV
 weights_csv = edited_ws.to_csv()
@@ -376,33 +377,33 @@ for col in preferences.columns:
     preferences[col] = preferences[col].map(str)
 
 edited_prefs = st.data_editor(preferences,
-                                key="pref_editor",
-                                column_config={
-                                    f"Item {j}": st.column_config.TextColumn(
-                                        f"Item {j}",
-                                        help=f"Agents' Preferences towards Item {j}",
-                                        max_chars=4,
-                                        validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
-                                        # width='small',  # Set the desired width here
-                                        # min_value=0,
-                                        # max_value=1000,
-                                        # step=1,
-                                        # format="%d",
-                                        required=True,
-                                    )
-                                    for j in range(1, m+1)
-                                }
-                                |
-                                {
-                                    "_index": st.column_config.Column(
-                                        "💡 Hint",
-                                        help="Support copy-paste from Excel sheets and bulk edits",
-                                        disabled=True,
-                                    ),
-                                },
-                                on_change=partial(
-                                    pchange_callback, preferences),
-                                )
+                              key="pref_editor",
+                              column_config={
+                                  f"Item {j}": st.column_config.TextColumn(
+                                      f"Item {j}",
+                                      help=f"Agents' Preferences towards Item {j}",
+                                      max_chars=4,
+                                      validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
+                                      # width='small',  # Set the desired width here
+                                      # min_value=0,
+                                      # max_value=1000,
+                                      # step=1,
+                                      # format="%d",
+                                      required=True,
+                                  )
+                                  for j in range(1, m+1)
+                              }
+                              |
+                              {
+                                  "_index": st.column_config.Column(
+                                      "💡 Hint",
+                                      help="Support copy-paste from Excel sheets and bulk edits",
+                                      disabled=True,
+                                  ),
+                              },
+                              on_change=partial(
+                                  pchange_callback, preferences),
+                              )
 with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
@@ -543,34 +544,29 @@ if start_algo:
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 
     # Add expandable information card
-    with st.expander("Explanation of the outcomes", expanded=False):
-        print(outcomes)
-        # outcomes is already a dictionary.
-        output_str = ""
-        has_lead_str = False
-        for i in range(n):
-            if not has_lead_str:
-                b = outcomes[i]
-                output_str += f"**Agent {i+1}** has weight {weights[i]} and \
-                    receives value {sum(preferences[i][b])}.\n\n"
-                has_lead_str = True
-            for j in range(n):
-                if i == j:
-                    continue
-                else:
-                    bi, bj = outcomes[i], outcomes[j]
-                    if sum(preferences[i][bj]) == 0:
-                        output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n\n"
-                    else:
-                        output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, \
-                            who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s \
-                                bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x:.2f}, {1-x:.2f}) \
-                                    because ({sum(preferences[i][bi])} + {1-x:.2f} * {max(preferences[i][bj])}) / {weights[i]} \
-                                        = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} \
-                                        > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} \
-                                            = ({sum(preferences[i][bj])} - {x:.2f} * {max(preferences[i][bj])}) / {weights[j]}.\n\n"
+    with st.spinner("Loading Explanations..."):
+        with st.expander("Explanation of the outcomes", expanded=False):
+            # outcomes is already a dictionary.
+            output_str = ""
             has_lead_str = False
-        st.markdown(output_str)
+            for i in range(n):
+                if not has_lead_str:
+                    b = outcomes[i]
+                    output_str += f"**Agent {i+1}** has weight {weights[i]} and receives value {sum(preferences[i][b])}.\n\n"
+                    has_lead_str = True
+                for j in range(n):
+                    if i == j:
+                        continue
+                    else:
+                        bi, bj = outcomes[i], outcomes[j]
+                        if sum(preferences[i][bj]) == 0:
+                            output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n\n"
+                        else:
+                            output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x:.2f}, {1-x:.2f}) because ({sum(preferences[i][bi])} + {1-x:.2f} * {max(preferences[i][bj])}) / {weights[i]} = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} = ({sum(preferences[i][bj])} - {x:.2f} * {max(preferences[i][bj])}) / {weights[j]}.\n\n"
+                has_lead_str = False
+            st.download_button('Download Explanations', output_str,
+                                file_name=f"{n}_agents_{m}_items_alloc_expl.txt")
+            st.markdown(output_str)
 
     print({otc[0]: otc[1] for otc in outcomes_df.to_numpy()})
 
