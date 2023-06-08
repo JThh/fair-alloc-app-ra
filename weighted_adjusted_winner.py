@@ -509,8 +509,8 @@ if start_algo:
     elapsed_time = end_time - start_time
 
     st.write("🎉 Outcomes:")
-    outcomes = [[key, sorted(value)] for key, value in outcomes.items()]
-    outcomes_df = pd.DataFrame(outcomes, columns=['Agent', 'Items'])
+    outcomes_list = [[key, sorted(value)] for key, value in outcomes.items()]
+    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Items'])
     outcomes_df['Agent'] += 1
     outcomes_df['Agent'] = outcomes_df['Agent'].apply(str)
     outcomes_df['Items'] = outcomes_df['Items'].apply(
@@ -541,6 +541,36 @@ if start_algo:
     # Print timing results
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+
+    # Add expandable information card
+    with st.expander("Explanation of the outcomes", expanded=False):
+        print(outcomes)
+        # outcomes is already a dictionary.
+        output_str = ""
+        has_lead_str = False
+        for i in range(n):
+            if not has_lead_str:
+                b = outcomes[i]
+                output_str += f"**Agent {i+1}** has weight {weights[i]} and \
+                    receives value {sum(preferences[i][b])}.\n\n"
+                has_lead_str = True
+            for j in range(n):
+                if i == j:
+                    continue
+                else:
+                    bi, bj = outcomes[i], outcomes[j]
+                    if sum(preferences[i][bj]) == 0:
+                        output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n"
+                    else:
+                        output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, \
+                            who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s \
+                                bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x}, {1-x}) \
+                                    because ({sum(preferences[i][bi])} + {1-x} * {max(preferences[i][bj])}) / {weights[i]} \
+                                        = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} \
+                                        > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} \
+                                            = ({sum(preferences[i][bj])} - {x} * {max(preferences[i][bj])}) / {weights[j]}.\n\n"
+            has_lead_str = False
+        st.markdown(output_str)
 
     print({otc[0]: otc[1] for otc in outcomes_df.to_numpy()})
 
