@@ -544,8 +544,8 @@ if start_algo:
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 
     # Add expandable information card
-    with st.spinner("Loading Explanations..."):
-        with st.expander("Explanation of the outcomes", expanded=False):
+    with st.spinner("Loading Explanations (for large n, please wait some time to load)..."):
+        with st.expander("Explanation of the outcomes", expanded=True):
             # outcomes is already a dictionary.
             output_str = ""
             has_lead_str = False
