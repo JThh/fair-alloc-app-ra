@@ -4,16 +4,16 @@ import streamlit as st
 st.set_page_config(
     page_title="Welcome to the Fair Allocation App!",
     page_icon="🌟",
-    # layout="wide",
+    layout="wide",
 )
 
 # Page 1: Introduction
-st.title("Welcome to the Fair Allocation App!")
+st.title(" Welcome to the Fair Allocation App! 👋")
 
-st.write("This app is designed to help you achieve fair allocation of indivisible goods!")
+st.write("This app is designed to help you achieve fair allocation of indivisible items!")
 st.markdown(
     """
-    We offer a variety of algorithmic implementations to ensure a fair distribution of these goods, taking into account the concept of weighted envy-freeness (WEF).
+    We offer a variety of algorithmic implementations to ensure a fair distribution of these items, taking into account the concept of weighted envy-freeness (WEF).
     
     Weighted envy-freeness is a fairness criterion that aims to minimize the envy experienced by participants in an allocation process. It assigns a weight to each participant's preferences, allowing for personalized fairness. Our app will help you find an allocation that balances these preferences as closely as possible, maximizing overall satisfaction.
 """
