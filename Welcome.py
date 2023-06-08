@@ -30,9 +30,6 @@ st.image(image, caption="App Layout", use_column_width=True)
 st.markdown("- **Sidebar**: On the left, you'll find a handy sidebar for easy navigation.")
 st.markdown("- **Main Section**: The main section in the center will display the content of the selected page.")
 st.markdown("- **User Guide**: The default page provides a user guide to help you understand how to use the app.")
-st.markdown(
-    "- **Allocation App**: The second page is dedicated to the allocation app, where you can input preferences and weights to calculate item allocation based on weighted envy-freeness."
-)
 
 # Page 3: Allocation App Introduction
 st.header("Allocation App: Achieving Weighted Envy-Freeness")
