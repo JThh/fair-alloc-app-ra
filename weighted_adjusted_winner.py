@@ -544,29 +544,37 @@ if start_algo:
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 
     # Add expandable information card
-    with st.spinner("Loading Explanations (for large n, please wait some time to load)..."):
-        with st.expander("Explanation of the outcomes", expanded=True):
-            # outcomes is already a dictionary.
-            output_str = ""
-            has_lead_str = False
-            for i in range(n):
-                if not has_lead_str:
-                    b = outcomes[i]
-                    output_str += f"**Agent {i+1}** has weight {weights[i]} and receives value {sum(preferences[i][b])}.\n\n"
-                    has_lead_str = True
-                for j in range(n):
-                    if i == j:
-                        continue
-                    else:
-                        bi, bj = outcomes[i], outcomes[j]
-                        if sum(preferences[i][bj]) == 0:
-                            output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n\n"
-                        else:
-                            output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x:.2f}, {1-x:.2f}) because ({sum(preferences[i][bi])} + {1-x:.2f} * {max(preferences[i][bj])}) / {weights[i]} = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} = ({sum(preferences[i][bj])} - {x:.2f} * {max(preferences[i][bj])}) / {weights[j]}.\n\n"
-                has_lead_str = False
-            st.download_button('Download Explanations', output_str,
-                                file_name=f"{n}_agents_{m}_items_alloc_expl.txt")
-            st.markdown(output_str)
+    # with st.spinner("For optimal performance with large data sets, please allow a moment for loading..."):
+    # outcomes is already a dictionary.
+    output_str = ""
+    has_lead_str = False
+    
+    # progress_text = "Explanations in preparation. Please wait."
+    # my_bar = st.progress(0, text=progress_text)
+    
+    for i in range(n):
+        if not has_lead_str:
+            b = outcomes[i]
+            output_str += f"**Agent {i+1}** has weight {weights[i]} and receives value {sum(preferences[i][b])}.\n\n"
+            has_lead_str = True
+        for j in range(n):
+            if i == j:
+                continue
+            else:
+                bi, bj = outcomes[i], outcomes[j]
+                if sum(preferences[i][bj]) == 0:
+                    output_str += f"Agent {i+1} has value 0 for the bundle of Agent {j+1}, so Agent {i+1} does not envy Agent {j+1}.\n\n"
+                else:
+                    output_str += f"Agent {i+1} has value {sum(preferences[i][bj])} for the bundle of Agent {j+1}, who has weight {weights[j]}. Agent {i+1}'s maximum value for an item in Agent {j+1}'s bundle is {max(preferences[i][bj])}. Agent {i+1} does not envy Agent {j+1} according to WEF({x:.2f}, {1-x:.2f}) because ({sum(preferences[i][bi])} + {1-x:.2f} * {max(preferences[i][bj])}) / {weights[i]} = {(sum(preferences[i][bi]) + (1-x)*max(preferences[i][bj])) / weights[i]:.2f} > {(sum(preferences[i][bj]) - x*max(preferences[i][bj])) / weights[j]:.2f} = ({sum(preferences[i][bj])} - {x:.2f} * {max(preferences[i][bj])}) / {weights[j]}.\n\n"
+        has_lead_str = False
+        # my_bar.progress((i+1) / n, text=progress_text)
+
+    # my_bar.empty()
+
+    with st.expander("Explanation of the outcomes", expanded=False):
+        st.download_button('Download Full Explanations', output_str,
+                            file_name=f"{n}_agents_{m}_items_alloc_expl.txt")
+        st.markdown(output_str)
 
     print({otc[0]: otc[1] for otc in outcomes_df.to_numpy()})
 
