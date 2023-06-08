@@ -266,7 +266,7 @@ st.sidebar.markdown(
     <div class="guide" style="background-color: {theme_colors['guide-background-color']}; color: {theme_colors['guide-color']}">
     <p>This app calculates outcomes using the Weighted Picking Sequence algorithm.</p>
 
-    <h3>Follow these steps to use the app:</h3>
+    <h3 style="color: {theme_colors['guide-color']};">Follow these steps to use the app:</h3>
 
     <ol>
         <li>Specify the number of agents (n) and items (m) using the number input boxes.</li>
@@ -291,7 +291,7 @@ n = col1.number_input("Number of agents (n)",
 m = col2.number_input("Number of goods (m)", min_value=2,
                       max_value=1000, value=6, step=1)
 x = col3.slider("Choose a value for x in WEF(x, 1-x)",
-                min_value=0.0, max_value=1.0, value=0.5, step=0.01)
+                min_value=0.0, max_value=1.0, value=0.5, step=0.01, help="💡 Large x favors low-weight agents")
 
 upload_preferences = None
 unweighted = False
