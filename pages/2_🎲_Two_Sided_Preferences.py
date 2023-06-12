@@ -2,6 +2,7 @@ from collections import defaultdict
 import base64
 from functools import partial
 import json
+import random
 import time
 
 import numpy as np
@@ -182,7 +183,14 @@ def restore_rankings(rankings):
     return rankings
 
 
-def load_rankings(n, m):
+def load_rankings(n, m, shuffle=False):
+    if shuffle:
+        rankings = pd.DataFrame(np.asarray([sorted(np.arange(1, n+1, dtype=int), key=lambda _:random.random()) for _ in range(m)]),
+                                index=[
+                                    f"Player {i+1}" for i in range(m)],
+                                columns=[f"Team {i+1}" for i in range(n)],
+                                dtype=int).T
+        return rankings
     if hasattr(st.session_state, "rankings"):
         old_n = st.session_state.rankings.shape[0]
         old_m = st.session_state.rankings.shape[1]
@@ -202,8 +210,8 @@ def load_rankings(n, m):
             return restore_rankings(rankings)
         elif m > old_m:
             rankings = pd.concat([st.session_state.rankings,
-                                  pd.DataFrame(np.tile(
-                                      np.arange(1, n+1, dtype=int), (m - old_m, 1)),
+                                  pd.DataFrame(
+                                      np.asarray([sorted(np.arange(1, n+1, dtype=int), key=lambda _:random.random()) for _ in range(m - old_m)]),
                                       index=[
                                       f"Player {i+1}" for i in range(old_m, m)],
                                       columns=[
@@ -212,18 +220,18 @@ def load_rankings(n, m):
                                  axis=1)
             return restore_rankings(rankings)
         else:
-            rankings = pd.DataFrame(np.tile(np.arange(1, n+1), (m, 1)),
+            rankings = pd.DataFrame(np.asarray([sorted(np.arange(1, n+1, dtype=int), key=lambda _:random.random()) for _ in range(m)]),
                                     index=[
                                         f"Player {i+1}" for i in range(m)],
                                     columns=[f"Team {i+1}" for i in range(n)],
                                     dtype=int).T
-            return restore_rankings(rankings)
-    rankings = pd.DataFrame(np.tile(np.arange(1, n+1), (m, 1)),
+            return rankings
+    rankings = pd.DataFrame(np.asarray([sorted(np.arange(1, n+1, dtype=int), key=lambda _:random.random()) for _ in range(m)]),
                             index=[
                                 f"Player {i+1}" for i in range(m)],
                             columns=[f"Team {i+1}" for i in range(n)],
                             dtype=int).T
-    return restore_rankings(rankings)
+    return rankings
 
 
 def wchange_callback(rankings):
@@ -240,7 +248,7 @@ def pchange_callback(preferences):
 
 
 # Set the title and layout of the web application
-st.markdown('<h1 class="header">Fast and Fair Team Matching with Players</h1>',
+st.markdown('<h1 class="header">Efficient and Fair Team Formation with Players</h1>',
             unsafe_allow_html=True)
 
 
@@ -279,8 +287,7 @@ st.sidebar.markdown(
 
     <ol>
         <li>Specify the number of teams (n) and players (m) using the number input boxes.</li>
-        <li>Choose a preference mode from the drop-down menu.</li>
-        <li>Provide the rankings by editing the ranking matrix.</li>
+        <li>Enter the team and player preferences in the table.</li>
         <li>Click the "Run Algorithm" button to get the matching outcome.</li>
     </ol>
 
@@ -293,17 +300,17 @@ st.sidebar.markdown(
 )
 
 # Add input components
-col1, col2 = st.columns(2)
+col1, col2, col3, col4 = st.columns([0.4,0.03,0.4,0.23])
 n = col1.number_input("Number of Teams (n)",
                       min_value=2, max_value=100, step=1)
-m = col2.number_input("Number of Players (m)", min_value=2,
+m = col3.number_input("Number of Players (m)", min_value=2,
                       max_value=1000, value=6, step=1)
 
 tab1, tab2 = st.tabs(["Team Preferences", "Player Preferences"])
 
 with tab1:
     # Agent Preferences
-    st.markdown("📊 Team Preferences towards Players (<code>-1000</code> - <code>1000</code>):",
+    st.markdown("📊 Team Preferences towards Players (-1000 to 1000):",
                 unsafe_allow_html=True)
 
     preferences = load_preferences(m, n)
@@ -349,25 +356,27 @@ with tab1:
 
 with tab2:
     st.markdown(
-        f"🌟 Player Rankings of Teams (<code>{1}</code> - <code>{n}</code>, Permitting Ties, <code>{1}</code> means the highest rank):", unsafe_allow_html=True)
+        f"🌟 Player Rankings of Teams ({1} - {n}, Permitting Ties, {1} means the highest rank):", unsafe_allow_html=True)
+
+    shuffle = st.button('Shuffle Rankings')
 
     with st.spinner("Loading..."):
-        rankings = load_rankings(n, m)
+        rankings = load_rankings(n, m, shuffle)
         st.session_state.rankings = rankings
         for col in rankings.columns:
             rankings[col] = rankings[col].map(str)
 
-    edited_ws = st.data_editor(rankings,
+    edited_ws = st.data_editor(rankings.T,
                             key="ranking_editor",
                             column_config={
-                                f"Player {i}": st.column_config.TextColumn(
-                                    f"Player {i}",
-                                    help=f"Player {i}'s Ranking",
+                                f"Team {i}": st.column_config.TextColumn(
+                                    f"Team {i}",
+                                    help=f"Player's Rankings for Team {i}",
                                     max_chars=4,
                                     validate=r'^(?:100|[1-9]\d?|0)$',
                                     required=True,
                                 )
-                                for i in range(1, m+1)
+                                for i in range(1, n+1)
                             }
                             |
                             {
@@ -382,9 +391,7 @@ with tab2:
     with st.spinner("Updating..."):
         for col in edited_ws.columns:
             edited_ws[col] = edited_ws[col].map(lambda x: int(float(x)))
-        st.session_state.rankings = restore_rankings(edited_ws)
-
-    rankings = edited_ws.values[0]
+        st.session_state.rankings = restore_rankings(edited_ws.T)
     
     st.markdown(
             f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
@@ -402,7 +409,7 @@ with tab2:
         return style
     
     with st.spinner("Loading Table..."):
-        st.dataframe(rankings.style.applymap(format_cell_color))
+        st.dataframe(rankings.T.style.applymap(format_cell_color))
     
     rankings = rankings.T.to_numpy()
 
@@ -488,13 +495,14 @@ with st.expander("ℹ️ Information", expanded=False):
                 </li>
                 <li>
                     <p class="information-card-text">
-                        Let E<sup>*</sup>  = {(q, p) ∈ Q &times; P | w(q, p) = w(q, µ<sub>q</sub>)}; // Keep edges that are as good for the teams as those in µ
+                        Let E<sup>*</sup>  = {(q, p) ∈ Q &times; P | w(q, p) = w(q, µ<sub>q</sub>)}; <span style="color: grey; 
+                        font-style: italic">// Keep edges that are as good for the teams as those in µ</span>
                     </p>
                 </li>
                 <li>
                     <p class="information-card-text">
                         Compute a perfect matching µ<sup>*</sup> in G<sup>*</sup> = (Q, P; E<sup>*</sup>) such that the sum over all players p ∈ P of the rank of team 
-                        <span class="compact-expression">f(µ<sub>p</sub><sup>*</sup>)</span> for player p is minimized
+                        f(µ<sub>p</sub><sup>*</sup>) for player p is minimized
                     </p>
                 </li>
                 <li>
@@ -507,7 +515,7 @@ with st.expander("ℹ️ Information", expanded=False):
                 For a detailed characterization of the algorithm for EF[1,1], swap stability, and balancedness, please refer to the following paper:
             </p>
             <p class="information-card-citation">
-                A. Igarashi, Y. Kawase, W. Suksompong, and H. Sumita. <a href="https://arxiv.org/pdf/2206.05879.pdf" target="_blank">Fair division with two-sided preferences.</a> arXiv preprint arXiv:2206.05879, 2022
+                Ayumi Igarashi, Yasushi Kawase, Warut Suksompong, and Hanna Sumita. <a href="https://arxiv.org/pdf/2206.05879.pdf" target="_blank">Fair division with two-sided preferences.</a> arXiv preprint arXiv:2206.05879, 2022
             </p>
         </div>
         """,
@@ -515,7 +523,7 @@ with st.expander("ℹ️ Information", expanded=False):
     )
     
 
-start_algo = st.button("⏳ Run Fast & Fair Match Algorithm ")
+start_algo = st.button("⏳ Run Fast & Fair Matching Algorithm ")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
@@ -573,7 +581,7 @@ if start_algo:
     for i in range(n):
         if not has_lead_str:
             b = outcomes[i]
-            output_str += f"**Team {i+1}** has received value <code>{sum(preferences[i][b])}</code>.\n\n"
+            output_str += f"**Team {i+1}** has received value {sum(preferences[i][b])}.\n\n"
             has_lead_str = True
         for j in range(n):
             if i == j:
@@ -582,13 +590,13 @@ if start_algo:
                 bi, bj = outcomes[i], outcomes[j]
 
                 if sum(preferences[i][bj]) <= sum(preferences[i][bi]):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, and it does not envy Team {j+1} because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>.\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, and it does not envy Team {j+1} because {sum(preferences[i][bi])} ≥ {sum(preferences[i][bj])}.\n\n"
                 elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, but its own player has a minimum value of <code>{min(preferences[i][bi])}</code>. Team {i+1}'s maximum value for a player in Team {j+1} is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between <code>{sum(preferences[i][bi])}</code> and <code>{min(preferences[i][bi])}</code> equals <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code>, which is ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Team {i+1}'s maximum value for a player in Team {j+1} is {max(preferences[i][bj])}. Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} equals {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}\n\n"
                 elif (preferences[i][bi].size == 0 or min(preferences[i][bi]) >= 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is <code>{max(preferences[i][bj])}</code>. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is {max(preferences[i][bj])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because {sum(preferences[i][bi])} ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}\n\n"
                 elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size == 0 or max(preferences[i][bj]) < 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, but its own player has a minimum value of <code>{min(preferences[i][bi])}</code>. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between <code>{sum(preferences[i][bi])}</code> and <code>{min(preferences[i][bi])}</code> is <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code>, which is ≥ <code>{sum(preferences[i][bj])}</code>\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} is {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj])}\n\n"
                 else:
                     pass
                 
@@ -613,17 +621,17 @@ if start_algo:
                 continue
             output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
-                output_str2 += f"the values for Team {ti+1} will decrease from <code>{preferences[ti][i]}</code> to <code>{preferences[ti][j]}</code>, "
+                output_str2 += f"the values for Team {ti+1} will decrease from {preferences[ti][i]} to {preferences[ti][j]}, "
             if preferences[tj][j] >= preferences[tj][i]:
-                output_str2 += f"the values for Team {tj+1} will decrease from <code>{preferences[tj][j]}</code> to <code>{preferences[tj][i]}</code>, "
+                output_str2 += f"the values for Team {tj+1} will decrease from {preferences[tj][j]} to {preferences[tj][i]}, "
             if rankings[i][ti] < rankings[i][tj]:
-                output_str2 += f"Player {i+1}'s rank will increase from <code>{rankings[i][ti]}</code> to <code>{rankings[i][tj]}</code>, "
+                output_str2 += f"Player {i+1}'s rank will increase from {rankings[i][ti]} to {rankings[i][tj]}, "
             if rankings[j][tj] < rankings[j][ti]:
-                output_str2 += f"Player {j+1}'s rank will increase from <code>{rankings[j][tj]}</code> to <code>{rankings[j][ti]}</code>, "
+                output_str2 += f"Player {j+1}'s rank will increase from {rankings[j][tj]} to {rankings[j][ti]}, "
     
-            output_str2 += f"therefore, swapping Player {i+1} with Player {j+1} is not beneficial.\n\n"
+            output_str2 += f"**and hence swapping Player {i+1} with Player {j+1} is not beneficial.**\n\n"
 
-    with st.expander(f"Explanation of Outcomes (about {n**2 + int(m*(m-1)/2) * 2} lines)", expanded=False):
+    with st.expander(f"Explanations of Outcomes (**about {n**2 + int(m*(m-1)/2) * 2} lines**)", expanded=False):
         st.download_button('Download Full Explanations', output_str + output_str2,
                            file_name=f"{n}_teams_{m}_players_match_expl.txt")
         st.markdown(output_str, unsafe_allow_html=True)
