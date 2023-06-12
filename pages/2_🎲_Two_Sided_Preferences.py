@@ -610,13 +610,13 @@ if start_algo:
                 continue
             output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
-                output_str2 += f"Player values for Team {ti+1} will shrink by <code>{preferences[ti][i] - preferences[ti][j]}</code>;\n\n"
+                output_str2 += f"Player values for Team {ti+1} will descend from <code>{preferences[ti][i]}</code> to <code>{preferences[ti][j]}</code>;\n\n"
             if preferences[tj][j] >= preferences[tj][i]:
-                output_str2 += f"Player values for Team {tj+1} will shrink by <code>{preferences[tj][j] - preferences[tj][i]}</code>;\n\n"
+                output_str2 += f"Player values for Team {tj+1} will descend from <code>{preferences[tj][j]}</code> to <code>{preferences[tj][i]}</code>;\n\n"
             if rankings[i][ti] < rankings[i][tj]:
-                output_str2 += f"Player {i+1}'s rank will rise by <code>{rankings[i][tj] - rankings[i][ti]}</code>;\n\n"
+                output_str2 += f"Player {i+1}'s rank will rise from <code>{rankings[i][ti]}</code> to <code>{rankings[i][tj]}</code>;\n\n"
             if rankings[j][tj] < rankings[j][ti]:
-                output_str2 += f"Player {j+1}'s rank will rise by <code>{rankings[j][ti] - rankings[j][tj]}</code>;\n\n"
+                output_str2 += f"Player {j+1}'s rank will rise from <code>{rankings[j][tj]}</code> to <code>{rankings[j][ti]}</code>;\n\n"
     
             output_str2 += f"Hence, swapping Player {i+1} with Player {j+1} is not beneficial.\n\n"
 
