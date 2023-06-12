@@ -364,26 +364,25 @@ with tab1:
     # if st.button("Reconcile Rankings"):
     #     st.experimental_rerun()
     
-    if n * m <= 1000:
-        st.markdown(
-                f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
-            
-        rankings = st.session_state.rankings
-        # Define formatter function
-        def format_cell_color(val):
-            max_val = rankings.values.astype(np.int32).max()
-            min_val = rankings.values.astype(np.int32).min()
-            span = max_val - min_val + 1
-            cell_val = (int(float(val)) - min_val) / span  # Normalize value between 0 and 1
-            thickness = int(10 * cell_val)  # Adjust thickness as per preference
-            color = f'rgba(0, 0, 255, {cell_val})'  # Blue color with alpha value based on normalized value
-            style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
-            return style
+    st.markdown(
+            f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
         
-        with st.spinner("Loading Table..."):
-            st.dataframe(rankings.style.applymap(format_cell_color))
+    rankings = st.session_state.rankings
+    # Define formatter function
+    def format_cell_color(val):
+        max_val = rankings.values.astype(np.int32).max()
+        min_val = rankings.values.astype(np.int32).min()
+        span = max_val - min_val + 1
+        cell_val = (int(float(val)) - min_val) / span  # Normalize value between 0 and 1
+        thickness = int(10 * cell_val)  # Adjust thickness as per preference
+        color = f'rgba(0, 0, 255, {cell_val})'  # Blue color with alpha value based on normalized value
+        style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
+        return style
     
-    rankings = rankings.T.to_numpy() if isinstance(rankings, pd.DataFrame) else rankings.T
+    with st.spinner("Loading Table..."):
+        st.dataframe(rankings.style.applymap(format_cell_color))
+    
+    rankings = rankings.T.to_numpy()
 
     # Download rankings as CSV
     rankings_csv = edited_ws.to_csv()
