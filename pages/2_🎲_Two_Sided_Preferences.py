@@ -565,7 +565,7 @@ if start_algo:
     # EF[1,1] for every pair of teams.
     # Swap-stable for every pair of players.
     
-    output_str = f"The teams are **balanced** in the number of players (up to one).\n\n"
+    output_str = f"The teams have a **balanced** number of players (with a maximum difference of one). \n\n"
 
     output_str += '<h3 class="information-card-header">Fulfilling EF[1,1]</h3>\n\n'
     has_lead_str = False
