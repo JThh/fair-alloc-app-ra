@@ -146,41 +146,41 @@ def load_preferences(m, n, mode):
         preferences_default = pd.DataFrame(np.random.randint(low, high, (n, m)), columns=[f"Player {i+1}" for i in range(m)],
                                         index=[f"Team {i+1}" for i in range(n)],
                                         dtype=int)
-        st.session_state.preferences = preferences_default
+        st.session_state.prefs = preferences_default
         st.session_state.mode = mode
-        return st.session_state.preferences
+        return st.session_state.prefs
 
     if hasattr(st.session_state, "preferences"):         
-        old_n = st.session_state.preferences.shape[0]
-        old_m = st.session_state.preferences.shape[1]
+        old_n = st.session_state.prefs.shape[0]
+        old_m = st.session_state.prefs.shape[1]
         if n <= old_n and m <= old_m:
-            st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
-            return st.session_state.preferences
+            st.session_state.prefs = st.session_state.prefs.iloc[:n, :m]
+            return st.session_state.prefs
         elif n > old_n:
-            st.session_state.preferences = pd.concat([st.session_state.preferences,
+            st.session_state.prefs = pd.concat([st.session_state.prefs,
                                                       pd.DataFrame(np.random.randint(low, high, (n - old_n, m)),
                                                                    columns=[
                                                           f"Player {i+1}" for i in range(m)],
                                                           index=[f"Team {i+1}" for i in range(old_n, n)],
                                                           dtype=int)],
                                                      axis=0)
-            return st.session_state.preferences
+            return st.session_state.prefs
         else:
-            st.session_state.preferences = pd.concat([st.session_state.preferences,
+            st.session_state.prefs = pd.concat([st.session_state.prefs,
                                                       pd.DataFrame(np.random.randint(low, high,(n, m - old_m)),
                                                                    columns=[
                                                           f"Player {i+1}" for i in range(old_m, m)],
                                                           index=[f"Team {i+1}" for i in range(n)],
                                                           dtype=int)],
                                                      axis=1)
-            return st.session_state.preferences
+            return st.session_state.prefs
 
     preferences_default = pd.DataFrame(np.random.randint(low, high, (n, m)), columns=[f"Player {i+1}" for i in range(m)],
                                        index=[f"Team {i+1}" for i in range(n)],
                                        dtype=int)
-    st.session_state.preferences = preferences_default
+    st.session_state.prefs = preferences_default
     st.session_state.mode = mode
-    return st.session_state.preferences
+    return st.session_state.prefs
 
 
 def restore_rankings(rankings):
@@ -254,7 +254,7 @@ def pchange_callback(preferences):
     for col in preferences.columns:
         preferences[col] = preferences[col].apply(
             lambda x: int(float(x)))
-    st.session_state.preferences = preferences
+    st.session_state.prefs = preferences
 
 
 # Set the title and layout of the web application
@@ -426,7 +426,7 @@ with tab2:
         for col in edited_prefs.columns:
             edited_prefs[col] = edited_prefs[col].apply(
                 lambda x: int(float(x)))
-        st.session_state.preferences = edited_prefs.T
+        st.session_state.prefs = edited_prefs.T
 
     preferences = edited_prefs.T.values
 
