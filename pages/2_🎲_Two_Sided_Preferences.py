@@ -300,7 +300,7 @@ st.sidebar.markdown(
 )
 
 # Add input components
-col1, col2, col3, col4 = st.columns([0.4,0.03,0.4,0.23])
+col1, col2, col3, col4 = st.columns([0.35,0.03,0.35,0.33])
 n = col1.number_input("Number of Teams (n)",
                       min_value=2, max_value=100, step=1)
 m = col3.number_input("Number of Players (m)", min_value=2,
