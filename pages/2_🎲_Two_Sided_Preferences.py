@@ -130,7 +130,10 @@ def compute_EF11_ssba(n, m, preferences, ranks):
             real_team = real_teams[np.argmin(ranks[player][real_teams])]
             final_match[real_team].append(player)
             team = teams[np.argmin(ranks[player][real_teams])]
-            T.remove(team)
+            try:
+                T.remove(team)
+            except:
+                continue
 
     return final_match
 
