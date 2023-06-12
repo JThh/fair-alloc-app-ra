@@ -383,7 +383,7 @@ with tab1:
         with st.spinner("Loading Table..."):
             st.dataframe(rankings.style.applymap(format_cell_color))
     
-    rankings = rankings.T.to_numpy()
+    rankings = rankings.T.to_numpy() if isinstance(rankings, pd.DataFrame) else rankings.T
 
     # Download rankings as CSV
     rankings_csv = edited_ws.to_csv()
