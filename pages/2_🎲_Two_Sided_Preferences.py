@@ -458,6 +458,10 @@ with tab3:
             color: #555555;
             font-weight: bold;
         }
+        .compact-expression {
+            font-size: 0.8em;
+            vertical-align: middle;
+        }
         </style>
         <div class="information-card-content">
             <h2 class="information-card-header">Information</h2>
@@ -467,15 +471,38 @@ with tab3:
                 preferences over the teams. The algorithm can generate an allocation satisfying EF1, swap stability, and individual stability and can compute it in polynomial time, even
                 when teams may have positive or negative values for players.
             </p>
-            <h3 class="information-card-header">Algorithm Overview</h3>
-            <p class="information-card-text">
-                **Pending Updates**.
-                The algorithm starts with each agent's initial rankings. These rankings represent the relative importance or priority of the agents in the allocation process.
-                The algorithm then iteratively selects an item to allocate and assigns it to the agent who values it the most based on their preferences.
-                The rankings of the agents are adjusted after each allocation to reflect the items already allocated to them.
-                This adjustment ensures that agents with fewer allocated items are given higher rankings to maintain fairness in subsequent allocations.
-                The process continues until all items are allocated or no further allocations can be made while satisfying certain fairness criteria.
-            </p>
+            <h3 class="information-card-header">Algorithm Description</h3>
+            <p class="information-card-text">For computing an EF[1,1], swap stable, and balanced allocation</p>
+            <ol>
+                <li>
+                    <p class="information-card-text">
+                        Construct a complete bipartite graph G = (Q, P; E) with weight function w: E → R where Q = [m] and
+                        w(q, p) = v<sub>f(q)</sub>(p) for each (q, p) ∈ Q &times; P; // The set Q mimics the available positions within the teams
+                    </p>
+                </li>
+                <li>
+                    <p class="information-card-text">
+                        Compute a perfect matching µ ⊆ Q &times; P such that the weight of the edge adjacent to vertex 1 ∈ Q is as large as
+                        possible, and subject to this condition, the weight of the edge adjacent to vertex 2 ∈ Q is as large as possible, and so on
+                        until vertex m ∈ Q; // Simulate round-robin with only the players' values being assigned to teams
+                    </p>
+                </li>
+                <li>
+                    <p class="information-card-text">
+                        Let E<sup>*</sup>  = {(q, p) ∈ Q &times; P | w(q, p) = w(q, µ<sub>q</sub>)}; // Keep edges that are as good for the teams as those in µ
+                    </p>
+                </li>
+                <li>
+                    <p class="information-card-text">
+                        Compute a perfect matching µ<sup>*</sup> in G<sup>*</sup> = (Q, P; E<sup>*</sup>) such that the sum over all players p ∈ P of the rank of team <span class="compact-expression">f(µ<sub>p</sub><sup>*</sup>)</span> for player p is minimized;
+                    </p>
+                </li>
+                <li>
+                    <p class="information-card-text">
+                        Return the allocation A such that p is allocated to team f(q) for each (q, p) ∈ µ<sup>*</sup>;
+                    </p>
+                </li>
+            </ol>
             <p class="information-card-text">
                 For a detailed explanation of the Fair Matching algorithm for EF[1,1], swap stability, and balancedness, please refer to the following paper:
             </p>
@@ -486,6 +513,7 @@ with tab3:
         """,
         unsafe_allow_html=True
     )
+    
 
 start_algo = st.button("⏳ Run Fast & Fair Match Algorithm ")
 if start_algo:
