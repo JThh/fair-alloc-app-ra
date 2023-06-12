@@ -444,10 +444,29 @@ with st.expander("ℹ️ Information", expanded=False):
         <div class="information-card-content">
             <h2 class="information-card-header">Information</h2>
             <p class="information-card-text">
-                The Fair-Match algorithm is used for a fair division setting in which a number of players are to be fairly distributed among a
+                This matching algorithm is used for a fair division setting in which a number of players are to be fairly distributed among a
                 set of teams. In this setting, not only do the teams have preferences over the players as in the canonical fair division setting, but the players also have
-                preferences over the teams. The algorithm can generate an allocation satisfying EF1, swap stability, and individual stability and can compute it in polynomial time, even
+                preferences over the teams. The algorithm can generate an allocation satisfying EF[1,1], balancedness, swap stability, and can compute it in polynomial time, even
                 when teams may have positive or negative values for players.
+            </p>
+            <h4 class="information-card-header">EF[1,1]</h4>
+            <p class="information-card-text">
+                For an allocation to satisfy EF[1,1], it must meet the condition that for any two distinct teams, 
+                denoted as i and j, there exist subsets X ⊆ A<sub>i</sub> and Y ⊆ A<sub>j</sub>, where |X| and |Y| are at most 1, such that 
+                the value v<sub>i</sub>(A<sub>i</sub> \ X) is greater than or equal to v<sub>i</sub>(A<sub>j</sub> \ Y). In other words, each team should have 
+                an advantage over the other in terms of the values assigned to their players.
+            </p>
+            <h4 class="information-card-header">Balancedness</h4>
+            <p class="information-card-text">
+                An allocation is considered balanced if the absolute difference between the sizes of any two teams, denoted as
+                |A<sub>i</sub>| and |A<sub>j</sub>|, is at most 1 for all i and j. This ensures that the teams are relatively equal in terms of the 
+                number of players assigned to them.
+            </p>
+            <h4 class="information-card-header">Swap Stability</h4>
+            <p class="information-card-text">
+                A swap between players p ∈ A<sub>i</sub> and q ∈ A<sub>j</sub> (where i and j are distinct teams) is deemed beneficial if it improves the 
+                situation for at least one of the involved parties without making any of them worse off. An allocation is considered swap stable if it 
+                does not allow for any beneficial swaps, ensuring that no team or player can improve their situation through such exchanges.
             </p>
             <h3 class="information-card-header">Algorithm Description</h3>
             <p class="information-card-text">For computing an EF[1,1], swap stable, and balanced allocation</p>
@@ -455,14 +474,16 @@ with st.expander("ℹ️ Information", expanded=False):
                 <li>
                     <p class="information-card-text">
                         Construct a complete bipartite graph G = (Q, P; E) with weight function w: E → R where Q = [m] and
-                        w(q, p) = v<sub>f(q)</sub>(p) for each (q, p) ∈ Q &times; P; // The set Q mimics the available positions within the teams
+                        w(q, p) = v<sub>f(q)</sub>(p) for each (q, p) ∈ Q &times; P; <span style="color: grey; font-style: italic">// The set Q mimics 
+                        the available positions within the teams</span>
                     </p>
                 </li>
                 <li>
                     <p class="information-card-text">
                         Compute a perfect matching µ ⊆ Q &times; P such that the weight of the edge adjacent to vertex 1 ∈ Q is as large as
                         possible, and subject to this condition, the weight of the edge adjacent to vertex 2 ∈ Q is as large as possible, and so on
-                        until vertex m ∈ Q; // Simulate round-robin with only the players' values being assigned to teams
+                        until vertex m ∈ Q; <span style="color: grey; font-style: italic">// Simulate round-robin with only the players'
+                        values being assigned to teams</span>
                     </p>
                 </li>
                 <li>
@@ -472,17 +493,18 @@ with st.expander("ℹ️ Information", expanded=False):
                 </li>
                 <li>
                     <p class="information-card-text">
-                        Compute a perfect matching µ<sup>*</sup> in G<sup>*</sup> = (Q, P; E<sup>*</sup>) such that the sum over all players p ∈ P of the rank of team <span class="compact-expression">f(µ<sub>p</sub><sup>*</sup>)</span> for player p is minimized;
+                        Compute a perfect matching µ<sup>*</sup> in G<sup>*</sup> = (Q, P; E<sup>*</sup>) such that the sum over all players p ∈ P of the rank of team 
+                        <span class="compact-expression">f(µ<sub>p</sub><sup>*</sup>)</span> for player p is minimized
                     </p>
                 </li>
                 <li>
                     <p class="information-card-text">
-                        Return the allocation A such that p is allocated to team f(q) for each (q, p) ∈ µ<sup>*</sup>;
+                        Return the allocation A such that p is allocated to team f(q) for each (q, p) ∈ µ<sup>*</sup>
                     </p>
                 </li>
             </ol>
             <p class="information-card-text">
-                For a detailed explanation of the Fair Matching algorithm for EF[1,1], swap stability, and balancedness, please refer to the following paper:
+                For a detailed characterization of the algorithm for EF[1,1], swap stability, and balancedness, please refer to the following paper:
             </p>
             <p class="information-card-citation">
                 A. Igarashi, Y. Kawase, W. Suksompong, and H. Sumita. <a href="https://arxiv.org/pdf/2206.05879.pdf" target="_blank">Fair division with two-sided preferences.</a> arXiv preprint arXiv:2206.05879, 2022
