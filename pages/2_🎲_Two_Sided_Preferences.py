@@ -484,7 +484,7 @@ with tab3:
         unsafe_allow_html=True
     )
 
-start_algo = st.button("⏳ Run Fair Match Algorithm ")
+start_algo = st.button("⏳ Run Fast & Fair Match Algorithm ")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
@@ -569,9 +569,9 @@ if start_algo:
     pl2tm = reverse_dict(outcomes)
     for i in range(m):
         for j in range(i+1, m):
-            output_str2 += f"**If we swap Player {i+1} with Player {j+1}**, "
             ti = pl2tm[i]
             tj = pl2tm[j]
+            output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
                 output_str2 += f"Player values for Team {ti+1} will shrink by <code>{preferences[ti][i] - preferences[ti][j]}</code>;\n\n"
             if preferences[tj][j] >= preferences[tj][i]:
