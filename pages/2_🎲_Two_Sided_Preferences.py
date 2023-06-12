@@ -629,7 +629,7 @@ if start_algo:
             if rankings[j][tj] < rankings[j][ti]:
                 output_str2 += f"Player {j+1}'s rank will increase from {rankings[j][tj]} to {rankings[j][ti]}, "
     
-            output_str2 += f"**and hence swapping Player {i+1} with Player {j+1} is not beneficial.**\n\n"
+            output_str2 += f"and hence swapping Player {i+1} with Player {j+1} is **not beneficial.**\n\n"
 
     with st.expander(f"Explanations of Outcomes (**about {n**2 + int(m*(m-1)/2) * 2} lines**)", expanded=False):
         st.download_button('Download Full Explanations', output_str + output_str2,
