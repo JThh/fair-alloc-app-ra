@@ -578,6 +578,8 @@ if start_algo:
         for j in range(i+1, m):
             ti = pl2tm[i]
             tj = pl2tm[j]
+            if ti == tj:
+                continue
             output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
                 output_str2 += f"Player values for Team {ti+1} will shrink by <code>{preferences[ti][i] - preferences[ti][j]}</code>;\n\n"
