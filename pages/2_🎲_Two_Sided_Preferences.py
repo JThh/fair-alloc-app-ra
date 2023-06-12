@@ -373,7 +373,7 @@ with tab1:
         max_val = rankings.values.astype(np.int32).max()
         min_val = rankings.values.astype(np.int32).min()
         span = max_val - min_val + 1
-        cell_val = (int(float(val)) - min_val) / span  # Normalize value between 0 and 1
+        cell_val = (max_val - int(float(val))) / span  # Normalize value between 0 and 1
         thickness = int(10 * cell_val)  # Adjust thickness as per preference
         color = f'rgba(0, 0, 255, {cell_val})'  # Blue color with alpha value based on normalized value
         style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
