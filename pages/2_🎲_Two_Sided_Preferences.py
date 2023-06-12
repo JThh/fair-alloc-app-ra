@@ -84,15 +84,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-MODES = {'Two-Sided': 0, 'Non-Negative (Goods)': 1, 'Non-Positive (Chores)': 2}
-LOW_VALUES = (-100, 0, -100)
-HIGH_VALUES = (100, 100, 0)
-REGEXS = (
-    r'^-?[1-9][0-9]{0,2}$|^-?1000$|^0$',
-    r'^(?:1000|[1-9]\d{0,2}|0)$',
-    r'^-1000$|^-\d{1,3}$|^0$',
-)
-
 
 def compute_EF11_ssba(n, m, preferences, ranks):
     Q = list(range(n)) * (m // n) + list(range(n))[:(m % n)]
@@ -138,19 +129,11 @@ def compute_EF11_ssba(n, m, preferences, ranks):
     return final_match
 
 
-def load_preferences(m, n, mode):
-    low = LOW_VALUES[MODES[mode]]
-    high = HIGH_VALUES[MODES[mode]]
+def load_preferences(m, n):
+    low = -100
+    high = 100
 
-    if hasattr(st.session_state, "mode") and st.session_state.mode != mode:
-        preferences_default = pd.DataFrame(np.random.randint(low, high, (n, m)), columns=[f"Player {i+1}" for i in range(m)],
-                                        index=[f"Team {i+1}" for i in range(n)],
-                                        dtype=int)
-        st.session_state.prefs = preferences_default
-        st.session_state.mode = mode
-        return st.session_state.prefs
-
-    if hasattr(st.session_state, "preferences"):         
+    if hasattr(st.session_state, "prefs"):         
         old_n = st.session_state.prefs.shape[0]
         old_m = st.session_state.prefs.shape[1]
         if n <= old_n and m <= old_m:
@@ -179,7 +162,6 @@ def load_preferences(m, n, mode):
                                        index=[f"Team {i+1}" for i in range(n)],
                                        dtype=int)
     st.session_state.prefs = preferences_default
-    st.session_state.mode = mode
     return st.session_state.prefs
 
 
@@ -311,20 +293,63 @@ st.sidebar.markdown(
 )
 
 # Add input components
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 n = col1.number_input("Number of Teams (n)",
                       min_value=2, max_value=100, step=1)
 m = col2.number_input("Number of Players (m)", min_value=2,
                       max_value=1000, value=6, step=1)
 
-is_two_sided = col3.selectbox(
-    "Type of Team Preferences", ('Two-Sided', 'Non-Negative (Goods)', 'Non-Positive (Chores)'))
-
-tab1, tab2, tab3 = st.tabs(["Rankings", "Preferences", "Information"])
+tab1, tab2 = st.tabs(["Team Preferences", "Player Preferences"])
 
 with tab1:
+    # Agent Preferences
+    st.markdown("📊 Team Preferences towards Players (<code>-1000</code> - <code>1000</code>):",
+                unsafe_allow_html=True)
+
+    preferences = load_preferences(m, n)
+    for col in preferences.columns:
+        preferences[col] = preferences[col].map(str)
+
+    edited_prefs = st.data_editor(preferences,
+                                key="pref_editor",
+                                column_config={
+                                    f"Team {j}": st.column_config.TextColumn(
+                                        f"Team {j}",
+                                        help=f"Team {j}'s Preferences towards Players",
+                                        max_chars=5,
+                                        validate=r'^-?[1-9][0-9]{0,2}$|^-?1000$|^0$',
+                                        required=True,
+                                    )
+                                    for j in range(1, n+1)
+                                }
+                                |
+                                {
+                                    "_index": st.column_config.Column(
+                                        "💡 Hint",
+                                        help="Support copy-paste from Excel sheets and bulk edits",
+                                        disabled=True,
+                                    ),
+                                },
+                                on_change=partial(
+                                    pchange_callback, preferences),
+                                )
+    with st.spinner('Updating...'):
+        for col in edited_prefs.columns:
+            edited_prefs[col] = edited_prefs[col].apply(
+                lambda x: int(float(x)))
+        st.session_state.prefs = edited_prefs
+
+    preferences = edited_prefs.values
+
+    # Download preferences as CSV
+    preferences_csv = edited_prefs.to_csv()
+    b64 = base64.b64encode(preferences_csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
+with tab2:
     st.markdown(
-        f"🌟 Player Rankings of Teams (<code>{1}</code> - <code>{n}</code>, Permitting Ties):", unsafe_allow_html=True)
+        f"🌟 Player Rankings of Teams (<code>{1}</code> - <code>{n}</code>, Permitting Ties, <code>{1}</code> means the highest rank):", unsafe_allow_html=True)
 
     with st.spinner("Loading..."):
         rankings = load_rankings(n, m)
@@ -361,9 +386,6 @@ with tab1:
 
     rankings = edited_ws.values[0]
     
-    # if st.button("Reconcile Rankings"):
-    #     st.experimental_rerun()
-    
     st.markdown(
             f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
         
@@ -375,7 +397,7 @@ with tab1:
         span = max_val - min_val + 1
         cell_val = (max_val - int(float(val))) / span  # Normalize value between 0 and 1
         thickness = int(10 * cell_val)  # Adjust thickness as per preference
-        color = f'rgba(0, 0, 255, {cell_val})'  # Blue color with alpha value based on normalized value
+        color = f'rgba(67, 147, 195, {cell_val})'  # Blue color with alpha value based on normalized value
         style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
         return style
     
@@ -390,53 +412,8 @@ with tab1:
     href = f'<a href="data:file/csv;base64,{b64}" download="rankings.csv">Download Rankings CSV</a>'
     st.markdown(href, unsafe_allow_html=True)
 
-with tab2:
-    # Agent Preferences
-    st.markdown("📊 Team Preferences towards Players (<code>-1000</code> - <code>1000</code>):",
-                unsafe_allow_html=True)
-
-    preferences = load_preferences(m, n, is_two_sided)
-    for col in preferences.columns:
-        preferences[col] = preferences[col].map(str)
-
-    edited_prefs = st.data_editor(preferences.T,
-                                key="pref_editor",
-                                column_config={
-                                    f"Team {j}": st.column_config.TextColumn(
-                                        f"Team {j}",
-                                        help=f"Team {j}'s Preferences towards Players",
-                                        max_chars=5,
-                                        validate=REGEXS[MODES[is_two_sided]],
-                                        required=True,
-                                    )
-                                    for j in range(1, n+1)
-                                }
-                                |
-                                {
-                                    "_index": st.column_config.Column(
-                                        "💡 Hint",
-                                        help="Support copy-paste from Excel sheets and bulk edits",
-                                        disabled=True,
-                                    ),
-                                },
-                                on_change=partial(
-                                    pchange_callback, preferences),
-                                )
-    with st.spinner('Updating...'):
-        for col in edited_prefs.columns:
-            edited_prefs[col] = edited_prefs[col].apply(
-                lambda x: int(float(x)))
-        st.session_state.prefs = edited_prefs.T
-
-    preferences = edited_prefs.T.values
-
-    # Download preferences as CSV
-    preferences_csv = edited_prefs.to_csv()
-    b64 = base64.b64encode(preferences_csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
-    st.markdown(href, unsafe_allow_html=True)
-
-with tab3:
+# Add expandable information card
+with st.expander("ℹ️ Information", expanded=False):
     st.markdown(
         """
         <style>
@@ -581,16 +558,19 @@ if start_algo:
                 continue
             else:
                 bi, bj = outcomes[i], outcomes[j]
+
                 if sum(preferences[i][bj]) <= sum(preferences[i][bi]):
-                    output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}, so Team {i+1} does not envy Team {j+1} because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>.\n\n"
-                elif min(preferences[i][bi]) < 0 and max(preferences[i][bj]) >= 0:
-                    output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s minimum value for its own player is <code>{min(preferences[i][bi])}</code>. Team {i+1}'s maximum value for a player in Team {j+1} is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> - <code>{min(preferences[i][bi])}</code> = <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
-                elif min(preferences[i][bj]) >= 0 and max(preferences[i][bj]) >= 0:
-                    output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
-                elif min(preferences[i][bi]) < 0 and max(preferences[i][bj]) < 0:
-                    output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s minimum value for its own player is <code>{min(preferences[i][bi])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> - <code>{min(preferences[i][bi])}</code> = <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, and it does not envy Team {j+1} because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>.\n\n"
+                elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, but its own player has a minimum value of <code>{min(preferences[i][bi])}</code>. Team {i+1}'s maximum value for a player in Team {j+1} is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between <code>{sum(preferences[i][bi])}</code> and <code>{min(preferences[i][bi])}</code> equals <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code>, which is ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
+                elif (preferences[i][bi].size == 0 or min(preferences[i][bi]) >= 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is <code>{max(preferences[i][bj])}</code>. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
+                elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size == 0 or max(preferences[i][bj]) < 0):
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at <code>{sum(preferences[i][bj])}</code>, but its own player has a minimum value of <code>{min(preferences[i][bi])}</code>. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between <code>{sum(preferences[i][bi])}</code> and <code>{min(preferences[i][bi])}</code> is <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code>, which is ≥ <code>{sum(preferences[i][bj])}</code>\n\n"
                 else:
                     pass
+                
+# Team 2 values Team 1's allocation at -34, but its own player has a minimum value of -54. Despite this, Team 2 does not envy Team 1 under EF[1,1] because the difference (-54 - -54) equals 0, which is ≥ -34.
 
         has_lead_str = False
         
@@ -611,19 +591,19 @@ if start_algo:
                 continue
             output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
-                output_str2 += f"Player values for Team {ti+1} will descend from <code>{preferences[ti][i]}</code> to <code>{preferences[ti][j]}</code>;\n\n"
+                output_str2 += f"the values for Team {ti+1} will decrease from <code>{preferences[ti][i]}</code> to <code>{preferences[ti][j]}</code>, "
             if preferences[tj][j] >= preferences[tj][i]:
-                output_str2 += f"Player values for Team {tj+1} will descend from <code>{preferences[tj][j]}</code> to <code>{preferences[tj][i]}</code>;\n\n"
+                output_str2 += f"the values for Team {tj+1} will decrease from <code>{preferences[tj][j]}</code> to <code>{preferences[tj][i]}</code>, "
             if rankings[i][ti] < rankings[i][tj]:
-                output_str2 += f"Player {i+1}'s rank will rise from <code>{rankings[i][ti]}</code> to <code>{rankings[i][tj]}</code>;\n\n"
+                output_str2 += f"Player {i+1}'s rank will increase from <code>{rankings[i][ti]}</code> to <code>{rankings[i][tj]}</code>, "
             if rankings[j][tj] < rankings[j][ti]:
-                output_str2 += f"Player {j+1}'s rank will rise from <code>{rankings[j][tj]}</code> to <code>{rankings[j][ti]}</code>;\n\n"
+                output_str2 += f"Player {j+1}'s rank will increase from <code>{rankings[j][tj]}</code> to <code>{rankings[j][ti]}</code>, "
     
-            output_str2 += f"Hence, swapping Player {i+1} with Player {j+1} is not beneficial.\n\n"
+            output_str2 += f"therefore, swapping Player {i+1} with Player {j+1} is not beneficial.\n\n"
 
-    with st.expander(f"Explanation of Outcomes (about {n**2 + int(m*(m-1)/2) * 3} lines)", expanded=False):
+    with st.expander(f"Explanation of Outcomes (about {n**2 + int(m*(m-1)/2) * 2} lines)", expanded=False):
         st.download_button('Download Full Explanations', output_str + output_str2,
-                           file_name=f"{n}_teams_{m}_players_{is_two_sided}_match_expl.txt")
+                           file_name=f"{n}_teams_{m}_players_match_expl.txt")
         st.markdown(output_str, unsafe_allow_html=True)
         st.markdown(output_str2, unsafe_allow_html=True)
 
