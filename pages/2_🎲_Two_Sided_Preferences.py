@@ -609,7 +609,7 @@ if start_algo:
             tj = pl2tm[j]
             if ti == tj:
                 continue
-            output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**,\n\n"
+            output_str2 += f"**If we swap Player {i+1} (Team {ti+1}) with Player {j+1} (Team {tj+1})**, "
             if preferences[ti][i] >= preferences[ti][j]:
                 output_str2 += f"Player values for Team {ti+1} will descend from <code>{preferences[ti][i]}</code> to <code>{preferences[ti][j]}</code>;\n\n"
             if preferences[tj][j] >= preferences[tj][i]:
