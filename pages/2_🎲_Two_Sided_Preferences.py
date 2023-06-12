@@ -551,11 +551,11 @@ if start_algo:
                 bi, bj = outcomes[i], outcomes[j]
                 if sum(preferences[i][bj]) <= sum(preferences[i][bi]):
                     output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}, so Team {i+1} does not envy Team {j+1} because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>.\n\n"
-                elif min(preferences[i][bi]) < 0 and max(preferences[i][bj]) >= 0:
+                elif min(preferences[i][bi]) >= 0 and max(preferences[i][bj]) >= 0:
                     output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s minimum value for its own player is <code>{min(preferences[i][bi])}</code>. Team {i+1}'s maximum value for a player in Team {j+1} is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> - <code>{min(preferences[i][bi])}</code> = <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
-                elif min(preferences[i][bj]) >= 0 and max(preferences[i][bj]) >= 0:
+                elif min(preferences[i][bj]) < 0 and max(preferences[i][bj]) >= 0:
                     output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is <code>{max(preferences[i][bj])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj]) - max(preferences[i][bj])}</code> = <code>{sum(preferences[i][bj])}</code> - <code>{max(preferences[i][bj])}</code>\n\n"
-                elif min(preferences[i][bi]) < 0 and max(preferences[i][bj]) < 0:
+                elif min(preferences[i][bi]) >= 0 and max(preferences[i][bj]) < 0:
                     output_str += f"Team {i+1} has value <code>{sum(preferences[i][bj])}</code> for the allocation of Team {j+1}. Team {i+1}'s minimum value for its own player is <code>{min(preferences[i][bi])}</code>. Team {i+1} does not envy Team {j+1} according to EF[1,1] because <code>{sum(preferences[i][bi])}</code> - <code>{min(preferences[i][bi])}</code> = <code>{sum(preferences[i][bi]) - min(preferences[i][bi])}</code> ≥ <code>{sum(preferences[i][bj])}</code>\n\n"
                 else:
                     pass
