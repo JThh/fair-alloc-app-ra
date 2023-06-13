@@ -285,9 +285,10 @@ m = col3.number_input("Number of Houses (m)", min_value=2,
 if m < n:
     st.error("Number of Houses (m) must be greater than or equal to Number of Agents (n). Please adjust the values.")
 
+ordinal = lambda n: "%s" % ("tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])    
 
 st.markdown(
-    f"🌟 Agent Preferences towards Houses (ranked {1} - {m}, Permitting Ties, {1} means the highest rank):", unsafe_allow_html=True)
+    f"🌟 Agent Preferences towards Houses (ranks from {1}<sup>st</sup> to {m}<sup>{ordinal(m)}</sup> with ties permitted):", unsafe_allow_html=True)
 
 shuffle = st.button('Shuffle Rankings')
 
@@ -445,8 +446,6 @@ if start_algo:
     outcomes_df = outcomes_df.sort_values(['Agent'],
                                         key=lambda col: col.astype(int))
     
-    ordinal = lambda n: "%s" % ("tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])    
-
     if not flag:
         st.warning("No envy-free allocation found!", icon="⚠️")
         if not outcomes_df.empty:
