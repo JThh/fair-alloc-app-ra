@@ -299,7 +299,7 @@ st.sidebar.markdown(
 )
 
 # Add input components
-col1, col2, col3, col4 = st.columns([0.35,0.03,0.35,0.33])
+col1, col2, col3, col4 = st.columns([0.35,0.01,0.35,0.33])
 n = col1.number_input("Number of Teams (n)",
                       min_value=2, max_value=100, step=1)
 m = col3.number_input("Number of Players (m)", min_value=2,
@@ -448,13 +448,14 @@ with st.expander("ℹ️ Information", expanded=False):
         }
         </style>
         <div class="information-card-content">
-            <h2 class="information-card-header">Information</h2>
+            <h2 class="information-card-header">Fair Division with Two-Sided Preferences</h2>
             <p class="information-card-text">
                 This matching algorithm is used for a fair division setting in which a number of players are to be fairly distributed among a
                 set of teams. In this setting, not only do the teams have preferences over the players as in the canonical fair division setting, but the players also have
                 preferences over the teams. The algorithm can generate an allocation satisfying EF[1,1], balancedness, swap stability, and can compute it in polynomial time, even
                 when teams may have positive or negative values for players.
             </p>
+            <h3 class="information-card-header">Overview of Notions</h4>
             <h4 class="information-card-header">EF[1,1]</h4>
             <p class="information-card-text">
                 For an allocation to satisfy EF[1,1], it must meet the condition that for any two distinct teams, 
@@ -510,6 +511,7 @@ with st.expander("ℹ️ Information", expanded=False):
                     </p>
                 </li>
             </ol>
+            <br>
             <p class="information-card-text">
                 For a detailed characterization of the algorithm for EF[1,1], swap stability, and balancedness, please refer to the following paper:
             </p>
@@ -571,8 +573,9 @@ if start_algo:
     
     # EF[1,1] for every pair of teams.
     # Swap-stable for every pair of players.
+    balancedness = max(map(lambda x:len(x), outcomes.values())) - min(map(lambda x:len(x), outcomes.values()))
     
-    output_str = f"The teams have a **balanced** number of players (with a maximum difference of one). \n\n"
+    output_str = f"The teams have a **balanced** number of players (with a maximum difference of **{int(balancedness)}**). \n\n"
 
     output_str += '<h3 class="information-card-header">Fulfilling EF[1,1]</h3>\n\n'
     has_lead_str = False
@@ -580,22 +583,21 @@ if start_algo:
     for i in range(n):
         if not has_lead_str:
             b = outcomes[i]
-            output_str += f"**Team {i+1}** has received value {sum(preferences[i][b])}.\n\n"
+            output_str += f"**Team {i+1}** is allocated with players valued at {sum(preferences[i][b])} in total.\n\n"
             has_lead_str = True
         for j in range(n):
             if i == j:
                 continue
             else:
                 bi, bj = outcomes[i], outcomes[j]
-
                 if sum(preferences[i][bj]) <= sum(preferences[i][bi]):
                     output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, and it does not envy Team {j+1} because {sum(preferences[i][bi])} ≥ {sum(preferences[i][bj])}.\n\n"
                 elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Team {i+1}'s maximum value for a player in Team {j+1} is {max(preferences[i][bj])}. Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} equals {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Team {i+1}'s maximum value for a player in Team {j+1} is {max(preferences[i][bj])}. Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} equals {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}.\n\n"
                 elif (preferences[i][bi].size == 0 or min(preferences[i][bi]) >= 0) and (preferences[i][bj].size > 0 and max(preferences[i][bj]) >= 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is {max(preferences[i][bj])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because {sum(preferences[i][bi])} ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}. Team {i+1}'s maximum value for a player in Team {j+1}'s allocation is {max(preferences[i][bj])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because {sum(preferences[i][bi])} ≥ {sum(preferences[i][bj]) - max(preferences[i][bj])} = {sum(preferences[i][bj])} - {max(preferences[i][bj])}.\n\n"
                 elif (preferences[i][bi].size > 0 and min(preferences[i][bi]) < 0) and (preferences[i][bj].size == 0 or max(preferences[i][bj]) < 0):
-                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} is {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj])}\n\n"
+                    output_str += f"Team {i+1} values Team {j+1}'s allocation at {sum(preferences[i][bj])}, but its own player has a minimum value of {min(preferences[i][bi])}. Despite this, Team {i+1} does not envy Team {j+1} under EF[1,1] because the difference between {sum(preferences[i][bi])} and {min(preferences[i][bi])} is {sum(preferences[i][bi]) - min(preferences[i][bi])}, which is ≥ {sum(preferences[i][bj])}.\n\n"
                 else:
                     pass
                 

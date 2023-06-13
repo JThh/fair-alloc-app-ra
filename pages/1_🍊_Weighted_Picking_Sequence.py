@@ -65,7 +65,7 @@ st.markdown(
         line-height: 1.6;
     }
     .information-card-text {
-        font-weight: bold;
+        # font-weight: bold;
         color: #28517f;
         margin-bottom: 10px;
     }
@@ -442,9 +442,13 @@ with st.expander("ℹ️ Information", expanded=False):
             color: #555555;
             font-weight: bold;
         }
+        .compact-expression {
+            font-size: 0.8em;
+            vertical-align: middle;
+        }
         </style>
         <div class="information-card-content">
-            <h2 class="information-card-header">Information</h2>
+            <h2 class="information-card-header">Weighted Picking Sequence for Indivisible Items</h2>
             <p class="information-card-text">
                 The  Weighted Picking Sequence algorithm is used for goods allocation in situations where the items are indivisible.
                 It provides a method to allocate goods to agents in a way that balances fairness and efficiency.
@@ -475,7 +479,7 @@ with st.expander("ℹ️ Information", expanded=False):
                 The Weighted Picking Sequence algorithm can be represented using the following formula:
             </p>
             <p class="information-card-formula">
-                next_pick = argmin<sub>i ∈ N</sub> {(t<sub>i</sub> + (1 - x)) / w<sub>i</sub>}
+                Next_pick = argmin<sub>i ∈ N</sub> {(t<sub>i</sub> + (1 - x)) / w<sub>i</sub>}
             </p>
             <p class="information-card-text">
                 Where:
