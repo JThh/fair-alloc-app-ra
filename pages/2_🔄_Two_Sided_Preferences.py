@@ -323,7 +323,7 @@ with tab1:
                                         f"Player {j}",
                                         help=f"Team Preferences towards Player {j}",
                                         max_chars=5,
-                                        validate=r'^(?:100|[1-9]\d?|0)$',
+                                        validate=r'^-?[1-9][0-9]{0,2}$|^-?1000$|^0$',
                                         required=True,
                                     )
                                     for j in range(1, m+1)
