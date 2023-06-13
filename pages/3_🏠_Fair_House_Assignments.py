@@ -535,7 +535,7 @@ if start_algo:
                     continue
                 else:
                     bi, bj = outcomes[i], outcomes[j]
-                    output_str += f"Agent {i+1} ranks Agent {j+1}'s House {bj+1} at {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup>, so it does not envy Agent {j+1} as rank {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup> is lower than rank {orderings[i][bi]}<sup>{ordinal(orderings[i][bi])}</sup>.\n\n"
+                    output_str += f"Agent {i+1} ranks Agent {j+1}'s House {bj+1} at {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup>, so it does not envy Agent {j+1} as rank {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup> is lower than or equal to rank {orderings[i][bi]}<sup>{ordinal(orderings[i][bi])}</sup>.\n\n"
                     
             has_lead_str = False
             
