@@ -240,7 +240,7 @@ def wchange_callback(rankings):
     st.session_state.rankings = restore_rankings(rankings)
 
 
-def pchange_callback(preferences):
+def pchange_callback2(preferences):
     for col in preferences.columns:
         preferences[col] = preferences[col].apply(
             lambda x: int(float(x)))
@@ -317,11 +317,11 @@ with tab1:
         preferences[col] = preferences[col].map(str)
 
     edited_prefs = st.data_editor(preferences,
-                                key="pref_editor",
+                                key="pref_editor2",
                                 column_config={
                                     f"Player {j}": st.column_config.TextColumn(
                                         f"Player {j}",
-                                        help=f"Team Preferences towards Player {j}",
+                                        help=f"Teams' Preferences towards Player {j}",
                                         max_chars=5,
                                         validate=r'^-?[1-9][0-9]{0,2}$|^-?1000$|^0$',
                                         required=True,
@@ -337,7 +337,7 @@ with tab1:
                                     ),
                                 },
                                 on_change=partial(
-                                    pchange_callback, preferences),
+                                    pchange_callback2, preferences),
                                 )
     with st.spinner('Updating...'):
         for col in edited_prefs.columns:
