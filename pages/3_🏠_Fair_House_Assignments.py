@@ -281,7 +281,7 @@ col1, col2, col3, col4 = st.columns([0.35,0.01,0.35,0.35])
 n = col1.number_input("Number of Agents (n)",
                       min_value=2, max_value=100, step=1)
 m = col3.number_input("Number of Houses (m)", min_value=2,
-                      max_value=1000, value=6, step=1)
+                      max_value=1000, value=2, step=1)
 if m < n:
     st.error("Number of Houses (m) must be greater than or equal to Number of Agents (n). Please adjust the values.")
 
