@@ -524,7 +524,7 @@ with st.expander("ℹ️ Information", expanded=False):
     )
     
 
-start_algo = st.button("⏳ Run Fast & Fair Matching Algorithm ")
+start_algo = st.button("⏳ Run Matching Algorithm ")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
@@ -574,6 +574,7 @@ if start_algo:
     # EF[1,1] for every pair of teams.
     # Swap-stable for every pair of players.
     balancedness = max(map(lambda x:len(x), outcomes.values())) - min(map(lambda x:len(x), outcomes.values()))
+    ordinal = lambda n: "%s" % ("tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])    
     
     output_str = f"The teams have a **balanced** number of players (with a maximum difference of **{int(balancedness)}**). \n\n"
 
@@ -626,9 +627,9 @@ if start_algo:
             if preferences[tj][j] >= preferences[tj][i]:
                 output_str2 += f"the values for Team {tj+1} will decrease from {preferences[tj][j]} to {preferences[tj][i]}, "
             if rankings[i][ti] < rankings[i][tj]:
-                output_str2 += f"Player {i+1}'s rank will increase from {rankings[i][ti]} to {rankings[i][tj]}, "
+                output_str2 += f"Player {i+1}'s rank will drop from {rankings[i][ti]}<sup>{ordinal(rankings[i][ti])}</sup> to {rankings[i][tj]}<sup>{ordinal(rankings[i][tj])}</sup>, "
             if rankings[j][tj] < rankings[j][ti]:
-                output_str2 += f"Player {j+1}'s rank will increase from {rankings[j][tj]} to {rankings[j][ti]}, "
+                output_str2 += f"Player {j+1}'s rank will drop from {rankings[j][tj]}<sup>{ordinal(rankings[j][tj])}</sup> to {rankings[j][ti]}<sup>{ordinal(rankings[j][ti])}</sup>, "
     
             output_str2 += f"and hence swapping Player {i+1} with Player {j+1} is **not beneficial.**\n\n"
 
