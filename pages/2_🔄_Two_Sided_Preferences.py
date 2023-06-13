@@ -319,14 +319,14 @@ with tab1:
     edited_prefs = st.data_editor(preferences,
                                 key="pref_editor",
                                 column_config={
-                                    f"Team {j}": st.column_config.TextColumn(
-                                        f"Team {j}",
-                                        help=f"Team {j}'s Preferences towards Players",
+                                    f"Player {j}": st.column_config.TextColumn(
+                                        f"Player {j}",
+                                        help=f"Team Preferences towards Player {j}",
                                         max_chars=5,
-                                        validate=r'^-?[1-9][0-9]{0,2}$|^-?1000$|^0$',
+                                        validate=r'^(?:100|[1-9]\d?|0)$',
                                         required=True,
                                     )
-                                    for j in range(1, n+1)
+                                    for j in range(1, m+1)
                                 }
                                 |
                                 {
