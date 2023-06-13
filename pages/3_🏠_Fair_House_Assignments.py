@@ -456,7 +456,6 @@ if start_algo:
                 color = f'rgba(211, 211, 211, 0.3)'  # Blue color with alpha value based on normalized value
                 style = f'background-color: {color}; border-bottom: {1}px solid {color}'
                 return style
-            # st.dataframe(outcomes_df.style.applymap(format_cell_color))
             
             st.data_editor(outcomes_df.style.applymap(format_cell_color),
                             column_config={
@@ -488,7 +487,8 @@ if start_algo:
                 for (a, h) in outcomes.items():
                     if orderings[a][h] > orderings[a][uh]:
                         output_str += f"Agent {a+1} will envy it as Agent {a+1} ranks House {uh+1} \
-                            at {orderings[a][uh]}<sup>{ordinal(orderings[a][uh])}</sup>, "
+                            at {orderings[a][uh]}<sup>{ordinal(orderings[a][uh])}</sup> and its current house \
+                                at {orderings[a][h]}<sup>{ordinal(orderings[a][h])}</sup>, "
                                 
                     if orderings[ua][h] < orderings[ua][uh]:
                         output_str += f"it will envy Agent {a+1} as it ranks House {h+1} \
@@ -535,7 +535,7 @@ if start_algo:
                     continue
                 else:
                     bi, bj = outcomes[i], outcomes[j]
-                    output_str += f"Agent {i+1} ranks Agent {j+1}'s House {bj+1} at {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup>, so it does not envy Agent {j+1} as rank {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup> ≥ rank {orderings[i][bi]}<sup>{ordinal(orderings[i][bi])}</sup>.\n\n"
+                    output_str += f"Agent {i+1} ranks Agent {j+1}'s House {bj+1} at {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup>, so it does not envy Agent {j+1} as rank {orderings[i][bj]}<sup>{ordinal(orderings[i][bj])}</sup> is lower than rank {orderings[i][bi]}<sup>{ordinal(orderings[i][bi])}</sup>.\n\n"
                     
             has_lead_str = False
             
