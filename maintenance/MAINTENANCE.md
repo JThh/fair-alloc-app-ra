@@ -25,7 +25,9 @@ cd ..
 python3 -m streamlit run Welcome.py
 ```
 
-If successful, you will see something similar to [this image](./deploy_info.png) where a Network URL is provided for you to browse the app.
+If successful, you will see something similar to below image where a Network URL is provided for you to browse the app.
+
+![Local run](./deploy_info.png)
 
 If there is any error on finding `streamlit` in the environment, please refer to this [self-check guide](https://docs.streamlit.io/knowledge-base/using-streamlit/sanity-checks).
 
@@ -35,7 +37,7 @@ When you want to disconnect the app, just run `ctrl+c`.
 
 This app is currently running on my own Streamlit cloud account. If the account happens to be malfunctioning (which is rare), you should fork this repository to your account. Please follow [this link](https://github.com/JThh/fair-alloc-app-ra/fork) to fork it.
 
-Now, you should open an account at Streamlit cloud with [this signup link](https://share.streamlit.io/signup), and choose `continue with GitHub`. Grant the access from GitHub to Streamlit Cloud before you [follow this guide](https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app)(from `Deploy your app` onwards) to complete the deployment step. **Remember to choose the `new_main` branch and set the main file path as `Welcome.py`**. Set the custom domain as any link you would like.
+Now, you should open an account at Streamlit cloud with [this signup link](https://share.streamlit.io/signup), and choose `continue with GitHub`. Grant the access from GitHub to Streamlit Cloud before you [follow this guide](https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app) (from `Deploy your app` onwards) to complete the deployment step. **Remember to choose the `new_main` branch and set the main file path as `Welcome.py`**. Set the custom domain as any link you like.
 
 ![Deployment Choices](./deploy-an-app.png)
 
@@ -46,7 +48,7 @@ Now, you should open an account at Streamlit cloud with [this signup link](https
 
 There will be more and more new algorithms to come. We can extend the current app's functionality by adding new pages to the [pages folder](../pages/). 
 
-For example, if we want to implement an algorithm for `multiwinner approval voting` based on this [paper](https://arxiv.org/pdf/2112.05994.pdf). We can name a new Python as `4_🗳️_Multiwinner_Approval_Voting.py` and append it to the previous three app files (at the time this guide was written). The contents of the file can be referred from the previous apps and the [Streamlit documentation](https://docs.streamlit.io/), except for the actual algorithm from the paper.
+For example, if we want to implement an algorithm for `multiwinner approval voting` based on this [paper](https://arxiv.org/pdf/2112.05994.pdf). We can name a new Python as `4_🗳️_Multiwinner_Approval_Voting.py` and append it to the previous three app files (at the time this guide was written). The contents of the file can be referred from the previous apps and the [Streamlit documentation](https://docs.streamlit.io/), except for the actual algorithm.
 
 
 ## Contigency Plans
