@@ -120,14 +120,14 @@ def compute_envyfree_assignment(n, m, orderings):
                     matching[agent] = house
                     houses_left.remove(house)
                     break
-                
+
         if len(matching.keys()) == n:
             return matching, True
-        
+
         # No n-saturating match exists
         X_u = set(range(n)) - set(matching.keys())
         assert len(X_u) > 0, "Unmatched vertices in X should not be empty"
-        
+
         edges = defaultdict(list)
         for agent, houses in edges_nm.items():
             for house in houses:
@@ -415,7 +415,7 @@ with st.expander("ℹ️ Information", expanded=False):
                 For a detailed characterization of the algorithm for envy-free house allocation, please refer to the following paper:
             </p>
             <p class="information-card-citation">
-                Jiarui Gan, Warut Suksompong and Alexandros A. Voudouris. <a href="https://arxiv.org/pdf/1905.00468.pdf" target="_blank">Envy-Freeness in House Allocation Problems.</a> arXiv preprint arXiv:1905.00468, 2019
+                Jiarui Gan, Warut Suksompong and Alexandros A. Voudouris. <a href="https://www.sciencedirect.com/science/article/abs/pii/S0165489619300599" target="_blank">Envy-Freeness in House Allocation Problems.</a> Mathematical Social Sciences 101:104-106, 2019.
             </p>
         </div>
         """,
