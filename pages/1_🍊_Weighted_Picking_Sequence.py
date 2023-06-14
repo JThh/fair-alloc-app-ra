@@ -287,9 +287,9 @@ st.sidebar.markdown(
 
 # Add input components
 col1, col2, col3 = st.columns(3)
-n = col1.number_input("Number of agents (n)",
+n = col1.number_input("Number of Agents (n)",
                       min_value=2, max_value=100, step=1)
-m = col2.number_input("Number of goods (m)", min_value=2,
+m = col2.number_input("Number of Goods (m)", min_value=2,
                       max_value=1000, value=6, step=1)
 x = col3.slider("Choose a value for x in WEF(x, 1-x)",
                 min_value=0.0, max_value=1.0, value=0.5, step=0.01, help="💡 Large x favors low-weight agents")
