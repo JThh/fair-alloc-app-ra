@@ -252,7 +252,7 @@ st.markdown('<h1 class="header">Efficient and Fair Team Formation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("players.png", use_column_width=True,
+st.sidebar.image("./resource/players.png", use_column_width=True,
                  caption='Image Credit: Freepik.com')
 
 st.sidebar.title("User Guide")

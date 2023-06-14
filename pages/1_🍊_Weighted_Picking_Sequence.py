@@ -12,7 +12,7 @@ import streamlit as st
 # Set page configuration
 st.set_page_config(
     page_title="Weighted Fairness App",
-    page_icon="icon.png",
+    page_icon="🍊",
     layout="wide",
 )
 
@@ -237,7 +237,7 @@ st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./head_image.png", use_column_width=True,
+st.sidebar.image("./resource/head_image.png", use_column_width=True,
                  caption='Image Credit: Fulfillment.com')
 
 st.sidebar.title("User Guide")
@@ -278,8 +278,7 @@ st.sidebar.markdown(
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
 
-    <p><em>Image Credit: <a href="https://www.thefulfillmentlab.com/blog/product-allocation">Image Source</a></em>.
-    <em>Icon Credit: <a href="https://www.flaticon.com/free-icon/orange_135620">Icon Source</a></em>.</p>
+    <p><em>Image Credit: <a href="https://www.thefulfillmentlab.com/blog/product-allocation">Image Source</a></em>.</p>
     </div>
     """,
     unsafe_allow_html=True

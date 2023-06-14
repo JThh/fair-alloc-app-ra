@@ -38,15 +38,15 @@ st.write("Let's take a quick tour of the app's components:")
 # Load and display the image
 tab1, tab2, tab3 = st.tabs(["App 1","App 2","App 3"])
 with tab1:
-    image = "./layout1.png"
+    image = "./resource/layout1.png"
     st.image(image, caption="App Layout", use_column_width=True)
     
 with tab2:
-    image = "./layout2.png"
+    image = "./resource/layout2.png"
     st.image(image, caption="App Layout", use_column_width=True)
     
 with tab3:
-    image = "./layout3.png"
+    image = "./resource/layout3.png"
     st.image(image, caption="App Layout", use_column_width=True)
 
 st.markdown("- **Sidebar**: On the left, you'll find a handy sidebar for easy navigation.")
