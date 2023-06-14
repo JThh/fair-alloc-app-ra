@@ -7,6 +7,18 @@ st.set_page_config(
     layout="wide",
 )
 
+# Disable the scrollbar for the Streamlit sidebar
+st.markdown(
+    """
+    <style>
+    .sidebar .sidebar-content {
+        overflow-y: hidden;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Page 1: Introduction
 st.title(" Welcome to the Fair Allocation App! 👋")
 

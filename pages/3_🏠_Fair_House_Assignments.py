@@ -95,6 +95,7 @@ def compute_envyfree_assignment(n, m, orderings):
         for m_ in M:
             for i in range(n):
                 if orderings[i][m_] == min(orderings[i][M]):
+                    print(orderings[i][M])
                     edges_nm[i].append(m_)
                     edges_mn[m_].append(i)
         
@@ -150,6 +151,8 @@ def compute_envyfree_assignment(n, m, orderings):
                 for house in edges_nm[z]:
                     if house in M:
                         M.remove(house)
+                        
+        print("M",M)
 
     return matching, False
 
@@ -281,7 +284,7 @@ col1, col2, col3, col4 = st.columns([0.35,0.01,0.35,0.35])
 n = col1.number_input("Number of Agents (n)",
                       min_value=2, max_value=100, step=1)
 m = col3.number_input("Number of Houses (m)", min_value=2,
-                      max_value=1000, value=2, step=1)
+                      max_value=1000, value=n, step=1)
 if m < n:
     st.error("Number of Houses (m) must be greater than or equal to Number of Agents (n). Please adjust the values.")
 
@@ -493,7 +496,7 @@ if start_algo:
                         output_str += f"it will envy Agent {a+1} as it ranks House {h+1} \
                             at {orderings[ua][h]}<sup>{ordinal(orderings[ua][h])}</sup>, "
                                 
-                output_str += "and hence, it does not constitute an envy-free allocation.\n\n"
+                output_str += "and hence, it does not constitute any envy-free allocation.\n\n"
         
         with st.expander(f"Reasons for Failures", expanded=True):
             st.markdown(output_str, unsafe_allow_html=True)
