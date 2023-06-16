@@ -1,6 +1,6 @@
 ## Fair Allocation Application
 
-![Welcome Page](./resource/welcome.png)
+![Welcome Page](./resource/welcome-nrw.png)
 
 Welcome to this Fair Allocation Web App. We have implemented three algorithms coming from papers ([1](https://arxiv.org/pdf/2112.04166.pdf),[2](https://arxiv.org/pdf/2206.05879.pdf),[3](https://www.sciencedirect.com/science/article/abs/pii/S0165489619300599)). The app is available at https://fair-alloc.streamlit.app/. 
 
