@@ -4,7 +4,7 @@
 
 Welcome to this Fair Allocation Web App. We have implemented three algorithms coming from papers ([1](https://arxiv.org/pdf/2112.04166.pdf),[2](https://arxiv.org/pdf/2206.05879.pdf),[3](https://www.sciencedirect.com/science/article/abs/pii/S0165489619300599)). The app is available at https://fair-alloc.streamlit.app/. 
 
-The allocation app is designed to help you achieve envy-freeness notions to some certain degree by fairly allocating indivisible items. Here's how it works:
+The allocation app is designed to help you achieve some envy-freeness notion (e.g. `WEF(x, 1-x)`, `EF[1,1]`, and `EF`) by fairly allocating indivisible items. Here's how it works:
 
 1. Start by providing the number of participants and the available items.
 2. For each participant, specify their preferences for the items. You can assign weights to these preferences to reflect their importance.
