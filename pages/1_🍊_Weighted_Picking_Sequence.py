@@ -237,8 +237,7 @@ st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/head_image.png", use_column_width=True,
-                 caption='Image Credit: Fulfillment.com')
+st.sidebar.image("./resource/head_image.png", use_column_width=True,)
 
 st.sidebar.title("User Guide")
 

@@ -51,7 +51,7 @@ There will be more and more new algorithms to come. We can extend the current ap
 For example, if we want to implement an algorithm for `multiwinner approval voting` based on this [paper](https://arxiv.org/pdf/2112.05994.pdf). We can name a new Python as `4_🗳️_Multiwinner_Approval_Voting.py` and append it to the previous three app files (at the time this guide was written). The contents of the file can be referred from the previous apps and the [Streamlit documentation](https://docs.streamlit.io/), except for the actual algorithm.
 
 
-## Contigency Plans
+## Contingency Plans
 
 There are a few exceptional cases where this app deployed at https://fair-alloc.streamlit.app/ can be down.  
 

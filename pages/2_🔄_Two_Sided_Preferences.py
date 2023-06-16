@@ -252,9 +252,7 @@ st.markdown('<h1 class="header">Efficient and Fair Team Formation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/players.png", use_column_width=True,
-                 caption='Image Credit: Freepik.com')
-
+st.sidebar.image("./resource/football.jpg", use_column_width=True)
 st.sidebar.title("User Guide")
 
 # Define theme colors based on light and dark mode
@@ -291,8 +289,6 @@ st.sidebar.markdown(
     </ol>
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
-
-    <p><em>Image Credit: <a href="https://www.freepik.com/premium-vector/soccer-stadium-players-game-with-ball-football-field-struggle-different-teams-sport-match-athletes-competing-world-cup-sportsmen-play-together-vector-championship-concept_21049134.htm">Image Source</a></em>.
     </div>
     """,
     unsafe_allow_html=True

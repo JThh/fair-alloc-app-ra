@@ -233,8 +233,7 @@ st.markdown('<h1 class="header">Fast and Fair House Assignment</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/houses.png", use_column_width=True,
-                 caption='Image Credit: Freepik.com')
+st.sidebar.image("./resource/houses.png", use_column_width=True)
 
 st.sidebar.title("User Guide")
 
@@ -272,8 +271,6 @@ st.sidebar.markdown(
     </ol>
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
-
-    <p><em>Image Credit: <a href="https://www.freepik.com/free-vector/real-estate-agent-offering-house-young-family-couple-wife-husband-choosing-new-suburb-home-living_24023256.htm">Image Source</a></em>.
     </div>
     """,
     unsafe_allow_html=True
