@@ -520,7 +520,7 @@ with st.expander("ℹ️ Information", expanded=False):
     )
     
 
-start_algo = st.button("⏳ Run Matching Algorithm ")
+start_algo = st.button("⏳ Run Matching Algorithm")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
