@@ -1,0 +1,3 @@
+pandas
+numpy
+Streamlit>=1.23.1
