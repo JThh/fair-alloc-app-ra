@@ -237,7 +237,7 @@ st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/head_image.png", use_column_width=True,)
+st.sidebar.image("./resource/pick.png", use_column_width=True,)
 
 st.sidebar.title("User Guide")
 
@@ -276,8 +276,6 @@ st.sidebar.markdown(
     </ol>
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
-
-    <p><em>Image Credit: <a href="https://www.thefulfillmentlab.com/blog/product-allocation">Image Source</a></em>.</p>
     </div>
     """,
     unsafe_allow_html=True
