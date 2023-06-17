@@ -73,13 +73,13 @@ st.write(
 
 st.header("Troubleshooting")
 st.write(
-    "If the app cannot load and only shows a blank page, you may need to clear the browser cache for this site."
+    "If the app cannot load on Chrome and only shows a blank page, you may need to clear the browser cache for this site."
 )
 st.image('./resource/reload.png', caption="Reload Option")
 st.markdown(
     """
     1. Firstly, go into Chrome Developer Tools. That is CMD+Option+I on a Mac, and CTRL+Shift+I or F12 on Windows, Linux, and Chromebooks.
-    2. From here, right click the **Refresh** button next to the address bar.
+    2. From here, right click the **Refresh** button 🔄 next to the address bar.
     3. Click **Empty Cache and Hard Reload** in the list of options. The cache for this website, and this website only, has been emptied.
 """
 )
