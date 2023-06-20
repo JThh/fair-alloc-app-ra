@@ -21,27 +21,27 @@ def load_weights(n, unweighted=False):
     # ...
     pass
 
-# Weight Change Callback
-def wchange_callback(weights):
+# Weight Change Callback: used in Streamlit widget on_click / on_change
+def weight_change_callback(weights):
     # Callback function for weight change event
     # ...
     pass
 
-# Preference Change Callback
-def pchange_callback(preferences):
+# Preference Change Callback: used in Streamlit widget on_click / on_change
+def preference_change_callback(preferences):
     # Callback function for preference change event
     # ...
     pass
 
 # Algorithm Implementation
-def wef1x_algorithm(x, m, n, weights, preferences):
-    # Implementation of the WEF1x algorithm
+def algorithm(x, m, n, weights, preferences):
+    # Implementation of the algorithm
     # ...
     pass
 
-# Checker Function for WEF1x Algorithm
-def wef1x_checker(outcomes, x, m, n, weights, preferences):
-    # Function to check the outcomes of the WEF1x algorithm
+# Checker Function for Algorithm
+def algorithm_checker(outcomes, x, m, n, weights, preferences):
+    # Function to check the outcomes of the algorithm
     # ...
     pass
 
@@ -53,42 +53,113 @@ st.set_page_config(
 )
 
 # Custom CSS styles
-# ...
-# Define CSS styles here
+css = """
+    /* Insert your custom CSS styles here */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f1f1;
+    }
+    
+    .header {
+        padding: 20px;
+        background-color: #fff;
+        text-align: center;
+    }
+    
+    .title {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    
+    .content {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    
+    .sidebar {
+        flex: 0 0 20%;
+        padding: 20px;
+        background-color: #fff;
+        margin-right: 20px;
+    }
+    
+    .main {
+        flex: 1;
+        padding: 20px;
+        background-color: #fff;
+    }
+    
+    .section {
+        margin-bottom: 20px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .section-content {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    .button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    .button:hover {
+        background-color: #45a049;
+    }
+"""
 
-# Set the title of the web application
+# Set the title and layout of the web application
 st.title("Weighted Fairness App")
 
-# Insert header image
-# ...
-# Implementation of header image
+# Add custom CSS style
+st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-# Add user guide content to sidebar
-# ...
-# Implementation of user guide content
+# Header Message
+header_html = """
+    <div class="header">
+        <h1 class="title">Weighted Fairness App</h1>
+        <p>This app is based on a Weighted Fairness algorithm for fair resource allocation.</p>
+        <p>Reference: [Insert Reference Here]</p>
+        <p>Credit: [Insert Credit Here]</p>
+    </div>
+"""
+st.markdown(header_html, unsafe_allow_html=True)
 
-# Add input components
+# Sidebar
+st.sidebar.title("User Preferences")
 # ...
-# Implementation of input components
 
-# Download weights as CSV
+# Main Content
+st.header("Algorithm")
 # ...
-# Implementation of weights download
-
-# Agent Preferences
-# ...
-# Implementation of agent preferences
 
 # Run Algorithm Button
 if st.button("Run Algorithm"):
     # Implementation of run algorithm button
+    # ...
     pass
 
 # Download Outcomes as JSON
 # ...
-# Implementation of outcomes download
 
+# Community Contribution Guidelines
+# ...
 
-# Main function
-if __name__ == "__main__":
-    main()
+# Main function (optional)
+# if __name__ == "__main__":
+#     main()

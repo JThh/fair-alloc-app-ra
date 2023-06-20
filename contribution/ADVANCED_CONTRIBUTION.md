@@ -1,8 +1,10 @@
 ## Contribution Guideline for Experienced Coders
 
-### Code decomposition
+This serves as an advanced guide for experienced coders. 
 
-We take reference from the [first app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
+### Code section decomposition
+
+We take reference from the codes of the [Weight Picking Sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
 
 1. Importing libraries: *The code imports various libraries such as `defaultdict`, `base64`, `partial`, `json`, `time`, `numpy`, `pandas`, and `streamlit` for different functionalities.*
 
@@ -25,4 +27,4 @@ We take reference from the [first app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_
 
 ### Code Templates
 
-We have provided a [code template](./template.py) that accommodates the sections above. 
+We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to the [pages folder](../pages/), and refer to the deployment guide as detailed in [maintenance guide](../maintenance/MAINTENANCE.md#run-on-cloud).
