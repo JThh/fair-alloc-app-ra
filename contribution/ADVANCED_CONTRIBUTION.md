@@ -4,7 +4,7 @@ This serves as an advanced guide for experienced coders.
 
 ### Code section decomposition
 
-We take reference from the codes of the [Weight Picking Sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
+We take reference from the codes of the [weight picking sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
 
 1. Importing libraries: *The code imports various libraries such as `defaultdict`, `base64`, `partial`, `json`, `time`, `numpy`, `pandas`, and `streamlit` for different functionalities.*
 
@@ -22,9 +22,9 @@ We take reference from the codes of the [Weight Picking Sequence app](../pages/1
 
 8. Web application layout: *The code defines the layout of the web application using Streamlit functions like st.markdown and st.sidebar. It includes the application title, a sidebar with a user guide, input components for agents and goods, options for uploading preferences and selecting weights, and buttons for running the algorithm and downloading outcomes.*
 
-9. File downloads: *The code provides links to download the weights and preferences as `CSV` files.*
+9. File downloads: *The code provides links to download the weights and preferences as `csv` files.*
 
 
 ### Code Templates
 
-We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to the [pages folder](../pages/), and refer to the deployment guide as detailed in [maintenance guide](../maintenance/MAINTENANCE.md#run-on-cloud).
+We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to [`pages`](../pages/), and refer to the deployment guide as detailed in [`maintenance guide`](../maintenance/MAINTENANCE.md#run-on-cloud).
