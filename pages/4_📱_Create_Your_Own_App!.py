@@ -94,17 +94,8 @@ def main():
         "guide-color": "#333333",
     }
 
-    dark_mode = {
-        "sidebar-background-color": "#1a1a1a",
-        "guide-background-color": "#192841",
-        "guide-color": "#ffffff",
-    }
-
-    # Determine the current theme mode
-    theme_mode = st.sidebar.radio("Theme Mode", ("Light", "Dark"))
-
     # Select the appropriate colors based on the theme mode
-    theme_colors = light_mode if theme_mode == "Light" else dark_mode
+    theme_colors = light_mode
 
     # Add user guide content to sidebar
     st.sidebar.markdown(
@@ -165,6 +156,26 @@ def main():
 
         # Display the email link
         st.markdown(mailto_link, unsafe_allow_html=True)
+        
+
+    hide_streamlit_style = """
+        <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+        </style>
+    """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="footer" style="padding-top: 200px; margin-top: auto; text-align: left; font-size: 10px; color: #777777;">
+        <p>Developed by <a href="https://www.linkedin.com/in/jiatong-han-06636419b/" target="_blank">Jiatong Han</a>, 
+        kindly advised by Prof. <a href="https://www.comp.nus.edu.sg/~warut/" target="_blank">Warut Suksompong</a></p>
+        <p>&copy; 2023. All rights reserved.</p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # Function to generate input widget configuration
@@ -183,22 +194,42 @@ def generate_widget_config():
                 f"Widget {i+1} type:",
                 options=["Text Input", "Number Input", "Slider", "Checkbox"],
             )
-        src = "https://doc-text-input.streamlit.app"
+            
+        col1, _ = st.columns([0.6,0.4])
         if widget_type == "Number Input":
-            src = "https://doc-number-input.streamlit.app"
+            col1.number_input("Example number input widget", value=5, step=1, 
+                              help="You may use this for eliciting number of agents or items.", key=f"{i}_number")
+            col1.write("💡 You may use this for entering the number of agents or items.")
         elif widget_type == "Slider":
-            src = "https://doc-slider.streamlit.app/"
-        elif widget_type == "Checkbox":
-            src = "https://doc-checkbox.streamlit.app/"
-        st.write(f"Embedded Example for {widget_type}:")
-        st.markdown(f"""               
-            <iframe
-            src="{src}/?embed=true&embed_options=light_theme"
-            height="170"
-            style="width:80%;border:none;"
-            ></iframe>
-        """
-        , unsafe_allow_html=True)
+            col1.slider("Example slider", min_value=-100, max_value=100, value=(-10, 10), step=1, 
+                        help="You may use this to restrict the range of random preference values.", key=f"{i}_slider")
+            col1.write("💡 You may use this to restrict the range of random preference values.")
+        elif widget_type == "Text Input":
+            output_ = col1.text_input("Example test input box", value="Type some text here", max_chars=100, 
+                            help="You may use this to specify textual inputs for your algorithm.", key=f"{i}_text")
+            col1.code("You typed: "+output_, language="plaintext")
+            col1.write("💡 You may use this to specify string arguments for your algorithm.")
+        else:
+            col1.checkbox("Example check box", value=True, 
+                          help="You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for agents.",
+                          key=f"{i}_checkbox")
+            col1.write("💡 You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for agents.")
+        # src = "https://doc-text-input.streamlit.app"
+        # if widget_type == "Number Input":
+        #     src = "https://doc-number-input.streamlit.app"
+        # elif widget_type == "Slider":
+        #     src = "https://doc-slider.streamlit.app/"
+        # elif widget_type == "Checkbox":
+        #     src = "https://doc-checkbox.streamlit.app/"
+        # st.write(f"Embedded Example for {widget_type}:")
+        # st.markdown(f"""               
+        #     <iframe
+        #     src="{src}/?embed=true&embed_options=light_theme"
+        #     height="170"
+        #     style="width:80%;border:none;"
+        #     ></iframe>
+        # """
+        # , unsafe_allow_html=True)
         st.divider()
             
         widget_config[widget_name] = widget_type
