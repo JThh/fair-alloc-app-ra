@@ -1,7 +1,5 @@
 # Required Libraries
 import re
-import webbrowser
-from xml.etree.ElementTree import TreeBuilder
 
 # Streamlit API
 import streamlit as st
@@ -250,7 +248,7 @@ def generate_code(algorithm_name, input_widget_config, pseudo_algorithm):
 
     # Code template
     code = f"""
-import Streamlit as st
+import streamlit as st
 
 # Input Widgets
 input_data = dict()
@@ -303,7 +301,7 @@ def generate_mailto_link(subject, body):
 
     # Create mailto link
     email_link = f"mailto:{receiver_email}?cc={cc_email}&subject={subject}"
-    return f'<a href="{email_link}" style="font-size: 16px; color: #fff; background-color: #009688; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Send email</a>'
+    return f'<a href="{email_link}" style="font-size: 16px; color: #fff; background-color: #009688; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Send email to us</a>'
 
 
 # Execute the main function
