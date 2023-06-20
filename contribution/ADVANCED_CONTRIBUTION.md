@@ -20,7 +20,7 @@ from functools import partial
 ```
 # Set page configuration
 st.set_page_config(
-    page_title="Weighted Fairness App",
+    page_title="Fair Allocation App",
     page_icon="🍊",
     layout="wide",
 )
@@ -76,13 +76,23 @@ x = col3.slider("Choose a value for x in WEF(x, 1-x)",
 6. *Callback functions*: The code defines callback functions that are executed when there are changes in the weights or preferences. These functions update the corresponding session states and trigger actions based on the changes.
 
 ```
-def wchange_callback(weights):
-    ...
-    st.session_state.weights = weights
-
 def pchange_callback(preferences):
     ...
     st.session_state.preferences = preferences
+
+xxx = st.data_editor(preferences,
+                              key="preference_editor",
+                              column_config={
+                                  f"Item {j}": st.column_config.TextColumn(
+                                      f"Item {j}",
+                                      ...
+                                  )
+                                  for j in range(1, m+1)
+                              },
+                              on_change=partial(
+                                  pchange_callback, preferences),
+                              )
+...
 ```
 
 7. *Algorithm implementation*: The code includes an implementation of the WEF1 (Weighted Picking Sequence) algorithm. It contains functions for allocating goods based on weights and preferences, and for checking if the allocations satisfy certain fairness criteria.
@@ -97,7 +107,7 @@ def wef1x_algorithm(x, m, n, weights, preferences):
 
 ```
 # Set the title and layout of the web application
-st.markdown('<h1 class="header">xxxtitlexxx</h1>',
+st.markdown('<h1 class="header">Your Title</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
