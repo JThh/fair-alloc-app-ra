@@ -69,7 +69,7 @@ Example code users may take reference:
         return bundles
 
     # Execute the algorithm function
-    result = Weighted_Fair_Allocation(input_data)
+    result = Weighted_Envy_Freeness_up_to_1_Item(input_data)
 
     # Display the outputs
     st.write(result)
