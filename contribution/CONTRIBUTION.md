@@ -22,6 +22,9 @@ More details can be found in the [`Maintenance Guide`](../maintenance/MAINTENANC
 
 **If you wish to publish your app on [our site](https://fair-alloc.streamlit.app), please email us with link to your repository holding this app.**
 
+
+Example code users may take reference:
+
     """
     from collections import defaultdict
 
