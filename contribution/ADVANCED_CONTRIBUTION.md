@@ -2,7 +2,7 @@
 
 This serves as an advanced guide for experienced coders. 
 
-### Code section decomposition
+### Code Section Decomposition
 
 We take reference from the codes of the [weight picking sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
 
