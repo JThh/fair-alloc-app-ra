@@ -130,4 +130,4 @@ st.markdown(href, unsafe_allow_html=True)
 
 ### Code Templates
 
-We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to [`pages`](../pages/), and refer to the deployment guide as detailed in [`maintenance guide`](../maintenance/MAINTENANCE.md#run-on-cloud).
+We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to [`Pages`](../pages/), and refer to the deployment guide as detailed in [`Maintenance Guide`](../maintenance/MAINTENANCE.md#run-on-cloud).
