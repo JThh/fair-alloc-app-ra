@@ -8,21 +8,115 @@ We take reference from the codes of the [weight picking sequence app](../pages/1
 
 1. *Importing libraries*: The code imports various libraries such as `defaultdict`, `base64`, `partial`, `json`, `time`, `numpy`, `pandas`, and `streamlit` for different functionalities.
 
+```
+from collections import defaultdict
+import base64
+from functools import partial
+...
+```
+
 2. *Setting page configuration*: The st.set_page_config function is used to configure the title, icon, and layout of the web application.
+
+```
+# Set page configuration
+st.set_page_config(
+    page_title="Weighted Fairness App",
+    page_icon="🍊",
+    layout="wide",
+)
+```
 
 3. *Custom CSS styles*: The st.markdown function is used to define custom CSS styles for different elements of the web application. It adds CSS code within the `<style>` tags to customize the appearance of headers, subheaders, sidebar, guide, information cards, and more.
 
+```
+# Custom CSS styles
+st.markdown(
+    """
+    <style>
+    .header {
+        color: #28517f;
+        font-size: 40px;
+        padding: 20px 0 20px 0;
+        text-align: center;
+        font-weight: bold;
+    }
+    ...
+)
+```
+
 4. *Function definitions*: The code defines several functions for loading preferences, weights, and implementing algorithms for weighted fairness. These functions are used to handle user inputs, perform calculations, and generate outcomes.
+
+```
+def load_preferences(m, n, upload_preferences):
+    if hasattr(st.session_state, "preferences"):
+        pass
+    ...
+
+def load_weights(n, unweighted=False):
+    if hasattr(st.session_state, "weights"):
+        pass
+    ...
+...
+```
 
 5. *User interface elements*: The code defines the user interface components using Streamlit functions like `st.markdown`, `st.sidebar`, `st.columns`, `st.number_input`, `st.slider`, `st.checkbox`, `st.file_uploader`, `st.data_editor`, and more. These elements allow users to interact with the web application by inputting values, uploading files, and modifying preferences and weights.
 
+```
+# Add input components
+col1, col2, col3 = st.columns(3)
+n = col1.number_input("Number of Agents (n)",
+                      min_value=2, max_value=100, step=1)
+m = col2.number_input("Number of Goods (m)", min_value=2,
+                      max_value=1000, value=6, step=1)
+x = col3.slider("Choose a value for x in WEF(x, 1-x)",
+                min_value=0.0, max_value=1.0, value=0.5, step=0.01, help="💡 Large x favors low-weight agents")
+...
+```
+
 6. *Callback functions*: The code defines callback functions that are executed when there are changes in the weights or preferences. These functions update the corresponding session states and trigger actions based on the changes.
+
+```
+def wchange_callback(weights):
+    ...
+    st.session_state.weights = weights
+
+def pchange_callback(preferences):
+    ...
+    st.session_state.preferences = preferences
+```
 
 7. *Algorithm implementation*: The code includes an implementation of the WEF1 (Weighted Picking Sequence) algorithm. It contains functions for allocating goods based on weights and preferences, and for checking if the allocations satisfy certain fairness criteria.
 
+```
+def wef1x_algorithm(x, m, n, weights, preferences):
+    # Implementation of WEF1 algorithm
+    ...
+```
+
 8. *Web application layout*: The code defines the layout of the web application using Streamlit functions like st.markdown and st.sidebar. It includes the application title, a sidebar with a user guide, input components for agents and goods, options for uploading preferences and selecting weights, and buttons for running the algorithm and downloading outcomes.
 
+```
+# Set the title and layout of the web application
+st.markdown('<h1 class="header">xxxtitlexxx</h1>',
+            unsafe_allow_html=True)
+
+# Insert header image
+st.sidebar.image("./resource/xxx.png")
+
+st.sidebar.title("User Guide")
+...
+```
+
 9. *File downloads*: The code provides links to download the weights and preferences as `csv` files.
+
+```
+# Download weights as CSV
+weights_csv = xxx.to_csv()
+b64 = base64.b64encode(weights_csv.encode()).decode()
+href = f'<a href="data:file/csv;base64,{b64}" download="weights.csv">Download Weights CSV</a>'
+st.markdown(href, unsafe_allow_html=True)
+...
+```
 
 ### Code Templates
 
