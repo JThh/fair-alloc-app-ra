@@ -9,11 +9,11 @@ Also, for the actual algorithm codes, you should implement the Python codes for 
 If you face any difficulty in implementing the app, feel free to [email us](mailto:julius.han@outlook.com?cc=warut@comp.nus.edu.sg&subject=Generated_Weighted_Fair_Allocation) for help.
 
 ### Steps
-More details can be found in the [Maintenance Guide](../maintenance/MAINTENANCE.md).
+More details can be found in the [`Maintenance Guide`](../maintenance/MAINTENANCE.md).
 
 1. [Fork this repository](https://github.com/JThh/fair-alloc-app-ra/fork) into your own account. [Clone your forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) into your local environment.
 
-2. Save the above code snippet into a Python code file. For example, you may name the file as `{i}_📊_Weight_Fair_Allocation.py` where `i` is the index of your app. Add this code file into [`pages`](../pages).
+2. Save the above code snippet into a Python code file. For example, you may name the file as `4_📊_Weight_Fair_Allocation.py` where `4` is the index of your app. Add this code file into [`pages`](../pages).
 
 3. Refer to the maintenance guide section [`Run Locally`](../maintenance/MAINTENANCE.md#run-locally) for how to make this app live on cloud and public to the world!
 
