@@ -53,82 +53,11 @@ st.set_page_config(
 )
 
 # Custom CSS styles
-css = """
-    /* Insert your custom CSS styles here */
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f1f1f1;
-    }
-    
-    .header {
-        padding: 20px;
-        background-color: #fff;
-        text-align: center;
-    }
-    
-    .title {
-        font-size: 28px;
-        color: #333;
-        margin-bottom: 20px;
-    }
-    
-    .content {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    
-    .sidebar {
-        flex: 0 0 20%;
-        padding: 20px;
-        background-color: #fff;
-        margin-right: 20px;
-    }
-    
-    .main {
-        flex: 1;
-        padding: 20px;
-        background-color: #fff;
-    }
-    
-    .section {
-        margin-bottom: 20px;
-    }
-    
-    .section-title {
-        font-size: 20px;
-        color: #333;
-        margin-bottom: 10px;
-    }
-    
-    .section-content {
-        font-size: 16px;
-        color: #666;
-    }
-    
-    .button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-    }
-    
-    .button:hover {
-        background-color: #45a049;
-    }
-"""
+# ...
+# Define CSS styles here
 
-# Set the title and layout of the web application
+# Set the title of the web application
 st.title("Weighted Fairness App")
-st.layout("wide")
-
-# Add custom CSS style
-st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 # Insert header image
 # ...
@@ -151,7 +80,7 @@ st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 # Implementation of agent preferences
 
 # Run Algorithm Button
-if st.button("Run Algorithm", class="button"):
+if st.button("Run Algorithm"):
     # Implementation of run algorithm button
     pass
 
@@ -159,9 +88,6 @@ if st.button("Run Algorithm", class="button"):
 # ...
 # Implementation of outcomes download
 
-# Community Contribution Guidelines
-# ...
-# Guidelines for community contributions
 
 # Main function
 if __name__ == "__main__":
