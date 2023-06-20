@@ -4,7 +4,7 @@ Please check out [the app](https://fair-alloc.streamlit.app/Create_Your_Own_App!
 
 The code templates can be as below. You should refer to the [Streamlit guide](https://docs.streamlit.io/library/api-reference/widgets) to adjust the actual function arguments (*our template just provides the bare minimum version*). For example, for `st.slider`, you can set the `min_value`, `max_value`, `step`, as well as `value`. Also, for the actual algorithm codes, you should implement the Python codes for yourself based on your entered pseudocodes. You may take the below code snippet as a good reference.
 
-If you meet any difficulty, feel free to email us as instructed in the app.
+If you meet any difficulty, feel free to [email us](mailto:julius.han@outlook.com?cc=warut@comp.nus.edu.sg&subject=Generated_Weighted_Fair_Allocation) as instructed in the app.
 
     """
     from collections import defaultdict
@@ -23,30 +23,6 @@ If you meet any difficulty, feel free to email us as instructed in the app.
                 min_value=-100, max_value=100, value=[-10,10])
     input_data['The Range of Agent Weights'] = st.slider("Select the range of agent weights:", 
                 min_value=-100, max_value=100, value=[0,10])
-
-    # Pseudo-Algorithm
-    '''
-        m = number of items
-        n = number of agents
-        x = value x for WEF(x, 1-x)
-        preferences = matrix of agent preferences
-        weights = list of agent weights
-
-        remaining_items = [1,2,3,...,m]
-        bundles = list(n) # bundles of n agents
-        times = list(n) # number of times agents have picked
-
-        # Implement a weighted picking sequence algorithm
-        while not remaining_items.empty(): # there are items left
-            agent_index = argmin((tiems + (1 - x)) / weights)
-            item = remaining_items[argmax(preferences[agent_index][remaining_items])]
-            # Add item to bundle A_index
-            bundles[agent_index].add(item)
-            remaining_items.remove(item)
-            times[index] += 1
-
-        return bundles
-    '''
 
     # Algorithm Function
     def Weighted_Envy_Freeness_up_to_1_Item(input_data):
@@ -87,4 +63,4 @@ If you meet any difficulty, feel free to email us as instructed in the app.
 
 3. Refer to the maintenance guide section [`Run Locally`](../maintenance/MAINTENANCE.md) for how to make this app live on cloud and public to the world!
 
-For more details on how to deploy a multi-page Streamlit app, you may refer to [this page](https://docs.streamlit.io/library/get-started/multipage-apps/create-a-multipage-app).
+4. After adjusting the app to your favorite state. you may [deploy the app on Streamlit cloud](https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app). **If you wish to publish your app on our site (https://fair-alloc.streamlit.app), please email us with link to your repository holding this app.**
