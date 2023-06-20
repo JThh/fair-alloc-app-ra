@@ -181,23 +181,22 @@ def generate_widget_config():
                 f"Widget {i+1} type:",
                 options=["Text Input", "Number Input", "Slider", "Checkbox"],
             )
-        if i == 0:
-            src = "https://doc-text-input.streamlit.app"
-            if widget_type == "Number Input":
-                src = "https://doc-number-input.streamlit.app"
-            elif widget_type == "Slider":
-                src = "https://doc-slider.streamlit.app/"
-            elif widget_type == "Checkbox":
-                src = "https://doc-checkbox.streamlit.app/"
-            st.write(f"Embedded Example for {widget_type}:")
-            st.markdown(f"""               
-                <iframe
-                src="{src}/?embed=true&embed_options=light_theme"
-                height="170"
-                style="width:80%;border:none;"
-                ></iframe>
-            """
-            , unsafe_allow_html=True)
+        src = "https://doc-text-input.streamlit.app"
+        if widget_type == "Number Input":
+            src = "https://doc-number-input.streamlit.app"
+        elif widget_type == "Slider":
+            src = "https://doc-slider.streamlit.app/"
+        elif widget_type == "Checkbox":
+            src = "https://doc-checkbox.streamlit.app/"
+        st.write(f"Embedded Example for {widget_type}:")
+        st.markdown(f"""               
+            <iframe
+            src="{src}/?embed=true&embed_options=light_theme"
+            height="170"
+            style="width:80%;border:none;"
+            ></iframe>
+        """
+        , unsafe_allow_html=True)
         st.divider()
             
         widget_config[widget_name] = widget_type
