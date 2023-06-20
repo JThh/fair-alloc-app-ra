@@ -20,7 +20,7 @@ More details can be found in the [`Maintenance Guide`](../maintenance/MAINTENANC
 4. After adjusting the app to your favorite state, you may [deploy the app on Streamlit cloud](https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app). 
 
 
-**If you wish to publish your app on our site (https://fair-alloc.streamlit.app), please email us with link to your repository holding this app.**
+**If you wish to publish your app on [our site](https://fair-alloc.streamlit.app), please email us with link to your repository holding this app.**
 
     """
     from collections import defaultdict
