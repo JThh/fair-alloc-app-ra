@@ -318,11 +318,6 @@ edited_ws = st.data_editor(weights.T,
                                f"Agent {i}": st.column_config.TextColumn(
                                    f"Agent {i}",
                                    help=f"Agent {i}'s Weight",
-                                   # min_value=1,
-                                   # max_value=1000,
-                                   # width='medium',  # Set the desired width here
-                                   # step=1,
-                                   # format="%d",
                                    required=True,
                                    max_chars=4,
                                    validate=r"^(?:[1-9]\d{0,2}|1000)$",
@@ -347,18 +342,6 @@ with st.spinner("Updating..."):
 
 weights = edited_ws.values[0]
 
-# with col3:
-#     edited_ws['Variations'] = edited_ws.values.tolist()
-#     st.line_chart(edited_ws['Variations'])
-# print(edited_ws['Variations'])
-# st.dataframe(edited_ws['Variations'],
-#              column_config={
-#                 "Variations": st.column_config.LineChartColumn(
-#                     "Agent Weights Variations", y_min=0, y_max=1000
-#                 ),
-#              },
-#              hide_index=True)
-
 # Download weights as CSV
 weights_csv = edited_ws.to_csv()
 b64 = base64.b64encode(weights_csv.encode()).decode()
@@ -380,11 +363,6 @@ edited_prefs = st.data_editor(preferences,
                                       help=f"Agents' Preferences towards Item {j}",
                                       max_chars=4,
                                       validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
-                                      # width='small',  # Set the desired width here
-                                      # min_value=0,
-                                      # max_value=1000,
-                                      # step=1,
-                                      # format="%d",
                                       required=True,
                                   )
                                   for j in range(1, m+1)
