@@ -143,4 +143,4 @@ Follow the rest steps to contribute your codes to our repository.
 3. Submit your PR to the repository - the PR will trigger our CI/CD workflow and run some basic eligibility tests. Make sure all tests are passed.
 4. Notify the developer team by tagging (`@`) us in your PR. We will get to your contribution as soon as possible.
 5. Once your PR is reviewed, commented, and refined (or rebutted), we will merge your PR to our `dev` branch, and launch the app at a separate link for a short while to test its stability. 
-6. After the test period, we will announce the official launch of this new app at our social media homepages and direct all traffic to our [original site link](https://fair-alloc.streamlit.app/). 
+6. After the test period, we will announce the official launch of this new app and direct all traffic to our [original site link](https://fair-alloc.streamlit.app/). 
