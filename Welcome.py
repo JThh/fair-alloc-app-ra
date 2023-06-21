@@ -25,7 +25,7 @@ st.title(" Welcome to Fast & Fair! 👋")
 st.write("This app is designed to help you achieve fair division of indivisible items!")
 st.markdown(
     """
-    We offer a variety of algorithmic implementations to ensure a fair distribution of these items, taking into account some fairness notions such as envy-freeness up to one item (EF1) and weighted envy-freeness (WEF).
+    We offer a variety of algorithmic implementations to ensure a fair distribution of these items, taking into account standard fairness notions such as envy-freeness up to one item (EF1) and weighted envy-freeness (WEF).
     
     Our app will help you find an allocation that fulfills these notions as closely as possible while maximizing overall satisfaction. 
 """
