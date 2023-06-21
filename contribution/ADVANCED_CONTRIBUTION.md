@@ -1,6 +1,6 @@
 ## Contribution Guideline for Experienced Coders
 
-This serves as an advanced guide for experienced coders. 
+This serves as an advanced guide for experienced coders. You may skip the decomposition section and work directly on the [`Code Templates`](./ADVANCED_CONTRIBUTION.md#code-templates). **You are advised to submit your app file via a [Pull Request](https://github.com/JThh/fair-alloc-app-ra/compare) upon finishing all steps in this guide**. Our developers will review your PR (after it passes the CI) and incorporate your contribution at our site if possible!
 
 ### Code Section Decomposition
 
@@ -130,4 +130,17 @@ st.markdown(href, unsafe_allow_html=True)
 
 ### Code Templates
 
-We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to [`Pages`](../pages/), and refer to the deployment guide as detailed in [`Maintenance Guide`](../maintenance/MAINTENANCE.md#run-on-cloud).
+We have provided a [code template](./template.py) that accommodates the sections above. You may fill up the template before adding the file to [`Pages`](../pages/) and making a [pull request](https://github.com/JThh/fair-alloc-app-ra/compare) to this repository. 
+
+In your local development settings, you may refer to the guide as detailed in the [`Maintenance Guide`](../maintenance/MAINTENANCE.md#run-locally) to ensure your app runs perfectly with the existing apps.
+
+### Submit your PR
+
+Follow the rest steps to contribute your codes to our repository.
+
+1. Run your apps locally and ensure it runs smoothly and as flawlessly as possible.
+2. Create a `requirements.txt` file, save it at the root directory, and dd any additional package requirements (such as `networkx`) to the  file.
+3. Submit your PR to the repository - the PR will trigger our CI/CD workflow and run some basic eligibility tests. Make sure all tests are passed.
+4. Notify the developer team by tagging (`@`) us in your PR. We will get to your contribution as soon as possible.
+5. Once your PR is reviewed, commented, and refined (or rebutted), we will merge your PR to our `dev` branch, and launch the app at a separate link for a short while to test its stability. 
+6. After the test period, we will announce the official launch of this new app at our social media homepages and direct all traffic to our [original site link](https://fair-alloc.streamlit.app/). 
