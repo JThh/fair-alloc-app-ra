@@ -4,7 +4,7 @@ This serves as an advanced guide for experienced coders. You may skip the decomp
 
 ### Code Section Decomposition
 
-We take reference from the codes of the [weight picking sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components.
+We take reference from the codes of the [weight picking sequence app](../pages/1_%F0%9F%8D%8A_Weighted_Picking_Sequence.py) to decompose the code components. The codes are written in a functional programming style.
 
 1. *Importing libraries*: The code imports various libraries such as `defaultdict`, `base64`, `partial`, `json`, `time`, `numpy`, `pandas`, and `streamlit` for different functionalities.
 

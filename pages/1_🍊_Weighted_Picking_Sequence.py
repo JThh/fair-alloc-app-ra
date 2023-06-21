@@ -233,7 +233,7 @@ def wef1x_checker(outcomes, x, m, n, weights, preferences):
 
 
 # Set the title and layout of the web application
-st.markdown('<h1 class="header">Fast and Fair Goods Allocation</h1>',
+st.markdown('<h1 class="header">Fast & Fair Goods Allocation</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
