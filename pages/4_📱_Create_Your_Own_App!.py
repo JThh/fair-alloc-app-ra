@@ -181,7 +181,7 @@ def generate_widget_config():
     widget_config = {}
 
     col1, col2 = st.columns([0.4,0.6])
-    num_inputs = col1.number_input("Number of input widgets:", min_value=0, value=1, step=1)
+    num_inputs = col1.number_input("Number of input widgets:", min_value=1, max_value=10, value=1, step=1)
 
     for i in range(num_inputs):
         col1, col2, _ = st.columns([0.4,0.4,0.2])
