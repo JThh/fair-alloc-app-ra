@@ -139,7 +139,7 @@ In your local development settings, you may refer to the guide as detailed in th
 Follow the rest steps to contribute your codes to our repository.
 
 1. Run your apps locally and ensure it runs smoothly and as flawlessly as possible.
-2. Create a `requirements.txt` file, save it at the root directory, and dd any additional package requirements (such as `networkx`) to the  file.
+2. Create a `requirements.txt` file at the root directory, and add any additional package requirements (such as `networkx`) to the  file.
 3. Submit your PR to the repository - the PR will trigger our CI/CD workflow and run some basic eligibility tests. Make sure all tests are passed.
 4. Notify the developer team by tagging (`@`) us in your PR. We will get to your contribution as soon as possible.
 5. Once your PR is reviewed, commented, and refined (or rebutted), we will merge your PR to our `dev` branch, and launch the app at a separate link for a short while to test its stability. 
