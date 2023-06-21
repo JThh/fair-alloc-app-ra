@@ -140,13 +140,13 @@ def main():
         st.header("Generated Code")
         st.code(code, language="python")
         
-        st.markdown("## Next step")
+        st.markdown("## Next Step")
         
         st.markdown("Follow the <a href='https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md'>contribution guide</a> to complete the remaining steps and launch your app!", unsafe_allow_html=True)
 
         st.markdown("Alternatively, if you are an experienced programmer, you can refer to this <a href='https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/ADVANCED_CONTRIBUTION.md'>advanced guide</a> for implementing more complex functionalities.", unsafe_allow_html=True)
         
-        st.markdown("**If you wish to publish your app on this site (https://fair-alloc.streamlit.app), please email us.** Make sure to include any **paper references** that are relevant, and optionally, you can include **your code** in the email body.<br><br>", unsafe_allow_html=True)
+        st.markdown("**If you wish to publish your app on this site (https://fair-alloc.streamlit.app), please make a pull request at our repository (accessible at upper right corner).** Make sure to include any **paper references** that are relevant in the PR description.<br><br>", unsafe_allow_html=True)
         # Email button
         # st.markdown("### Email your codes to the developer team")
         subject = f"Generated Code - {algorithm_name}"
