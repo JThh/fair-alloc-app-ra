@@ -10,14 +10,6 @@ import pandas as pd
 import streamlit as st
 import networkz as nx
 
-def generate_random_preferences(n, m):
-    # Generate a DataFrame with random values between 1 and m
-    random_data = np.random.randint(1, m + 1, size=(n, m))
-    preferences = pd.DataFrame(random_data, columns=[f"Item {i+1}" for i in range(m)],
-                               index=[f"Agent {i+1}" for i in range(n)])
-    
-    return preferences
-
 # Load Preferences
 def load_preferences(m, n, upload_preferences):
     if hasattr(st.session_state, "preferences"):
@@ -43,18 +35,27 @@ def load_preferences(m, n, upload_preferences):
         old_m = st.session_state.preferences.shape[1]
         if n <= old_n and m <= old_m:
             st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
+            return st.session_state.preferences
         elif n > old_n:
-            new_rows = n - old_n
-            new_data = generate_random_preferences(new_rows, old_m)
-            st.session_state.preferences = pd.concat([st.session_state.preferences, new_data], axis=0)
+            st.session_state.preferences = pd.concat([st.session_state.preferences,
+                                                      pd.DataFrame(np.random.randint(1, 10, (n - old_n, m)),
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(m)],
+                                                          index=[f"Agent {i+1}" for i in range(old_n, n)])],
+                                                     axis=0)
+            return st.session_state.preferences
         elif m > old_m:
-            new_cols = m - old_m
-            new_data = generate_random_preferences(old_n, new_cols)
-            st.session_state.preferences = pd.concat([st.session_state.preferences, new_data], axis=1)
+            st.session_state.preferences = pd.concat([st.session_state.preferences,
+                                                      pd.DataFrame(np.random.randint(1, 10, (n, m - old_m)),
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(old_m, m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])],
+                                                     axis=1)
+            return st.session_state.preferences
         else:
-            st.session_state.preferences = generate_random_preferences(n, m)
-
-        return st.session_state.preferences
+            st.session_state.preferences = pd.DataFrame(np.random.randint(1, 10, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
+                                                        index=[f"Agent {i+1}" for i in range(n)])
+            return st.session_state.preferences
 
     if upload_preferences:
         preferences_default = None
