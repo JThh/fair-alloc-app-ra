@@ -4,11 +4,17 @@ import base64
 from functools import partial
 import json
 import time
-
+import random
 import numpy as np
 import pandas as pd
 import streamlit as st
 import networkz as nx
+
+
+MIN_AGENTS = 2
+MAX_AGENTS = 500
+MIN_ITEMS = 1
+MAX_ITEMS = 1000
 
 # Load Preferences
 def load_preferences(m, n, upload_preferences):
@@ -33,27 +39,31 @@ def load_preferences(m, n, upload_preferences):
                 st.stop()
         old_n = st.session_state.preferences.shape[0]
         old_m = st.session_state.preferences.shape[1]
+        max_rank = m+1
         if n <= old_n and m <= old_m:
             st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
             return st.session_state.preferences
         elif n > old_n:
             st.session_state.preferences = pd.concat([st.session_state.preferences,
-                                                      pd.DataFrame(np.random.randint(1, 10, (n - old_n, m)),
+                                                      pd.DataFrame(np.random.randint(1, max_rank,(n - old_n,m) ),
                                                                    columns=[
                                                           f"Item {i+1}" for i in range(m)],
                                                           index=[f"Agent {i+1}" for i in range(old_n, n)])],
                                                      axis=0)
             return st.session_state.preferences
         elif m > old_m:
+            population = list(range(1, max_rank))
+            random_ranks =[random.sample(population,m-old_m) for _ in range(n)]
+            print(random_ranks)
             st.session_state.preferences = pd.concat([st.session_state.preferences,
-                                                      pd.DataFrame(np.random.randint(1, 10, (n, m - old_m)),
+                                                      pd.DataFrame(random_ranks,
                                                                    columns=[
                                                           f"Item {i+1}" for i in range(old_m, m)],
                                                           index=[f"Agent {i+1}" for i in range(n)])],
                                                      axis=1)
             return st.session_state.preferences
         else:
-            st.session_state.preferences = pd.DataFrame(np.random.randint(1, 10, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
+            st.session_state.preferences = pd.DataFrame(np.random.randint(1, max_rank, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
                                                         index=[f"Agent {i+1}" for i in range(n)])
             return st.session_state.preferences
 
@@ -70,7 +80,7 @@ def load_preferences(m, n, upload_preferences):
             st.error("An error occurred while loading the preferences file.")
             st.stop()
     else:
-        preferences_default = pd.DataFrame(np.random.randint(1, 10, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
+        preferences_default = pd.DataFrame(np.random.randint(1, MIN_ITEMS+1, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
                                            index=[f"Agent {i+1}" for i in range(n)])
     st.session_state.preferences = preferences_default
     return st.session_state.preferences
@@ -201,10 +211,7 @@ header_html = """
     </div>
 """
 st.markdown(header_html, unsafe_allow_html=True)
-MIN_AGENTS = 2
-MAX_AGENTS = 500
-MIN_ITEMS = 1
-MAX_ITEMS = 1000
+
 # Add input components
 col1, col2, col3 = st.columns(3)
 n = col1.number_input("Number of Agents (n)",
