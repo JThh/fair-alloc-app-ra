@@ -52,15 +52,13 @@ def load_preferences(m, n, upload_preferences):
                                                      axis=0)
             return st.session_state.preferences
         elif m > old_m:
+            new_items = m - old_m
             population = list(range(1, max_rank))
-            random_ranks =[random.sample(population,m-old_m) for _ in range(n)]
-            print(random_ranks)
-            st.session_state.preferences = pd.concat([st.session_state.preferences,
-                                                      pd.DataFrame(random_ranks,
+            random_ranks =[random.sample(population,m) for _ in range(n)]
+            st.session_state.preferences = pd.DataFrame(random_ranks,
                                                                    columns=[
-                                                          f"Item {i+1}" for i in range(old_m, m)],
-                                                          index=[f"Agent {i+1}" for i in range(n)])],
-                                                     axis=1)
+                                                          f"Item {i+1}" for i in range(0, m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])
             return st.session_state.preferences
         else:
             st.session_state.preferences = pd.DataFrame(np.random.randint(1, max_rank, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
@@ -80,7 +78,8 @@ def load_preferences(m, n, upload_preferences):
             st.error("An error occurred while loading the preferences file.")
             st.stop()
     else:
-        preferences_default = pd.DataFrame(np.random.randint(1, MIN_ITEMS+1, (n, m)), columns=[f"Item {i+1}" for i in range(m)],
+        preferences_default = pd.DataFrame(np.random.randint(1, m+1, (n, m)), 
+                                           columns=[f"Item {i+1}" for i in range(m)],
                                            index=[f"Agent {i+1}" for i in range(n)])
     st.session_state.preferences = preferences_default
     return st.session_state.preferences
@@ -100,7 +99,6 @@ def algorithm(m, n, preferences):
     G = nx.Graph()
     for i in range(n):
         for j in range(m):
-            print(preferences[i,j])            
             rank = preferences[i,j]
             #if rank!= '' and type(rank) == int and rank>= 0:
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
@@ -127,88 +125,74 @@ st.set_page_config(
 # Custom CSS styles
 css = """
     /* Insert your custom CSS styles here */
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f1f1f1;
-    }
     
     .header {
-        padding: 20px;
-        background-color: #fff;
+        color: #28517f;
+        font-size: 40px;
+        padding: 20px 0 20px 0;
         text-align: center;
+        font-weight: bold;
     }
-    
-    .title {
-        font-size: 28px;
-        color: #333;
-        margin-bottom: 20px;
-    }
-    
-    .content {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    
-    .sidebar {
-        flex: 0 0 20%;
-        padding: 20px;
-        background-color: #fff;
-        margin-right: 20px;
-    }
-    
-    .main {
-        flex: 1;
-        padding: 20px;
-        background-color: #fff;
-    }
-    
-    .section {
-        margin-bottom: 20px;
-    }
-    
-    .section-title {
+    .subheader {
+        color: #28517f;
         font-size: 20px;
-        color: #333;
+        margin-bottom: 12px;
+        text-align: center;
+        font-style: italic;
+    }
+    .sidebar {
+        padding: 20px;
+        background-color: var(--sidebar-background-color);
+    }
+    .guide {
+        font-size: 16px;
+        line-height: 1.6;
+        background-color: var(--guide-background-color);
+        color: var(--guide-color);
+        padding: 20px;
+        border-radius: 8px;
+    }
+    .guide-title {
+        color: #28517f;
+        font-size: 24px;
         margin-bottom: 10px;
     }
-    
-    .section-content {
-        font-size: 16px;
-        color: #666;
+    .guide-step {
+        margin-bottom: 10px;
     }
-    
-    .button {
-        background-color: #4CAF50;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
+    .disclaimer {
+        font-size: 12px;
+        color: #777777;
+        margin-top: 20px;
     }
-    
-    .button:hover {
-        background-color: #45a049;
+    .information-card-content {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    .information-card-text {
+        # font-weight: bold;
+        color: #28517f;
+        margin-bottom: 10px;
+    }
+    .information-card-list {
+        list-style-type: decimal;
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+    .information-card-disclaimer {
+        font-size: 12px;
+        color: #777777;
+        margin-top: 20px;
     }
 """
-
-# Set the title and layout of the web application
-st.title("Rank Maximal Matching App")
 
 # Add custom CSS style
 st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 # Header Message
 header_html = """
-    <div class="header">
-        <h1 class="title">Rank Maximal Matching App</h1>
-        <p>This app is based on a Rank Maximal Matching algorithm for fair resource allocation.</p>
-        <p>Reference: [Insert Reference Here]</p>
-        <p>Credit: [Insert Credit Here]</p>
-    </div>
+   <h1 class="header">Fast and Fair Posts Allocation</h1>
 """
 st.markdown(header_html, unsafe_allow_html=True)
 
@@ -222,7 +206,7 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
 upload_preferences = None
 
 # Agent Preferences
-st.write("📊 Agent Preferences (0-1000, copyable from local sheets):")
+st.write("📊 Agent Preferences (0-m, copyable from local sheets):")
 
 preferences = load_preferences(m, n, upload_preferences)
 for col in preferences.columns:
@@ -284,10 +268,13 @@ if start_algo:
     end_time = time.time()
     elapsed_time = end_time - start_time
 
+    def cindex(name: str) -> int:
+        return int(name.split()[1])-1
+
     st.write("🎉 Outcomes:")
-    outcomes_list = [[key, value] for key, value in outcomes.items()]
-    print('out list:' ,outcomes_list)
-    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Items'])
+    outcomes_list = [[agent, item, preferences[cindex(agent),cindex(item)]]
+                      for agent, item in outcomes.items()]
+    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
     # Sort the table
     outcomes_df = outcomes_df.sort_values(['Agent'],
                                          )
@@ -313,17 +300,7 @@ if start_algo:
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 # Sidebar
 st.sidebar.title("User Preferences")
-# ...
-
-# Main Content
-st.header("Algorithm")
-# ...
-
-# Run Algorithm Button
-if st.button("Run Algorithm"):
-    # Implementation of run algorithm button
-    # ...
-    pass
+# ..
 
 # Download Outcomes as JSON
 # ...
