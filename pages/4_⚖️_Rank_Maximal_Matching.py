@@ -18,18 +18,18 @@ MIN_ITEMS = 1
 MAX_ITEMS = 1000
 
 
+
 # Transform agent/item names into their corresponding index positions.
+def pindex(name: str) -> int:
+    return int(name.split()[1])-1
+
 def get_rank(agent,item):
-    
-    def pindex(name: str) -> int:
-        return int(name.split()[1])-1
-    
     return preferences[pindex(agent),pindex(item)]
 
 
 
 # Load Preferences
-def load_preferences(m, n, upload_preferences):
+def load_preferences(m, n, upload_preferences = False, shuffle = False):
     if hasattr(st.session_state, "preferences"):
         if upload_preferences:
             preferences_default = None
@@ -50,9 +50,22 @@ def load_preferences(m, n, upload_preferences):
                 st.error(f"An error occurred while loading the preferences file.")
                 logging.debug("file uploding error: ", e)
                 st.stop()
+                
         old_n = st.session_state.preferences.shape[0]
-        old_m = st.session_state.preferences.shape[1]
+        old_m = st.session_state.preferences.shape[1]     
         max_rank = m+1
+   
+        if shuffle:
+            population = list(range(1, max_rank))
+            random_ranks =[random.sample(population,m) for _ in range(n)]
+            st.session_state.preferences = pd.DataFrame(random_ranks,
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(0, m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])
+            print(st.session_state.preferences)
+            return st.session_state.preferences
+        
+        
         if n <= old_n and m <= old_m:
             st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
             return st.session_state.preferences
@@ -65,7 +78,6 @@ def load_preferences(m, n, upload_preferences):
                                                      axis=0)
             return st.session_state.preferences
         elif m > old_m:
-            new_items = m - old_m
             population = list(range(1, max_rank))
             random_ranks =[random.sample(population,m) for _ in range(n)]
             st.session_state.preferences = pd.DataFrame(random_ranks,
@@ -202,7 +214,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 st.markdown('<h1 class="header">Fast and Fair Jobs Allocation</h1>',
             unsafe_allow_html=True)
 
@@ -261,7 +272,6 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
                       max_value=MAX_ITEMS, value=MIN_ITEMS, step=1)
 
 upload_preferences = None
-col1, col2 = st.columns([0.5, 0.5])
 with col1:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
@@ -269,6 +279,13 @@ with col1:
         
 # Agent Preferences
 st.write("📊 Agent Preferences (0-m, copyable from local sheets):")
+
+shuffle = st.button('Shuffle Rankings')
+
+with st.spinner("Loading..."):
+    preferences = load_preferences(m, n, shuffle=shuffle)
+    for col in preferences.columns:
+        preferences[col] = preferences[col].map(str)
 
 preferences = load_preferences(m, n, upload_preferences)
 for col in preferences.columns:
@@ -380,8 +397,7 @@ if start_algo:
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 # Sidebar
-st.sidebar.title("User Preferences")
-# ..
+# # ..
 
 # Download Outcomes as JSON
 # ...
