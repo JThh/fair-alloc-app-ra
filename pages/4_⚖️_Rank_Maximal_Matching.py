@@ -1,3 +1,5 @@
+import logging
+
 # Required Libraries
 from collections import defaultdict
 import base64
@@ -10,11 +12,21 @@ import pandas as pd
 import streamlit as st
 import networkz as nx
 
-
 MIN_AGENTS = 2
 MAX_AGENTS = 500
 MIN_ITEMS = 1
 MAX_ITEMS = 1000
+
+
+# Transform agent/item names into their corresponding index positions.
+def get_rank(agent,item):
+    
+    def pindex(name: str) -> int:
+        return int(name.split()[1])-1
+    
+    return preferences[pindex(agent),pindex(item)]
+
+
 
 # Load Preferences
 def load_preferences(m, n, upload_preferences):
@@ -36,6 +48,7 @@ def load_preferences(m, n, upload_preferences):
                 return st.session_state.preferences
             except Exception as e:
                 st.error(f"An error occurred while loading the preferences file.")
+                logging.debug("file uploding error: ", e)
                 st.stop()
         old_n = st.session_state.preferences.shape[0]
         old_m = st.session_state.preferences.shape[1]
@@ -95,25 +108,25 @@ def preference_change_callback(preferences):
 # Algorithm Implementation
 def algorithm(m, n, preferences):
     ranker_list =[f"Agent {i+1}" for i in range(n)]
-    print('ranker list:', ranker_list)
+    logging.debug('ranker list:', ranker_list)
     G = nx.Graph()
     for i in range(n):
         for j in range(m):
             rank = preferences[i,j]
-            #if rank!= '' and type(rank) == int and rank>= 0:
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
     M = nx.rank_maximal_matching(G=G, top_nodes=ranker_list, rank='rank')
+    logging.debug("RMM Matching: ", M)
     half_length = len(M) // 2
     half_M = {k: M[k] for k in list(M)[:half_length]}
     return half_M
     
    
-
-# Checker Function for Algorithm
-def algorithm_checker(outcomes, x, m, n, preferences):
-    # Function to check the outcomes of the algorithm
-    # ...
-    pass
+# Checker Function for Algorithm - 
+def algorithm_checker(outcomes,preferences):
+    from collections import Counter
+    result_vector = dict(Counter([get_rank(agent,item) for agent, item in outcomes.items()]))
+    logging.debug('Result Vector:', result_vector)
+    return result_vector
 
 # Set page configuration
 st.set_page_config(
@@ -122,10 +135,9 @@ st.set_page_config(
     layout="wide",
 )
 
-# Custom CSS styles
-css = """
-    /* Insert your custom CSS styles here */
-    
+st.markdown(
+    """
+    <style>
     .header {
         color: #28517f;
         font-size: 40px;
@@ -185,16 +197,61 @@ css = """
         color: #777777;
         margin-top: 20px;
     }
-"""
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
-# Add custom CSS style
-st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
-# Header Message
-header_html = """
-   <h1 class="header">Fast and Fair Posts Allocation</h1>
-"""
-st.markdown(header_html, unsafe_allow_html=True)
+st.markdown('<h1 class="header">Fast and Fair Jobs Allocation</h1>',
+            unsafe_allow_html=True)
+
+# Insert header image
+st.sidebar.image("./resource/applicants.jpg", use_column_width=True,)
+
+st.sidebar.title("User Guide")
+
+# Define theme colors based on light and dark mode
+light_mode = {
+    "sidebar-background-color": "#f7f7f7",
+    "guide-background-color": "#eef4ff",
+    "guide-color": "#333333",
+}
+
+dark_mode = {
+    "sidebar-background-color": "#1a1a1a",
+    "guide-background-color": "#192841",
+    "guide-color": "#ffffff",
+}
+
+# Determine the current theme mode
+theme_mode = st.sidebar.radio("Theme Mode", ("Light", "Dark"))
+
+# Select the appropriate colors based on the theme mode
+theme_colors = light_mode if theme_mode == "Light" else dark_mode
+
+# Add user guide content to sidebar
+st.sidebar.markdown(
+    f"""
+    <div class="guide" style="background-color: {theme_colors['guide-background-color']}; color: {theme_colors['guide-color']}">
+    <p>This app calculates outcomes using the Rank Maximal Matching algorithm.</p>
+
+    <h3 style="color: {theme_colors['guide-color']};">Follow these steps to use the app:</h3>
+
+    <ol>
+        <li>Specify the number of agents (n) and items (m) using the number input boxes.</li>
+        <li>Choose to either upload a preferences file or edit the  preferences.</li>
+        <li>Click the 'Run Algorithm' button to start the algorithm.</li>
+        <li>You can download the outcomes as a CSV file using the provided links.</li>
+    </ol>
+
+    <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
+
+    <p><em>Image Credit: <a href="http://www.thesmallbusinesssite.co.za/2016/10/11/job-applicant-become-employee">Image Source</a></em>.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # Add input components
 col1, col2, col3 = st.columns(3)
@@ -204,7 +261,12 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
                       max_value=MAX_ITEMS, value=MIN_ITEMS, step=1)
 
 upload_preferences = None
-
+col1, col2 = st.columns([0.5, 0.5])
+with col1:
+    if st.checkbox("⭐ Upload Local Preferences CSV"):
+        upload_preferences = st.file_uploader(
+            f"Upload Preferences of shape ({n}, {m})", type=['csv'])
+        
 # Agent Preferences
 st.write("📊 Agent Preferences (0-m, copyable from local sheets):")
 
@@ -268,12 +330,10 @@ if start_algo:
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    def cindex(name: str) -> int:
-        return int(name.split()[1])-1
-
     st.write("🎉 Outcomes:")
-    outcomes_list = [[agent, item, preferences[cindex(agent),cindex(item)]]
-                      for agent, item in outcomes.items()]
+
+    outcomes_list = [[agent, item, get_rank(agent,item)] 
+                     for agent, item in outcomes.items()]
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
     # Sort the table
     outcomes_df = outcomes_df.sort_values(['Agent'],
@@ -289,6 +349,27 @@ if start_algo:
                        "Items": st.column_config.ListColumn(
                            "Items",
                            help="The list of items allocated to agents",
+                       ),
+                   },
+                   hide_index=True,
+                   disabled=True,
+                   )
+
+    st.write("🗒️ Outcomes Summary:")
+
+    vector = algorithm_checker(outcomes, preferences)
+    vector_list = [[rank, count] for rank,count in vector.items()]
+    vector_df = pd.DataFrame(vector_list, columns=['Rank', 'Count'])
+    st.data_editor(vector_df,
+                   column_config={
+                       "Ranks": st.column_config.NumberColumn(
+                           "Rank",
+                           help="the agent's preference for the item",
+                           step=1,
+                       ),
+                       "Counts": st.column_config.ListColumn(
+                           "Count",
+                           help="the occurrences count of each preference value",
                        ),
                    },
                    hide_index=True,
