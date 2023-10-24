@@ -247,7 +247,7 @@ st.sidebar.markdown(
 
     <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
 
-    <p><em>Image Credit: <a href="http://www.thesmallbusinesssite.co.za/2016/10/11/job-applicant-become-employee">Image Source</a></em>.</p>
+    <p><em>Image Credit: <a href="https://www.freepik.com/free-vector/creative-illustration-recruitment-concept_9453228.htm#page=2&position=26&from_view=search&track=ais">Image Source</a></em>.</p>
     </div>
     """,
     unsafe_allow_html=True
