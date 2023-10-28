@@ -10,7 +10,7 @@ import random
 import numpy as np
 import pandas as pd
 import streamlit as st
-import networkz as nx
+import networkx as nx
 
 MIN_AGENTS = 2
 MAX_AGENTS = 500
