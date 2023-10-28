@@ -248,7 +248,7 @@ def pchange_callback2(preferences):
 
 
 # Set the title and layout of the web application
-st.markdown('<h1 class="header">Efficient and Fair Team Formation</h1>',
+st.markdown('<h1 class="header">Fast & Fair Team Distribution</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
@@ -520,7 +520,7 @@ with st.expander("ℹ️ Information", expanded=False):
     )
     
 
-start_algo = st.button("⏳ Run Matching Algorithm ")
+start_algo = st.button("⏳ Run Matching Algorithm")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:

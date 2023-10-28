@@ -229,7 +229,7 @@ def ochange_callback(orderings):
 
 
 # Set the title and layout of the web application
-st.markdown('<h1 class="header">Fast and Fair House Assignment</h1>',
+st.markdown('<h1 class="header">Fast & Fair House Assignment</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
@@ -423,7 +423,7 @@ with st.expander("ℹ️ Information", expanded=False):
     )
 
 
-start_algo = st.button("⏳ Run Fair Assignment Algorithm ")
+start_algo = st.button("⏳ Run Assignment Algorithm")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
