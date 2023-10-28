@@ -396,6 +396,26 @@ if start_algo:
     # Print timing results
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+    
+hide_streamlit_style = """
+    <style>
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="footer" style="padding-top: 200px; margin-top: auto; text-align: left; font-size: 10px; color: #777777;">
+    <p>Contributed by <a href="https://github.com/oriyalperin" target="_blank">Oriya Alperin</a> and 
+    Prof. <a href="http://erelsgl.github.io/" target="_blank">Erel Segal-Halevi</a></p>
+    <p>&copy; 2023. All rights reserved.</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 # Sidebar
 # # ..
 
