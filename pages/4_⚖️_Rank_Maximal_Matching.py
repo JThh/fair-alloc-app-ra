@@ -269,7 +269,7 @@ col1, col2, col3 = st.columns(3)
 n = col1.number_input("Number of Agents (n)",
                       min_value=MIN_AGENTS, max_value=MAX_AGENTS, step=1)
 m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
-                      max_value=MAX_ITEMS, value=MIN_ITEMS, step=1)
+                      max_value=MAX_ITEMS, value=3, step=1)
 
 upload_preferences = None
 with col1:
