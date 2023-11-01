@@ -214,7 +214,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<h1 class="header">Fast and Fair Jobs Allocation</h1>',
+st.markdown('<h1 class="header">Fast and Efficient Matching</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
