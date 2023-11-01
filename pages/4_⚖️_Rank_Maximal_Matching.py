@@ -407,7 +407,9 @@ with st.expander("ℹ️ Information", expanded=False):
                 For a detailed explanation of the Rank Maximal Matching algorithm and its theoretical foundations, please refer to the following paper:
             </p>
             <p class="information-card-citation">
-                Robert W. Irving, Telikepalli Kavitha, Kurt Mehlhorn, Dimitrios Michail, and Katarzyna Paluch. 2006. <a href="https://d-michail.github.io/assets/papers/RankMaximalMatchings-journal.pdf" target="_blank">Weighted Fairness Notions for Indivisible Items Revisited.</a> Proceedings of the 36th AAAI Conference on Artificial Intelligence (AAAI)(2022), 4949–4956.
+                Robert W. Irving, Telikepalli Kavitha, Kurt Mehlhorn, Dimitrios Michail, and Katarzyna Paluch. 2006. 
+                <a href="https://d-michail.github.io/assets/papers/RankMaximalMatchings-journal.pdf" target="_blank">Rank-maximal matchings.</a> 
+                ACM Transactions on Algorithms (TALG), 2(4), 602-610.
             </p>
         </div>
         """,
