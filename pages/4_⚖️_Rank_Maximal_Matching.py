@@ -214,7 +214,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<h1 class="header">Fast and Fair Jobs Allocation</h1>',
+st.markdown('<h1 class="header">Fast and Efficient Matching</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
@@ -332,6 +332,89 @@ preferences_csv = edited_prefs.to_csv()
 b64 = base64.b64encode(preferences_csv.encode()).decode()
 href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
+
+# Add expandable information card
+with st.expander("ℹ️ Information", expanded=False):
+    st.markdown(
+        """
+        <style>
+        .information-card-content {
+            margin-top: 20px;
+        }
+        .information-card-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+        .information-card-citation {
+            font-size: 12px;
+            font-style: italic;
+            color: #777777;
+        }
+        .information-card-formula {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555555;
+            font-weight: bold;
+        }
+        .compact-expression {
+            font-size: 0.8em;
+            vertical-align: middle;
+        }
+        </style>
+        <div class="information-card-content">
+            <h2 class="information-card-header">Rank Maximal Matching</h2>
+            <p class="information-card-text">
+                The  Rank Maximal Matching algorithm is used for applicants and posts, where each applicant ranks posts based on their preferences.
+                The goal is to allocate the posts to the applicants in a way that maximizes the number of applicants matched to their first choice post,
+                and if possible, maximizes the number of applicants matched to their second choice post, and so on.
+            </p>
+            <h3 class="information-card-header">Algorithm Overview</h3>
+            <p class="information-card-text">
+                <ul>
+                <li> The algorithm starts with an initial matching, which can be any maximum matching in the graph. </li>
+                <li> At each iteration, the algorithm follow the following steps:
+                  <div> a. Partition the nodes into sets based on the current matching. These sets include even nodes (matched nodes), odd nodes (unmatched nodes), and unreachable nodes. </div>
+                  <div> b. Delete certain edges from the graph based on the partitioning. Remove edges of rank higher than the current iteration that are incident to odd and unreachable nodes. </div>
+                  <div> c. Augment the current matching by finding augmenting paths in a suitable subgraph. This step aims to increase the cardinality of the matching while maintaining the rank-maximality property. </div>
+                </li>
+                <li> Throughout the iterations, certain invariants are maintained: every rank-maximal matching in the current graph has all its edges in the modified graph, and the current matching is a rank-maximal matching. </li>
+                <li> The iterations continue until a stopping condition is met. This can be when the maximum rank is reached, or when the current matching is already a maximum matching in the modified graph. </li>
+                </ul>
+            </p>
+            <!--
+            <h3 class="information-card-header">Notation</h3>
+            <p class="information-card-text">
+                <p>Let A be the set of applicants and P be the set of posts.</p>
+                <p>Each edge (a, p) has a rank i, indicating that post p is the i-th choice for applicant a.</p>
+                <p>A matching is a set of (applicant, post) pairs where each applicant and post appear in at most one pair.</p>
+                <p>A rank-maximal matching aims to maximize the number of applicants matched to their first choice post, followed by their subsequent choices.</p>
+            </p>
+            <h3 class="information-card-header">Algorithm Description</h3>
+            <div class="information-card-text" style="background-color: #F7F7F7; padding: 10px;">
+                <p class="information-card-text">Algorithm 1: Algorithm for Computing a Rank-Maximal Matching</p>
+                <p class="information-card-text">
+                    <p>Given a bipartite graph G = (A, P, E) with preference lists and ranks assigned to each edge.</p>
+                    <p>Initialize an empty matching M.</p>
+                    <p>Repeat the following steps until there are no more augmenting paths in G:</p>
+                    <p>&nbsp;&nbspa. Find an augmenting path in G using a suitable algorithm (e.g., breadth-first search).</p>
+                    <p>&nbsp;&nbspb. Augment the matching M along the augmenting path.</p>
+                    <p>Return the rank-maximal matching M.</p>
+                </p>
+            </div>
+            -->
+            <p class="information-card-text">
+                For a detailed explanation of the Rank Maximal Matching algorithm and its theoretical foundations, please refer to the following paper:
+            </p>
+            <p class="information-card-citation">
+                Robert W. Irving, Telikepalli Kavitha, Kurt Mehlhorn, Dimitrios Michail, and Katarzyna Paluch. 2006. 
+                <a href="https://d-michail.github.io/assets/papers/RankMaximalMatchings-journal.pdf" target="_blank">Rank-maximal matchings.</a> 
+                ACM Transactions on Algorithms (TALG), 2(4), 602-610.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 start_algo = st.button("⏳ Run Rank Maximal Matching Algorithm ")

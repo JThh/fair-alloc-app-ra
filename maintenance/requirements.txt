@@ -1,4 +1,4 @@
 pandas
 numpy
 Streamlit>=1.23.1
-networkz>=1.0.5
+networkz>=1.0.6
