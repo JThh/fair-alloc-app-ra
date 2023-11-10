@@ -372,14 +372,14 @@ with st.expander("ℹ️ Information", expanded=False):
             <h3 class="information-card-header">Algorithm Overview</h3>
             <p class="information-card-text">
                 <ul>
-                <li> The algorithm starts with an initial matching, which can be any maximum matching in the graph. </li>
-                <li> At each iteration, the algorithm follow the following steps:
-                  <div> a. Partition the nodes into sets based on the current matching. These sets include even nodes (matched nodes), odd nodes (unmatched nodes), and unreachable nodes. </div>
-                  <div> b. Delete certain edges from the graph based on the partitioning. Remove edges of rank higher than the current iteration that are incident to odd and unreachable nodes. </div>
-                  <div> c. Augment the current matching by finding augmenting paths in a suitable subgraph. This step aims to increase the cardinality of the matching while maintaining the rank-maximality property. </div>
+                <li class="information-card-text"> The algorithm starts with an initial matching, which can be any maximum matching in the graph. </li>
+                <li class="information-card-text"> At each iteration, the algorithm follow the following steps:
+                  <div class="information-card-text"> a. Partition the nodes into sets based on the current matching. These sets include even nodes (matched nodes), odd nodes (unmatched nodes), and unreachable nodes. </div>
+                  <div class="information-card-text"> b. Delete certain edges from the graph based on the partitioning. Remove edges of rank higher than the current iteration that are incident to odd and unreachable nodes. </div>
+                  <div class="information-card-text"> c. Augment the current matching by finding augmenting paths in a suitable subgraph. This step aims to increase the cardinality of the matching while maintaining the rank-maximality property. </div>
                 </li>
-                <li> Throughout the iterations, certain invariants are maintained: every rank-maximal matching in the current graph has all its edges in the modified graph, and the current matching is a rank-maximal matching. </li>
-                <li> The iterations continue until a stopping condition is met. This can be when the maximum rank is reached, or when the current matching is already a maximum matching in the modified graph. </li>
+                <li class="information-card-text"> Throughout the iterations, certain invariants are maintained: every rank-maximal matching in the current graph has all its edges in the modified graph, and the current matching is a rank-maximal matching. </li>
+                <li class="information-card-text"> The iterations continue until a stopping condition is met. This can be when the maximum rank is reached, or when the current matching is already a maximum matching in the modified graph. </li>
                 </ul>
             </p>
             <!--
