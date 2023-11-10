@@ -396,27 +396,6 @@ with st.expander("ℹ️ Information", expanded=False):
                 </li>
                 </ol>
             </p>
-            <!--
-            <h3 class="information-card-header">Notation</h3>
-            <p class="information-card-text">
-                <p>Let A be the set of applicants and P be the set of posts.</p>
-                <p>Each edge (a, p) has a rank i, indicating that post p is the i-th choice for applicant a.</p>
-                <p>A matching is a set of (applicant, post) pairs where each applicant and post appear in at most one pair.</p>
-                <p>A rank-maximal matching aims to maximize the number of applicants matched to their first choice post, followed by their subsequent choices.</p>
-            </p>
-            <h3 class="information-card-header">Algorithm Description</h3>
-            <div class="information-card-text" style="background-color: #F7F7F7; padding: 10px;">
-                <p class="information-card-text">Algorithm 1: Algorithm for Computing a Rank-Maximal Matching</p>
-                <p class="information-card-text">
-                    <p>Given a bipartite graph G = (A, P, E) with preference lists and ranks assigned to each edge.</p>
-                    <p>Initialize an empty matching M.</p>
-                    <p>Repeat the following steps until there are no more augmenting paths in G:</p>
-                    <p>&nbsp;&nbspa. Find an augmenting path in G using a suitable algorithm (e.g., breadth-first search).</p>
-                    <p>&nbsp;&nbspb. Augment the matching M along the augmenting path.</p>
-                    <p>Return the rank-maximal matching M.</p>
-                </p>
-            </div>
-            -->
             <p class="information-card-text">
                 For a detailed explanation of the Rank Maximal Matching algorithm and its theoretical foundations, please refer to the following paper:
             </p>
