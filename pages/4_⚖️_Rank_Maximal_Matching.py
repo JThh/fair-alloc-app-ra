@@ -371,7 +371,7 @@ with st.expander("ℹ️ Information", expanded=False):
             </p>
             <h3 class="information-card-header">Algorithm Overview</h3>
             <p class="information-card-text">
-                <ul>
+                <ol>
                 <li>
                     <p class="information-card-text">
                         The algorithm starts with an initial matching, which can be any maximum matching in the graph.
@@ -394,7 +394,7 @@ with st.expander("ℹ️ Information", expanded=False):
                         The iterations continue until a stopping condition is met. This can be when the maximum rank is reached, or when the current matching is already a maximum matching in the modified graph. 
                     </p>
                 </li>
-                </ul>
+                </ol>
             </p>
             <!--
             <h3 class="information-card-header">Notation</h3>
