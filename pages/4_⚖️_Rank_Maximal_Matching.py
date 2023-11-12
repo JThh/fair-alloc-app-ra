@@ -136,13 +136,13 @@ def restore_orderings(orderings):
     return orderings.T
 
 # Algorithm Implementation
-def algorithm(m, n, preferences):
+def algorithm(m, n, preferences: pd.DataFrame):
     ranker_list =[f"Agent {i+1}" for i in range(n)]
     logging.debug('ranker list:', ranker_list)
     G = nx.Graph()
     for i in range(n):
         for j in range(m):
-            rank = preferences[i,j]
+            rank = preferences.iloc[i,j]
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
     M = nx.rank_maximal_matching(G=G, top_nodes=ranker_list, rank='rank')
     logging.debug("RMM Matching: ", M)
@@ -314,7 +314,7 @@ edited_prefs = st.data_editor(preferences,
                               column_config={
                                   f"Item {j}": st.column_config.TextColumn(
                                       f"Item {j}",
-                                      help=f"Agents' Rankings towards Item {j} (ordinal)",
+                                      help=f"Agents' Rankings towards Item {j} (values can be arbitrary; but we treat them as ordinal)",
                                       max_chars=4,
                                       validate=r"^(?:10|[1-9]\d{0,2}|0)$",
                                       # width='small',  # Set the desired width here
