@@ -509,14 +509,15 @@ if start_algo:
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
     
-    # Download outcomes in JSON format
-    outcomes_json = json.dumps({otc[0]: otc[1]
-                            for otc in outcomes_df.to_numpy()}, indent=4)
-    st.markdown("### Download Outcomes as JSON")
-    b64 = base64.b64encode(outcomes_json.encode()).decode()
-    href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
-    st.markdown(href, unsafe_allow_html=True)
-    st.json(outcomes_json, )
+    # Download outcomes in JSON format (if the outcome is large enough)
+    if n * m > 20: 
+        outcomes_json = json.dumps({otc[0]: otc[1]
+                                for otc in outcomes_df.to_numpy()}, indent=4)
+        st.markdown("### Download Outcomes as JSON")
+        b64 = base64.b64encode(outcomes_json.encode()).decode()
+        href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
+        st.markdown(href, unsafe_allow_html=True)
+        st.json(outcomes_json, )
 
     
 hide_streamlit_style = """
