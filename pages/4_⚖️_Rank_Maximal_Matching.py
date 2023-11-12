@@ -131,7 +131,7 @@ def preference_change_callback(preferences):
     for col in preferences.columns:
         preferences[col] = preferences[col].apply(
             lambda x: int(float(x)))
-    st.session_state.preferences = restore_orderings(preferences)
+    st.session_state.preferences = preferences
 
 # Algorithm Implementation
 def algorithm(m, n, preferences):
@@ -144,7 +144,7 @@ def algorithm(m, n, preferences):
             print(rank)
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
     M = nx.rank_maximal_matching(G=G, top_nodes=ranker_list, rank='rank')
-    logging.debug("RMM Matching: ", M)
+    print("RMM Matching: ", M)
     half_length = len(M) // 2
     half_M = {k: M[k] for k in list(M)[:half_length]}
     return half_M
@@ -458,7 +458,7 @@ if start_algo:
 
     st.write("🎉 Outcomes:")
 
-    outcomes_list = [[agent, item, get_rank(edited_prefs.values, agent,item)] 
+    outcomes_list = [[agent, item, get_rank(edited_prefs.values, agent, item)] 
                      for agent, item in outcomes.items()]
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
     # Sort the table
