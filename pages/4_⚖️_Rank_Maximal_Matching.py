@@ -116,6 +116,24 @@ def preference_change_callback(preferences):
         preferences[col] = preferences[col].apply(
             lambda x: int(float(x)))
     st.session_state.preferences = preferences
+    
+# Make orderings based on the cadinality of the preferences
+def restore_orderings(orderings):
+    orderings = orderings.T
+    def apply_list(arr: list):
+        indices = sorted(range(len(arr)), key=lambda i: (arr[i], i))
+        new_ranks = arr.copy()
+        cur_rank = 1
+        for ind in indices:
+            new_ranks[ind] = cur_rank
+            cur_rank += 1
+        for i in range(1, len(arr)):
+            if arr[indices[i]] == arr[indices[i - 1]]:
+                new_ranks[indices[i]] = new_ranks[indices[i - 1]]
+        return new_ranks
+    for col in orderings.columns:
+        orderings[col] = apply_list(orderings[col].tolist())
+    return orderings.T
 
 # Algorithm Implementation
 def algorithm(m, n, preferences):
@@ -214,7 +232,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<h1 class="header">Fast and Efficient Matching</h1>',
+st.markdown('<h1 class="header">Rank Maximal Matching</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
@@ -296,7 +314,7 @@ edited_prefs = st.data_editor(preferences,
                               column_config={
                                   f"Item {j}": st.column_config.TextColumn(
                                       f"Item {j}",
-                                      help=f"Agents' Preferences towards Item {j}",
+                                      help=f"Agents' Rankings towards Item {j} (ordinal)",
                                       max_chars=4,
                                       validate=r"^(?:10|[1-9]\d{0,2}|0)$",
                                       # width='small',  # Set the desired width here
@@ -323,9 +341,25 @@ with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
             lambda x: int(float(x)))
-    st.session_state.preferences = edited_prefs
+    st.session_state.preferences = restore_orderings(edited_prefs)
 
-preferences = edited_prefs.values
+st.markdown(
+        f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
+    
+edited_prefs = st.session_state.preferences
+# Define formatter function
+def format_cell_color(val):
+    max_val = edited_prefs.values.astype(np.int32).max()
+    min_val = edited_prefs.values.astype(np.int32).min()
+    span = max_val - min_val + 1
+    cell_val = (max_val - int(float(val))) / span  # Normalize value between 0 and 1
+    thickness = int(10 * cell_val)  # Adjust thickness as per preference
+    color = f'rgba(67, 147, 195, {cell_val})'  # Blue color with alpha value based on normalized value
+    style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
+    return style
+
+with st.spinner("Loading Table..."):
+    st.dataframe(edited_prefs.style.applymap(format_cell_color))
 
 # Download preferences as CSV
 preferences_csv = edited_prefs.to_csv()
@@ -431,7 +465,6 @@ if start_algo:
     # Sort the table
     outcomes_df = outcomes_df.sort_values(['Agent'],
                                          )
-
     st.data_editor(outcomes_df,
                    column_config={
                        "Agents": st.column_config.NumberColumn(
