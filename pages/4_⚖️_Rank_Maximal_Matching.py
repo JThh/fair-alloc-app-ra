@@ -23,9 +23,8 @@ MAX_ITEMS = 1000
 def pindex(name: str) -> int:
     return int(name.split()[1])-1
 
-def get_rank(agent,item):
+def get_rank(preferences, agent, item):
     return preferences[pindex(agent),pindex(item)]
-
 
 
 # Load Preferences
@@ -459,7 +458,7 @@ if start_algo:
 
     st.write("🎉 Outcomes:")
 
-    outcomes_list = [[agent, item, get_rank(agent,item)] 
+    outcomes_list = [[agent, item, get_rank(edited_prefs.values, agent,item)] 
                      for agent, item in outcomes.items()]
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
     # Sort the table
