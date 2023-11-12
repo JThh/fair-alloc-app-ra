@@ -289,9 +289,8 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
 
 upload_preferences = None
 with col3:
-    st.markdown("\n\n")
-    st.markdown("\n\n")
-    st.markdown("\n\n")
+    st.markdown("\n\n\t\n")
+    st.markdown("\n\n\t\n")
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
