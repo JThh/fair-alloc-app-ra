@@ -151,9 +151,9 @@ def algorithm(m, n, preferences):
     
    
 # Checker Function for Algorithm - 
-def algorithm_checker(outcomes,preferences):
+def algorithm_checker(outcomes, preferences):
     from collections import Counter
-    result_vector = dict(Counter([get_rank(agent,item) for agent, item in outcomes.items()]))
+    result_vector = dict(Counter([get_rank(preferences, agent, item) for agent, item in outcomes.items()]))
     logging.debug('Result Vector:', result_vector)
     return result_vector
 
@@ -482,7 +482,7 @@ if start_algo:
 
     st.write("🗒️ Outcomes Summary:")
 
-    vector = algorithm_checker(outcomes, preferences)
+    vector = algorithm_checker(outcomes, edited_prefs.values)
     vector_list = [[rank, count] for rank,count in vector.items()]
     vector_df = pd.DataFrame(vector_list, columns=['Rank', 'Count'])
     st.data_editor(vector_df,
