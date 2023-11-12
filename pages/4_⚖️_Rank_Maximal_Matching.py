@@ -18,7 +18,6 @@ MIN_ITEMS = 1
 MAX_ITEMS = 1000
 
 
-
 # Transform agent/item names into their corresponding index positions.
 def pindex(name: str) -> int:
     return int(name.split()[1])-1
@@ -289,7 +288,7 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
                       max_value=MAX_ITEMS, value=3, step=1)
 
 upload_preferences = None
-with col1:
+with col3:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
@@ -465,7 +464,7 @@ if start_algo:
                      for agent, item in outcomes.items()]
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item', 'Rank'])
     # Sort the table
-    outcomes_df = outcomes_df.sort_values(['Agent'], key = lambda x:x.apply(lambda y:int(y.split('Agent')[-1])))
+    # outcomes_df = outcomes_df.sort_values(['Agent'], key = lambda x:x.apply(lambda y:int(y.split('Agent')[-1])))
 
     st.data_editor(outcomes_df,
                    column_config={
@@ -488,6 +487,7 @@ if start_algo:
     vector = algorithm_checker(outcomes, edited_prefs.values)
     vector_list = [[rank, count] for rank,count in vector.items()]
     vector_df = pd.DataFrame(vector_list, columns=['Rank', 'Count'])
+    vector_df = vector_df.sort_values(['Rank'])
     st.data_editor(vector_df,
                    column_config={
                        "Ranks": st.column_config.NumberColumn(
@@ -516,7 +516,7 @@ if start_algo:
     b64 = base64.b64encode(outcomes_json.encode()).decode()
     href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
     st.markdown(href, unsafe_allow_html=True)
-    st.json(outcomes_json)
+    st.json(outcomes_json, )
 
     
 hide_streamlit_style = """
