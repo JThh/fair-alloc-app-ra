@@ -109,14 +109,6 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
     st.session_state.preferences = preferences_default
     return st.session_state.preferences
 
-
-# Preference Change Callback: used in Streamlit widget on_click / on_change
-def preference_change_callback(preferences):
-    for col in preferences.columns:
-        preferences[col] = preferences[col].apply(
-            lambda x: int(float(x)))
-    st.session_state.preferences = preferences
-    
 # Make orderings based on the cadinality of the preferences
 def restore_orderings(orderings):
     orderings = orderings.T
@@ -135,14 +127,22 @@ def restore_orderings(orderings):
         orderings[col] = apply_list(orderings[col].tolist())
     return orderings.T
 
+# Preference Change Callback: used in Streamlit widget on_click / on_change
+def preference_change_callback(preferences):
+    for col in preferences.columns:
+        preferences[col] = preferences[col].apply(
+            lambda x: int(float(x)))
+    st.session_state.preferences = restore_orderings(preferences)
+
 # Algorithm Implementation
-def algorithm(m, n, preferences: pd.DataFrame):
+def algorithm(m, n, preferences):
     ranker_list =[f"Agent {i+1}" for i in range(n)]
     logging.debug('ranker list:', ranker_list)
     G = nx.Graph()
     for i in range(n):
         for j in range(m):
-            rank = preferences.iloc[i,j]
+            rank = preferences[i,j]
+            print(rank)
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
     M = nx.rank_maximal_matching(G=G, top_nodes=ranker_list, rank='rank')
     logging.debug("RMM Matching: ", M)
@@ -453,7 +453,7 @@ if start_algo:
             time.sleep(n * m * 0.01)
 
     start_time = time.time()
-    outcomes = algorithm(m, n, preferences)
+    outcomes = algorithm(m, n, edited_prefs.values)
     end_time = time.time()
     elapsed_time = end_time - start_time
 
