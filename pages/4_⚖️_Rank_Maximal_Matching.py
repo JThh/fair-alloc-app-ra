@@ -295,7 +295,10 @@ with col1:
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
         
 # Agent Preferences
-st.write("📊 Agent Preferences (0-m, copyable from local sheets):")
+ordinal = lambda n: "%s" % ("tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])    
+
+st.markdown(
+    f"🌟 Agent Preferences towards Items (ranks from {1}<sup>st</sup> to {m}<sup>{ordinal(m)}</sup> with ties permitted):", unsafe_allow_html=True)
 
 shuffle = st.button('Shuffle Rankings')
 
@@ -460,16 +463,16 @@ if start_algo:
 
     outcomes_list = [[agent, item, get_rank(edited_prefs.values, agent, item)] 
                      for agent, item in outcomes.items()]
-    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
+    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item', 'Rank'])
     # Sort the table
-    outcomes_df = outcomes_df.sort_values(['Agent'],
-                                         )
+    outcomes_df = outcomes_df.sort_values(['Agent'], key = lambda x:x.apply(lambda y:int(y.split('Agent')[-1])))
+
     st.data_editor(outcomes_df,
                    column_config={
-                       "Agents": st.column_config.NumberColumn(
+                       "Agents": st.column_config.ListColumn(
                            "Agent",
                            help="The list of agents that get allocated",
-                           step=1,
+                        #    step=1,
                        ),
                        "Items": st.column_config.ListColumn(
                            "Items",
@@ -492,9 +495,10 @@ if start_algo:
                            help="the agent's preference for the item",
                            step=1,
                        ),
-                       "Counts": st.column_config.ListColumn(
+                       "Counts": st.column_config.NumberColumn(
                            "Count",
                            help="the occurrences count of each preference value",
+                           step=1,
                        ),
                    },
                    hide_index=True,
@@ -504,6 +508,16 @@ if start_algo:
     # Print timing results
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+    
+    # Download outcomes in JSON format
+    outcomes_json = json.dumps({otc[0]: otc[1]
+                            for otc in outcomes_df.to_numpy()}, indent=4)
+    st.markdown("### Download Outcomes as JSON")
+    b64 = base64.b64encode(outcomes_json.encode()).decode()
+    href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
+    st.markdown(href, unsafe_allow_html=True)
+    st.json(outcomes_json)
+
     
 hide_streamlit_style = """
     <style>
