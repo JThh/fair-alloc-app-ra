@@ -18,14 +18,12 @@ MIN_ITEMS = 1
 MAX_ITEMS = 1000
 
 
-
 # Transform agent/item names into their corresponding index positions.
 def pindex(name: str) -> int:
     return int(name.split()[1])-1
 
-def get_rank(agent,item):
+def get_rank(preferences, agent, item):
     return preferences[pindex(agent),pindex(item)]
-
 
 
 # Load Preferences
@@ -109,6 +107,23 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
     st.session_state.preferences = preferences_default
     return st.session_state.preferences
 
+# Make orderings based on the cadinality of the preferences
+def restore_orderings(orderings):
+    orderings = orderings.T
+    def apply_list(arr: list):
+        indices = sorted(range(len(arr)), key=lambda i: (arr[i], i))
+        new_ranks = arr.copy()
+        cur_rank = 1
+        for ind in indices:
+            new_ranks[ind] = cur_rank
+            cur_rank += 1
+        for i in range(1, len(arr)):
+            if arr[indices[i]] == arr[indices[i - 1]]:
+                new_ranks[indices[i]] = new_ranks[indices[i - 1]]
+        return new_ranks
+    for col in orderings.columns:
+        orderings[col] = apply_list(orderings[col].tolist())
+    return orderings.T
 
 # Preference Change Callback: used in Streamlit widget on_click / on_change
 def preference_change_callback(preferences):
@@ -125,18 +140,19 @@ def algorithm(m, n, preferences):
     for i in range(n):
         for j in range(m):
             rank = preferences[i,j]
+            print(rank)
             G.add_edge(f"Agent {i+1}", f"Item {j+1}", rank=rank)
     M = nx.rank_maximal_matching(G=G, top_nodes=ranker_list, rank='rank')
-    logging.debug("RMM Matching: ", M)
+    print("RMM Matching: ", M)
     half_length = len(M) // 2
     half_M = {k: M[k] for k in list(M)[:half_length]}
     return half_M
     
    
 # Checker Function for Algorithm - 
-def algorithm_checker(outcomes,preferences):
+def algorithm_checker(outcomes, preferences):
     from collections import Counter
-    result_vector = dict(Counter([get_rank(agent,item) for agent, item in outcomes.items()]))
+    result_vector = dict(Counter([get_rank(preferences, agent, item) for agent, item in outcomes.items()]))
     logging.debug('Result Vector:', result_vector)
     return result_vector
 
@@ -214,7 +230,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown('<h1 class="header">Fast and Efficient Matching</h1>',
+st.markdown('<h1 class="header">Rank Maximal Matching</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
@@ -272,13 +288,18 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
                       max_value=MAX_ITEMS, value=3, step=1)
 
 upload_preferences = None
-with col1:
+with col3:
+    st.markdown("\n\n\t\n")
+    st.markdown("\n\n\t\n")
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({n}, {m})", type=['csv'])
         
 # Agent Preferences
-st.write("📊 Agent Preferences (0-m, copyable from local sheets):")
+ordinal = lambda n: "%s" % ("tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])    
+
+st.markdown(
+    f"🌟 Agent Preferences towards Items (ranks from {1}<sup>st</sup> to {m}<sup>{ordinal(m)}</sup> with ties permitted):", unsafe_allow_html=True)
 
 shuffle = st.button('Shuffle Rankings')
 
@@ -296,7 +317,7 @@ edited_prefs = st.data_editor(preferences,
                               column_config={
                                   f"Item {j}": st.column_config.TextColumn(
                                       f"Item {j}",
-                                      help=f"Agents' Preferences towards Item {j}",
+                                      help=f"Agents' Rankings towards Item {j} (values can be arbitrary; but we treat them as ordinal)",
                                       max_chars=4,
                                       validate=r"^(?:10|[1-9]\d{0,2}|0)$",
                                       # width='small',  # Set the desired width here
@@ -323,9 +344,25 @@ with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
             lambda x: int(float(x)))
-    st.session_state.preferences = edited_prefs
+    st.session_state.preferences = restore_orderings(edited_prefs)
 
-preferences = edited_prefs.values
+st.markdown(
+        f"Colored Ranking Table (Preview):", unsafe_allow_html=True)
+    
+edited_prefs = st.session_state.preferences
+# Define formatter function
+def format_cell_color(val):
+    max_val = edited_prefs.values.astype(np.int32).max()
+    min_val = edited_prefs.values.astype(np.int32).min()
+    span = max_val - min_val + 1
+    cell_val = (max_val - int(float(val))) / span  # Normalize value between 0 and 1
+    thickness = int(10 * cell_val)  # Adjust thickness as per preference
+    color = f'rgba(67, 147, 195, {cell_val})'  # Blue color with alpha value based on normalized value
+    style = f'background-color: {color}; border-bottom: {thickness}px solid {color}'
+    return style
+
+with st.spinner("Loading Table..."):
+    st.dataframe(edited_prefs.style.applymap(format_cell_color))
 
 # Download preferences as CSV
 preferences_csv = edited_prefs.to_csv()
@@ -419,25 +456,24 @@ if start_algo:
             time.sleep(n * m * 0.01)
 
     start_time = time.time()
-    outcomes = algorithm(m, n, preferences)
+    outcomes = algorithm(m, n, edited_prefs.values)
     end_time = time.time()
     elapsed_time = end_time - start_time
 
     st.write("🎉 Outcomes:")
 
-    outcomes_list = [[agent, item, get_rank(agent,item)] 
+    outcomes_list = [[agent, item, get_rank(edited_prefs.values, agent, item)] 
                      for agent, item in outcomes.items()]
-    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item','Rank'])
+    outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent', 'Item', 'Rank'])
     # Sort the table
-    outcomes_df = outcomes_df.sort_values(['Agent'],
-                                         )
+    # outcomes_df = outcomes_df.sort_values(['Agent'], key = lambda x:x.apply(lambda y:int(y.split('Agent')[-1])))
 
     st.data_editor(outcomes_df,
                    column_config={
-                       "Agents": st.column_config.NumberColumn(
+                       "Agents": st.column_config.ListColumn(
                            "Agent",
                            help="The list of agents that get allocated",
-                           step=1,
+                        #    step=1,
                        ),
                        "Items": st.column_config.ListColumn(
                            "Items",
@@ -450,9 +486,10 @@ if start_algo:
 
     st.write("🗒️ Outcomes Summary:")
 
-    vector = algorithm_checker(outcomes, preferences)
+    vector = algorithm_checker(outcomes, edited_prefs.values)
     vector_list = [[rank, count] for rank,count in vector.items()]
     vector_df = pd.DataFrame(vector_list, columns=['Rank', 'Count'])
+    vector_df = vector_df.sort_values(['Rank'])
     st.data_editor(vector_df,
                    column_config={
                        "Ranks": st.column_config.NumberColumn(
@@ -460,9 +497,10 @@ if start_algo:
                            help="the agent's preference for the item",
                            step=1,
                        ),
-                       "Counts": st.column_config.ListColumn(
+                       "Counts": st.column_config.NumberColumn(
                            "Count",
                            help="the occurrences count of each preference value",
+                           step=1,
                        ),
                    },
                    hide_index=True,
@@ -472,6 +510,17 @@ if start_algo:
     # Print timing results
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+    
+    # Download outcomes in JSON format (if the outcome is large enough)
+    if n * m > 20: 
+        outcomes_json = json.dumps({otc[0]: otc[1]
+                                for otc in outcomes_df.to_numpy()}, indent=4)
+        st.markdown("### Download Outcomes as JSON")
+        b64 = base64.b64encode(outcomes_json.encode()).decode()
+        href = f'<a href="data:application/json;base64,{b64}" download="outcomes.json">Download Outcomes JSON</a>'
+        st.markdown(href, unsafe_allow_html=True)
+        st.json(outcomes_json, )
+
     
 hide_streamlit_style = """
     <style>
