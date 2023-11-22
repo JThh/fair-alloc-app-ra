@@ -2,6 +2,8 @@
 
 ![Welcome Page](./resource/welcome-nrw.png)
 
+_**[News] We feel glad to share that our paper "Fast & Fair: A Collaborative Platform for Fair Division Applications" has been accepted to AAAI-24 for publication!**_ Camera-ready version will be available soon!
+
 Welcome to Fast & Fair. We have implemented three algorithms coming from papers ([1](https://arxiv.org/pdf/2112.04166.pdf),[2](https://arxiv.org/pdf/2206.05879.pdf),[3](https://www.sciencedirect.com/science/article/abs/pii/S0165489619300599)). The app is available at https://fair-alloc.streamlit.app/. 
 
 ## Introduction
