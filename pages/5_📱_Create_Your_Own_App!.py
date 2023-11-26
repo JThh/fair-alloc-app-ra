@@ -1,8 +1,48 @@
-# Required Libraries
-import re
+from functools import partial
 
-# Streamlit API
+import numpy as np
+import pandas as pd
 import streamlit as st
+
+
+def load_table(m, n):
+    if hasattr(st.session_state, "table"):
+        old_n = st.session_state.table.shape[0]
+        old_m = st.session_state.table.shape[1]
+        if n <= old_n and m <= old_m:
+            st.session_state.table = st.session_state.table.iloc[:n, :m]
+            return st.session_state.table
+        elif n > old_n:
+            st.session_state.table = pd.concat([st.session_state.table,
+                                                      pd.DataFrame(np.random.randint(1, 100, (n - old_n, m)),
+                                                                   columns=[
+                                                          f"Column Entity {i+1}" for i in range(m)],
+                                                          index=[f"Row Entity {i+1}" for i in range(old_n, n)])],
+                                                     axis=0)
+            return st.session_state.table
+        elif m > old_m:
+            st.session_state.table = pd.concat([st.session_state.table,
+                                                      pd.DataFrame(np.random.randint(1, 100, (n, m - old_m)),
+                                                                   columns=[
+                                                          f"Column Entity {i+1}" for i in range(old_m, m)],
+                                                          index=[f"Row Entity {i+1}" for i in range(n)])],
+                                                     axis=1)
+            return st.session_state.table
+        else:
+            st.session_state.table = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Column Entity {i+1}" for i in range(m)],
+                                                        index=[f"Row Entity {i+1}" for i in range(n)])
+            return st.session_state.table
+
+    table_default = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Column Entity {i+1}" for i in range(m)],
+                                           index=[f"Row Entity {i+1}" for i in range(n)])
+    st.session_state.table = table_default
+    return st.session_state.table
+
+def tchange_callback(table):
+    for col in table.columns:
+        table[col] = table[col].apply(
+            lambda x: int(float(x)))
+    st.session_state.table = table
 
 
 def main():
@@ -191,8 +231,8 @@ def generate_widget_config():
         col1, _ = st.columns([0.6,0.4])
         if widget_type == "Number Input":
             col1.number_input("Example number input widget", value=5, step=1, 
-                              help="You may use this for eliciting number of agents or items.", key=f"{i}_number")
-            col1.write("💡 You may use this for entering the number of agents or items.")
+                              help="You may use this for eliciting number of Row Entitys or Column Entitys.", key=f"{i}_number")
+            col1.write("💡 You may use this for entering the number of Row Entitys or Column Entitys.")
         elif widget_type == "Slider":
             col1.slider("Example slider", min_value=-100, max_value=100, value=(-10, 10), step=1, 
                         help="You may use this to restrict the range of random preference values.", key=f"{i}_slider")
@@ -203,15 +243,49 @@ def generate_widget_config():
             col1.code("You typed: "+output_, language="plaintext")
             col1.write("💡 You may use this to specify string arguments for your algorithm.")
         elif widget_type == "Table Input":
-            output_ = col1.text_input("Example test input box", value="Type some text here", max_chars=100, 
-                            help="You may use this to specify textual inputs for your algorithm.", key=f"{i}_text")
-            col1.code("You typed: "+output_, language="plaintext")
-            col1.write("💡 You may use this to specify string arguments for your algorithm.")
+            # Add input components
+            min_col, max_col = col1.slider("Allowed number of column entities (e.g. items)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+                         key=f"{i}_item_slider")
+            min_row, max_row = col2.slider("Allowed number of row entities (e.g. agents)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+                         key=f"{i}_agent_slider")
+            m = col1.number_input("Number of Column Entities (n)",
+                                min_value=min_col, max_value=max_col, step=1)
+            n = col2.number_input("Number of Row Entities (m)", min_value=min_row,
+                                max_value=max_row, value=3, step=1)
+            table = load_table(m, n)
+            edited_table = st.data_editor(table,
+                                        key="table_editor",
+                                        column_config={
+                                            f"Column Entity {j}": st.column_config.TextColumn(
+                                                f"Column Entity {j}",
+                                                max_chars=4,
+                                                validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
+                                                required=True,
+                                            )
+                                            for j in range(1, m+1)
+                                        }
+                                        |
+                                        {
+                                            "_index": st.column_config.Column(
+                                                "💡 Hint",
+                                                disabled=True,
+                                            ),
+                                        },
+                                        on_change=partial(
+                                            tchange_callback, table),
+                                        )
+            with st.spinner('Updating...'):
+                for col in edited_table.columns:
+                    edited_table[col] = edited_table[col].apply(
+                        lambda x: int(float(x)))
+                st.session_state.table = edited_table
+ 
+            col1.write("💡 You may use this to collect tabular inputs (e.g. Row Entity table).")
         else:
             col1.checkbox("Example check box", value=True, 
-                          help="You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for agents.",
+                          help="You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for Row Entitys.",
                           key=f"{i}_checkbox")
-            col1.write("💡 You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for agents.")
+            col1.write("💡 You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for Row Entitys.")
         # src = "https://doc-text-input.streamlit.app"
         # if widget_type == "Number Input":
         #     src = "https://doc-number-input.streamlit.app"
@@ -245,7 +319,7 @@ import streamlit as st
 input_data = dict()
 """
 
-    for widget_name, widget_type in input_widget_config.items():
+    for widget_name, widget_type in input_widget_config.Column Entitys():
         if widget_type == "Text Input":
             code += f"""
 input_data['{widget_name}'] = st.text_input("{widget_name}:")
