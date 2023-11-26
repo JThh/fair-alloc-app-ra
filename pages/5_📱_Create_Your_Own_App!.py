@@ -278,7 +278,7 @@ def generate_widget_config():
                                         )
             with st.spinner('Updating...'):
                 tchange_callback(edited_table, i)
-            col1.write("💡 You may use this to collect tabular inputs (e.g. Row Entity table).")
+            col1.write("💡 You may use this to collect tabular inputs (e.g. preference table).")
         else:
             col1.checkbox("Example check box", value=True, 
                           help="You may use this to alter algorithm settings, such as 'weighted' or 'unweighted' for Row Entitys.",
