@@ -244,15 +244,18 @@ def generate_widget_config():
             col1.write("💡 You may use this to specify string arguments for your algorithm.")
         elif widget_type == "Table Input":
             # Add input components
-            min_col, max_col = col1.slider("Allowed number of column entities (e.g. items)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+            subcol1, subcol2, _ = st.columns([0.4,0.4,0.2])
+            min_col, max_col = subcol1.slider("Allowed number of column entities (e.g. items)", min_value=0, max_value=1000, value=(2, 100), step=1, 
                          key=f"{i}_item_slider")
-            min_row, max_row = col2.slider("Allowed number of row entities (e.g. agents)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+            min_row, max_row = subcol2.slider("Allowed number of row entities (e.g. agents)", min_value=0, max_value=1000, value=(2, 100), step=1, 
                          key=f"{i}_agent_slider")
-            m = col1.number_input("Number of Column Entities (n)",
+            m = subcol1.number_input("Number of Column Entities (n)",
                                 min_value=min_col, max_value=max_col, step=1)
-            n = col2.number_input("Number of Row Entities (m)", min_value=min_row,
+            n = subcol2.number_input("Number of Row Entities (m)", min_value=min_row,
                                 max_value=max_row, value=3, step=1)
             table = load_table(m, n)
+            for col in table.columns:
+                table[col] = table[col].map(str)
             edited_table = st.data_editor(table,
                                         key="table_editor",
                                         column_config={
