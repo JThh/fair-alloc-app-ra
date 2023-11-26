@@ -319,7 +319,7 @@ import streamlit as st
 input_data = dict()
 """
 
-    for widget_name, widget_type in input_widget_config.Column Entitys():
+    for widget_name, widget_type in input_widget_config.items():
         if widget_type == "Text Input":
             code += f"""
 input_data['{widget_name}'] = st.text_input("{widget_name}:")
