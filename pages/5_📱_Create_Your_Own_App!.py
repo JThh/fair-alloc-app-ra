@@ -5,44 +5,41 @@ import pandas as pd
 import streamlit as st
 
 
-def load_table(m, n):
-    if hasattr(st.session_state, "table"):
-        old_n = st.session_state.table.shape[0]
-        old_m = st.session_state.table.shape[1]
+def load_table(m, n, i):
+    if hasattr(st.session_state, f"table_{i}"):
+        table = getattr(st.session_state, f"table_{i}")
+        old_n = table.shape[0]
+        old_m = table.shape[1]
         if n <= old_n and m <= old_m:
-            st.session_state.table = st.session_state.table.iloc[:n, :m]
-            return st.session_state.table
+            setattr(st.session_state, f"table_{i}", table.iloc[:n, :m])
         elif n > old_n:
-            st.session_state.table = pd.concat([st.session_state.table,
-                                                      pd.DataFrame(np.random.randint(1, 100, (n - old_n, m)),
-                                                                   columns=[
-                                                          f"Column Entity {i+1}" for i in range(m)],
-                                                          index=[f"Row Entity {i+1}" for i in range(old_n, n)])],
-                                                     axis=0)
-            return st.session_state.table
+            setattr(st.session_state, f"table_{i}", pd.concat([table, 
+                                                               pd.DataFrame(np.random.randint(1, 100, (n - old_n, m)),
+                                                                            columns=[
+                                                                                f"Column Entity {i+1}" for i in range(m)],
+                                                                            index=[f"Row Entity {i+1}" for i in range(old_n, n)])],
+                                                              axis=0))
         elif m > old_m:
-            st.session_state.table = pd.concat([st.session_state.table,
-                                                      pd.DataFrame(np.random.randint(1, 100, (n, m - old_m)),
-                                                                   columns=[
-                                                          f"Column Entity {i+1}" for i in range(old_m, m)],
-                                                          index=[f"Row Entity {i+1}" for i in range(n)])],
-                                                     axis=1)
-            return st.session_state.table
+            setattr(st.session_state, f"table_{i}", pd.concat([table, 
+                                                               pd.DataFrame(np.random.randint(1, 100, (n, m - old_m)),
+                                                                            columns=[
+                                                                                f"Column Entity {i+1}" for i in range(old_m, m)],
+                                                                            index=[f"Row Entity {i+1}" for i in range(n)])],
+                                                              axis=1))
         else:
-            st.session_state.table = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Column Entity {i+1}" for i in range(m)],
-                                                        index=[f"Row Entity {i+1}" for i in range(n)])
-            return st.session_state.table
+            raise ValueError("Cannot alter both dimensions of table at the same time.")
+    else:
+        setattr(st.session_state, f"table_{i}", pd.DataFrame(np.random.randint(1, 100, (n, m)), 
+                                                             columns=[f"Column Entity {i+1}" for i in range(m)],
+                                                             index=[f"Row Entity {i+1}" for i in range(n)]))
+    return getattr(st.session_state, f"table_{i}")
 
-    table_default = pd.DataFrame(np.random.randint(1, 100, (n, m)), columns=[f"Column Entity {i+1}" for i in range(m)],
-                                           index=[f"Row Entity {i+1}" for i in range(n)])
-    st.session_state.table = table_default
-    return st.session_state.table
 
-def tchange_callback(table):
+def tchange_callback(table, i):
     for col in table.columns:
         table[col] = table[col].apply(
             lambda x: int(float(x)))
-    st.session_state.table = table
+    setattr(st.session_state, f"table_{i}", table)
 
 
 def main():
@@ -244,20 +241,22 @@ def generate_widget_config():
             col1.write("💡 You may use this to specify string arguments for your algorithm.")
         elif widget_type == "Table Input":
             # Add input components
-            subcol1, subcol2, _ = st.columns([0.4,0.4,0.2])
-            min_col, max_col = subcol1.slider("Allowed number of column entities (e.g. items)", min_value=0, max_value=1000, value=(2, 100), step=1, 
-                         key=f"{i}_item_slider")
-            min_row, max_row = subcol2.slider("Allowed number of row entities (e.g. agents)", min_value=0, max_value=1000, value=(2, 100), step=1, 
-                         key=f"{i}_agent_slider")
+            subcol1, subcol2, _ = st.columns([0.3,0.3,0.4])
+            # min_col, max_col = subcol1.slider("Allowed number of column entities (e.g. items)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+            #              key=f"{i}_item_slider")
+            # min_row, max_row = subcol2.slider("Allowed number of row entities (e.g. agents)", min_value=0, max_value=1000, value=(2, 100), step=1, 
+            #              key=f"{i}_agent_slider")
+            min_col, max_col = 2, 100
+            min_row, max_row = 2, 100
             m = subcol1.number_input("Number of Column Entities (n)",
-                                min_value=min_col, max_value=max_col, step=1)
+                                min_value=min_col, max_value=max_col, step=1, key=f"{i}_nbr_col")
             n = subcol2.number_input("Number of Row Entities (m)", min_value=min_row,
-                                max_value=max_row, value=3, step=1)
-            table = load_table(m, n)
+                                max_value=max_row, value=3, step=1, key=f"{i}_nbr_row")
+            table = load_table(m, n, i)
             for col in table.columns:
                 table[col] = table[col].map(str)
             edited_table = st.data_editor(table,
-                                        key="table_editor",
+                                        key=f"table_editor_{i}",
                                         column_config={
                                             f"Column Entity {j}": st.column_config.TextColumn(
                                                 f"Column Entity {j}",
@@ -275,14 +274,10 @@ def generate_widget_config():
                                             ),
                                         },
                                         on_change=partial(
-                                            tchange_callback, table),
+                                            tchange_callback, table, i),
                                         )
             with st.spinner('Updating...'):
-                for col in edited_table.columns:
-                    edited_table[col] = edited_table[col].apply(
-                        lambda x: int(float(x)))
-                st.session_state.table = edited_table
- 
+                tchange_callback(edited_table, i)
             col1.write("💡 You may use this to collect tabular inputs (e.g. Row Entity table).")
         else:
             col1.checkbox("Example check box", value=True, 
@@ -315,8 +310,45 @@ def generate_widget_config():
 # Function to generate code
 def generate_code(algorithm_name, input_widget_config):
     # Code template
-    code = f"""
+    code = """
 import streamlit as st
+
+# auxiliary functions (necessary if table inputs are used)
+def load_table(m, n, i): # i-th table
+    if hasattr(st.session_state, f"table_{i}"):
+        table = getattr(st.session_state, f"table_{i}")
+        old_n = table.shape[0]
+        old_m = table.shape[1]
+        if n <= old_n and m <= old_m:
+            setattr(st.session_state, f"table_{i}", table.iloc[:n, :m])
+        elif n > old_n:
+            setattr(st.session_state, f"table_{i}", pd.concat([table, 
+                                                               pd.DataFrame(np.random.randint(1, 100, (n - old_n, m)),
+                                                                            columns=[
+                                                                                f"Column Entity {i+1}" for i in range(m)],
+                                                                            index=[f"Row Entity {i+1}" for i in range(old_n, n)])],
+                                                              axis=0))
+        elif m > old_m:
+            setattr(st.session_state, f"table_{i}", pd.concat([table, 
+                                                               pd.DataFrame(np.random.randint(1, 100, (n, m - old_m)),
+                                                                            columns=[
+                                                                                f"Column Entity {i+1}" for i in range(old_m, m)],
+                                                                            index=[f"Row Entity {i+1}" for i in range(n)])],
+                                                              axis=1))
+        else:
+            raise ValueError("Cannot alter both dimensions of table at the same time.")
+    else:
+        setattr(st.session_state, f"table_{i}", pd.DataFrame(np.random.randint(1, 100, (n, m)), 
+                                                             columns=[f"Column Entity {i+1}" for i in range(m)],
+                                                             index=[f"Row Entity {i+1}" for i in range(n)]))
+    return getattr(st.session_state, f"table_{i}")
+
+
+def tchange_callback(table, i):
+    for col in table.columns:
+        table[col] = table[col].apply(
+            lambda x: int(float(x)))
+    setattr(st.session_state, f"table_{i}", table)
 
 # Input Widgets
 input_data = dict()
@@ -339,7 +371,51 @@ input_data['{widget_name}'] = st.slider("{widget_name}:")
             code += f"""
 input_data['{widget_name}'] = st.checkbox("{widget_name}")
 """
+        elif widget_type == "Table Input":
+            code += """
+i = ... # replace i with the index of table (ith table; avoid collision of session states).
 
+# adjust limit of table sizes (and row/col names) if necessary.
+min_col, max_col = 2, 100
+min_row, max_row = 2, 100
+
+m = subcol1.number_input("Number of Column Entities (n)",
+                    min_value=min_col, max_value=max_col, step=1, key=f"{i}_nbr_col")
+n = subcol2.number_input("Number of Row Entities (m)", min_value=min_row,
+                    max_value=max_row, value=3, step=1, key=f"{i}_nbr_row")
+
+table = load_table(m, n, i)
+for col in table.columns:
+    table[col] = table[col].map(str)  # map to string for regex verification
+
+edited_table = st.data_editor(table,
+                            key=f"table_editor_{i}",
+                            column_config={
+                                f"Column Entity {j}": st.column_config.TextColumn(
+                                    f"Column Entity {j}",
+                                    max_chars=4,
+                                    validate=r"^(?:1000|[1-9]\d{0,2}|0)$",
+                                    required=True,
+                                )
+                                for j in range(1, m+1)
+                            }
+                            |
+                            {
+                                "_index": st.column_config.Column(
+                                    "💡 Hint",
+                                    disabled=True,
+                                ),
+                            },
+                            on_change=partial(
+                                tchange_callback, table, i),
+                            )            
+"""
+            code += f"""
+
+input_data['{widget_name}']  = edited_table.values # convert pd.dataframe to python lists
+            """
+            
+            
     code += f"""
 # Algorithm Function
 def {algorithm_name}(input_data):
