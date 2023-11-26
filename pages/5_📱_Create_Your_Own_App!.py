@@ -312,7 +312,10 @@ def generate_code(algorithm_name, input_widget_config):
     # Code template
     code = """
 import streamlit as st
-
+    """
+    
+    if "Table Input" in input_widget_config.values():
+        code += """
 # auxiliary functions (necessary if table inputs are used)
 def load_table(m, n, i): # i-th table
     if hasattr(st.session_state, f"table_{i}"):
