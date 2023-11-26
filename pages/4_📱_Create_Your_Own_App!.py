@@ -123,18 +123,13 @@ def main():
     input_widget_config = generate_widget_config()
     col1, _ = st.columns([0.8,0.2])
     col1.code(input_widget_config, language="python")
-
-    # Pseudo-algorithm
-    st.header("Pseudo-Algorithm")
-    pseudo_algorithm = st.text_area(f"Enter pseudo-algorithm for *{algorithm_name}*:", value=f"Write your algorithm's body here.", help="Please do not include your algorithm signature. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
-    st.code(pseudo_algorithm, language="plaintext")
     
     algorithm_name = algorithm_name.replace(' ', "_")
 
     # Generate code button
     if st.button("Generate Code"):
         # Generate the code
-        code = generate_code(algorithm_name, input_widget_config, pseudo_algorithm)
+        code = generate_code(algorithm_name, input_widget_config)
 
         # Display the generated code
         st.header("Generated Code")
@@ -190,7 +185,7 @@ def generate_widget_config():
         with col2:
             widget_type = st.selectbox(
                 f"Widget {i+1} type:",
-                options=["Text Input", "Number Input", "Slider", "Checkbox"],
+                options=["Text Input", "Table Input", "Number Input", "Slider", "Checkbox"],
             )
             
         col1, _ = st.columns([0.6,0.4])
@@ -203,6 +198,11 @@ def generate_widget_config():
                         help="You may use this to restrict the range of random preference values.", key=f"{i}_slider")
             col1.write("💡 You may use this to restrict the range of random preference values.")
         elif widget_type == "Text Input":
+            output_ = col1.text_input("Example test input box", value="Type some text here", max_chars=100, 
+                            help="You may use this to specify textual inputs for your algorithm.", key=f"{i}_text")
+            col1.code("You typed: "+output_, language="plaintext")
+            col1.write("💡 You may use this to specify string arguments for your algorithm.")
+        elif widget_type == "Table Input":
             output_ = col1.text_input("Example test input box", value="Type some text here", max_chars=100, 
                             help="You may use this to specify textual inputs for your algorithm.", key=f"{i}_text")
             col1.code("You typed: "+output_, language="plaintext")
@@ -236,16 +236,7 @@ def generate_widget_config():
 
 
 # Function to generate code
-def generate_code(algorithm_name, input_widget_config, pseudo_algorithm):
-    # Remove leading/trailing whitespaces
-    algorithm_code = pseudo_algorithm.strip()
-
-    # Replace common keywords/phrases with their corresponding Python syntax
-    algorithm_code = re.sub(r'\bloop\b', 'for i in range(n):', algorithm_code)
-    algorithm_code = re.sub(r'\bif\b', 'if condition:', algorithm_code)
-    algorithm_code = re.sub(r'\belse\b', 'else:', algorithm_code)
-    algorithm_code = re.sub(r'\bprint\b', 'print()', algorithm_code)
-
+def generate_code(algorithm_name, input_widget_config):
     # Code template
     code = f"""
 import streamlit as st
@@ -273,15 +264,9 @@ input_data['{widget_name}'] = st.checkbox("{widget_name}")
 """
 
     code += f"""
-# Pseudo-Algorithm
-'''
-{pseudo_algorithm}
-'''
-
 # Algorithm Function
 def {algorithm_name}(input_data):
-    # Algorithm code goes here (based on your pseudo-codes)
-    {algorithm_code}
+    # Your algorithm code goes here
     pass
 
 # Execute the algorithm function
