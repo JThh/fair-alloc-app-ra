@@ -315,7 +315,13 @@ import streamlit as st
     """
     
     if "Table Input" in input_widget_config.values():
-        code += """
+        code = """
+import numpy as np
+import pandas as pd    
+import streamlit as st    
+
+from functools import partial
+
 # auxiliary functions (necessary if table inputs are used)
 def load_table(m, n, i): # i-th table
     if hasattr(st.session_state, f"table_{i}"):
