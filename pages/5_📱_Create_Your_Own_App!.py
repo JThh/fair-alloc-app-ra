@@ -164,8 +164,9 @@ def main():
     # Algorithm
     st.header("Algorithm Codes (in Python)")
     algorithm = st.text_area(f"Enter executable algorithm codes for *{algorithm_name}*:", 
-                             value=f"def {algorithm_name}(input_data): 
-                                        # Write your algorithm's body here (with input_data as provided above; if you feel unsure about the input data format, click 'Generate Code' first.).", 
+                             value=f"""def {algorithm_name}(input_data): 
+                                        # Write your algorithm's body here (with input_data as provided above; if you feel unsure about the input data format, click 'Generate Code' first.).
+                                        """, 
                              help="Please do not include your algorithm signature. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
     st.code(algorithm, language="python")
     
