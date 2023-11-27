@@ -161,12 +161,20 @@ def main():
     col1, _ = st.columns([0.8,0.2])
     col1.code(input_widget_config, language="python")
     
+    # Algorithm
+    st.header("Algorithm Codes (in Python)")
+    algorithm = st.text_area(f"Enter executable algorithm codes for *{algorithm_name}*:", 
+                             value=f"def {algorithm_name}(input_data): 
+                                        # Write your algorithm's body here (with input_data as provided above; if you feel unsure about the input data format, click 'Generate Code' first.).", 
+                             help="Please do not include your algorithm signature. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
+    st.code(algorithm, language="python")
+    
     algorithm_name = algorithm_name.replace(' ', "_")
 
     # Generate code button
     if st.button("Generate Code"):
         # Generate the code
-        code = generate_code(algorithm_name, input_widget_config)
+        code = generate_code(algorithm, algorithm_name, input_widget_config)
 
         # Display the generated code
         st.header("Generated Code")
@@ -308,7 +316,7 @@ def generate_widget_config():
 
 
 # Function to generate code
-def generate_code(algorithm_name, input_widget_config):
+def generate_code(algorithm, algorithm_name, input_widget_config):
     # Code template
     code = """
 import streamlit as st
@@ -429,7 +437,7 @@ input_data['{widget_name}']  = edited_table.values # convert pd.dataframe to pyt
 # Algorithm Function
 def {algorithm_name}(input_data):
     # Your algorithm code goes here
-    pass
+    {algorithm}
 
 # Execute the algorithm function
 result = {algorithm_name}(input_data)
