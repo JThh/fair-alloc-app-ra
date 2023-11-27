@@ -171,7 +171,7 @@ def main():
                                 value=f"""def {algorithm_name}(input_data): 
     # Write or paste your algorithm's body below
                                             """, 
-                                help="If you feel unsure about the input data format, click 'Generate Code' first. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
+                                help="If unsure about the input data format, click 'Generate Code' first. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
         st.code(algorithm, language="python")
     
 
