@@ -1,6 +1,6 @@
 ## Contribution Guideline for the Community
 
-Please check out [the app](https://fair-alloc.streamlit.app/Create_Your_Own_App!) and generate code templates before proceeding with the rest steps!
+Please check out [the app](https://fair-alloc.streamlit.app/Create_Your_Own_App!) and generate code templates before proceeding with the remaining steps!
 
 The code templates can be as below. You should refer to the [Streamlit guide](https://docs.streamlit.io/library/api-reference/widgets) to adjust the actual function arguments (our template just provides the bare minimum version). For example, for `st.slider`, you can set the `min_value`, `max_value`, `step`, as well as `value`. 
 
