@@ -240,15 +240,15 @@ def generate_widget_config():
         col1, _ = st.columns([0.6,0.4])
         if widget_type == "Number Input":
             col1.number_input("Example number input widget", value=5, step=1, 
-                              help="You may use this for eliciting number of Row Entitys or Column Entitys.", key=f"{i}_number")
-            col1.write("💡 You may use this for entering the number of Row Entitys or Column Entitys.")
+                              help="You may use this for eliciting number of items or agents.", key=f"{i}_number")
+            col1.write("💡 You may use this for entering the number of items or agents.")
         elif widget_type == "Slider":
             col1.slider("Example slider", min_value=-100, max_value=100, value=(-10, 10), step=1, 
                         help="You may use this to restrict the range of random preference values.", key=f"{i}_slider")
             col1.write("💡 You may use this to restrict the range of random preference values.")
         elif widget_type == "Text Input":
             output_ = col1.text_input("Example test input box", value="Type some text here", max_chars=100, 
-                            help="You may use this to specify textual inputs for your algorithm.", key=f"{i}_text")
+                            help="You may use this to specify textual inputs for your algorithm (e.g. agent names).", key=f"{i}_text")
             col1.code("You typed: "+output_, language="plaintext")
             col1.write("💡 You may use this to specify string arguments for your algorithm.")
         elif widget_type == "Table Input":
