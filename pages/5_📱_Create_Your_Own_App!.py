@@ -169,7 +169,7 @@ def main():
     with col1:
         algorithm = st.text_area(f"Enter executable Python codes for *{algorithm_name}*:", 
                                 value=f"""def {algorithm_name}(input_data): 
-        # Write your algorithm's body below
+    # Write your algorithm's body below
                                             """, 
                                 help="If you feel unsure about the input data format, click 'Generate Code' first. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
         st.code(algorithm, language="python")
@@ -438,7 +438,6 @@ input_data['{widget_name}']  = edited_table.values # convert pd.dataframe to pyt
             
             
     code += f"""
-# Your algorithm code goes here
 {algorithm}
 
 # Execute the algorithm function
