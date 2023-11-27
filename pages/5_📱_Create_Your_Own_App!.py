@@ -334,7 +334,7 @@ import streamlit as st
 
 from functools import partial
 
-# auxiliary functions (necessary if table inputs are used)
+# NOTE (need not change): auxiliary functions (necessary if table inputs are used)
 def load_table(m, n, i): # i-th table
     if hasattr(st.session_state, f"table_{i}"):
         table = getattr(st.session_state, f"table_{i}")
@@ -394,7 +394,7 @@ input_data['{widget_name}'] = st.checkbox("{widget_name}")
 """
         elif widget_type == "Table Input":
             code += """
-i = ... # replace i with the index of table (ith table; avoid collision of session states).
+i = ... # TODO: replace i with the index of table (ith table; avoid collision of session states).
 
 # adjust limit of table sizes (and row/col names) if necessary.
 min_col, max_col = 2, 100
@@ -433,7 +433,7 @@ edited_table = st.data_editor(table,
 """
             code += f"""
 
-input_data['{widget_name}']  = edited_table.values # convert pd.dataframe to python lists
+input_data['{widget_name}'] = edited_table.values # convert pd.dataframe to python lists
             """
             
             
