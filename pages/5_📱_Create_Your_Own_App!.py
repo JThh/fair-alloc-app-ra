@@ -141,7 +141,7 @@ def main():
         <ol>
             <li>Name your algorithm by providing a descriptive title.</li>
             <li>Configure the input widgets to elicit the necessary inputs for your algorithm.</li>
-            <li>Enter or paste the algorithm logic in pseudo-code format.</li>
+            <li>Enter or paste the algorithm code into the text box.</li>
             <li>Follow the remaining instructions to launch your custom app!</li>
         </ol>
 
@@ -164,10 +164,10 @@ def main():
     algorithm_name = algorithm_name.replace(' ', "_")
     
     # Algorithm
-    st.header("Algorithm Codes")
+    st.header("Algorithm Code")
     col1, _ = st.columns([0.8,0.2])
     with col1:
-        algorithm = st.text_area(f"Enter executable Python codes for *{algorithm_name}*:", 
+        algorithm = st.text_area(f"Enter executable Python code for *{algorithm_name}*:", 
                                 value=f"""def {algorithm_name}(input_data): 
     # Write or paste your algorithm's body below
                                             """, 

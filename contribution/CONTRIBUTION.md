@@ -4,7 +4,7 @@ Please check out [the app](https://fair-alloc.streamlit.app/Create_Your_Own_App!
 
 The code templates can be as below. You should refer to the [Streamlit guide](https://docs.streamlit.io/library/api-reference/widgets) to adjust the actual function arguments (our template just provides the bare minimum version). For example, for `st.slider`, you can set the `min_value`, `max_value`, `step`, as well as `value`. 
 
-Also, for the actual algorithm codes, you should implement the Python codes for yourself based on your entered pseudocodes. You may take the bottom code snippet as a good reference.
+Also, you should implement the actual fair division logic by writing the algorithm code in Python. You may take the bottom code snippet (_e.g. function Weighted_Envy_Freeness_up_to_1_Item_) as a good reference.
 
 If you face any difficulty in implementing the app, feel free to [email us](mailto:julius.han@outlook.com?cc=warut@comp.nus.edu.sg&subject=Generated_Weighted_Fair_Allocation) for help.
 
