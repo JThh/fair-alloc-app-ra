@@ -334,7 +334,7 @@ import streamlit as st
 
 from functools import partial
 
-# NOTE (need not change): auxiliary functions (necessary if table inputs are used)
+# NOTE: auxiliary functions (necessary if table inputs are used)
 def load_table(m, n, i): # i-th table
     if hasattr(st.session_state, f"table_{i}"):
         table = getattr(st.session_state, f"table_{i}")
