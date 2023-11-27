@@ -163,14 +163,13 @@ def main():
     
     # Algorithm
     st.header("Algorithm Codes")
-    col1, col2 = st.columns([0.5,0.5])
+    col1, _ = st.columns([0.8,0.2])
     with col1:
         algorithm = st.text_area(f"Enter executable Python codes for *{algorithm_name}*:", 
                                 value=f"""def {algorithm_name}(input_data): 
         # Write your algorithm's body here (with input_data as provided above).
                                             """, 
                                 help="If you feel unsure about the input data format, click 'Generate Code' first. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
-    with col2:
         st.code(algorithm, language="python")
     
     algorithm_name = algorithm_name.replace(' ', "_")
