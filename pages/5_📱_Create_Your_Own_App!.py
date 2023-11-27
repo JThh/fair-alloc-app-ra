@@ -161,6 +161,8 @@ def main():
     col1, _ = st.columns([0.8,0.2])
     col1.code(input_widget_config, language="python")
     
+    algorithm_name = algorithm_name.replace(' ', "_")
+    
     # Algorithm
     st.header("Algorithm Codes")
     col1, _ = st.columns([0.8,0.2])
@@ -172,7 +174,6 @@ def main():
                                 help="If you feel unsure about the input data format, click 'Generate Code' first. Refer to this guide for more instructions: https://github.com/JThh/fair-alloc-app-ra/blob/new_main/contribution/CONTRIBUTION.md")
         st.code(algorithm, language="python")
     
-    algorithm_name = algorithm_name.replace(' ', "_")
 
     # Generate code button
     if st.button("Generate Code"):
@@ -437,10 +438,8 @@ input_data['{widget_name}']  = edited_table.values # convert pd.dataframe to pyt
             
             
     code += f"""
-# Algorithm Function
-def {algorithm_name}(input_data):
-    # Your algorithm code goes here
-    {algorithm}
+# Your algorithm code goes here
+{algorithm}
 
 # Execute the algorithm function
 result = {algorithm_name}(input_data)
