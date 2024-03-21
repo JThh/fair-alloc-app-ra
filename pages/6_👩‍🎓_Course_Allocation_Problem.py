@@ -11,323 +11,16 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import fairpyx
+
+#--- Settings ---#
 MIN_AGENTS = 2
 MAX_AGENTS = 500
 MIN_ITEMS = 3
 MAX_ITEMS = 100
 MAX_POINTS = 1000
-pref_obj = None
-
-def load_table(rows,cols,table="table", upload_csv=False, shuffle=False,*args, **kwargs):
-    pass
 
 
-# Transform agent/item names into their corresponding index positions.
-def pindex(name: str) -> int:
-    return int(name.split()[1])-1
-
-def get_rank(agent,item):
-    return preferences[pindex(agent),pindex(item)]
-
-def generate_random_integers_array(m,n):
-    preferences = []
-    for i in range(n):
-        random_array = np.random.randint(0, 100, m)
-        scaled_array = random_array / random_array.sum() * MAX_POINTS
-        rounded_array = np.round(scaled_array).astype(int)
-        rounded_array[-1] += MAX_POINTS - rounded_array.sum()
-        preferences.append(random_array)
-    return preferences
-
-def load_capacities(m, upload_capacities = False, shuffle = False):
-    MAX_CAPACITY = 100
-    MIN_CAPACITY = 10
-    print(upload_capacities,shuffle)
-    if hasattr(st.session_state, "capacities"):
-        if upload_capacities:
-            capacities_default = None
-            # Load the user-uploaded capacities file
-            try:
-                capacities_default = pd.read_csv(
-                    upload_capacities, index_col=0)
-                if capacities_default.shape != (m,1):
-                    x, y = capacities_default.shape
-                    st.session_state.capacities.iloc[:x,
-                                                      :y] = capacities_default
-                else:
-                    st.session_state.capacities = pd.DataFrame(capacities_default,
-                                                                columns=st.session_state.capacities.columns,
-                                                                index=st.session_state.capacities.index)
-                return st.session_state.capacities
-            except Exception as e:
-                st.error(f"An error occurred while loading the capacities file.")
-                logging.debug("file uploding error: ", e)
-                st.stop()
-                
-        old_m = st.session_state.capacities.shape[0]     
-   
-        if shuffle:
-            random_ranks = np.random.randint(MIN_CAPACITY, MAX_CAPACITY,(m))
-            print("ranks: ",random_ranks)
-            st.session_state.capacities = pd.DataFrame(random_ranks,
-                                                                   columns=[
-                                                          "Capacity"],
-                                                          index=[f"Item {i+1}" for i in range(m)])
-            print(st.session_state.capacities)
-            return st.session_state.capacities
-        
-        
-        if m <= old_m:
-            st.session_state.capacities = st.session_state.capacities.iloc[:m, :1]
-            return st.session_state.capacities
-        elif m > old_m:
-            st.session_state.capacities = pd.concat([st.session_state.capacities,
-                                                      pd.DataFrame(np.random.randint(MIN_CAPACITY, MAX_CAPACITY, (m - old_m,1)),
-                                                                   columns=["Capacity"],
-                                                          index=[f"Item {i+1}" for i in range(old_m, m)])],
-                                                     )
-            return st.session_state.capacities
-        
-    if upload_capacities:
-            capacities_default = None
-            # Load the user-uploaded capacities file
-            try:
-                capacities_default = pd.read_csv(upload_capacities)
-                if capacities_default.shape != (m, 1):
-                    st.error(
-                        f"The uploaded capacities file should have a shape of ({m}, {1}).")
-                    st.stop()
-            except Exception as e:
-                st.error("An error occurred while loading the capacities file.")
-                st.stop()
-    else:
-        capacities_default = pd.DataFrame(np.random.randint(MIN_CAPACITY,MAX_CAPACITY, (m)), 
-                                        columns=["Capacity"],
-                                        index=[f"Item {i+1}" for i in range(m)])
-        print(capacities_default)
-    st.session_state.capacities = capacities_default
-    return st.session_state.capacities
-
-# Load Requirements
-def load_requirements(n, upload_requirements = False, shuffle = False):
-    MAX_REQUIREMENT = 10
-    MIN_REQUIREMENT = 1
-    print(upload_requirements,shuffle)
-    if hasattr(st.session_state, "requirements"):
-        if upload_requirements:
-            requirements_default = None
-            # Load the user-uploaded requirements file
-            try:
-                requirements_default = pd.read_csv(
-                    upload_requirements, index_col=0)
-                if requirements_default.shape != (n,1):
-                    x, y = requirements_default.shape
-                    st.session_state.requirements.iloc[:x,
-                                                      :y] = requirements_default
-                else:
-                    st.session_state.requirements = pd.DataFrame(requirements_default,
-                                                                columns=st.session_state.requirements.columns,
-                                                                index=st.session_state.requirements.index)
-                return st.session_state.requirements
-            except Exception as e:
-                st.error(f"An error occurred while loading the requirements file.")
-                logging.debug("file uploding error: ", e)
-                st.stop()
-                
-        old_n = st.session_state.requirements.shape[0]     
-   
-        if shuffle:
-            random_ranks = np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT,(n))
-            print("ranks: ",random_ranks)
-            st.session_state.requirements = pd.DataFrame(random_ranks,
-                                                                   columns=[
-                                                          "Requirement"],
-                                                          index=[f"Agent {i+1}" for i in range(n)])
-            print(st.session_state.requirements)
-            return st.session_state.requirements
-        
-        
-        if n <= old_n:
-            st.session_state.requirements = st.session_state.requirements.iloc[:n, :1]
-            return st.session_state.requirements
-        elif n > old_n:
-            st.session_state.requirements = pd.concat([st.session_state.requirements,
-                                                      pd.DataFrame(np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT, (n - old_n,1)),
-                                                                   columns=[
-                                                          "Requirement"],
-                                                          index=[f"Agent {i+1}" for i in range(old_n, n)])],
-                                                     )
-            return st.session_state.requirements
-        
-    if upload_requirements:
-            requirements_default = None
-            # Load the user-uploaded requirements file
-            try:
-                requirements_default = pd.read_csv(upload_requirements)
-                if requirements_default.shape != (n, 1):
-                    st.error(
-                        f"The uploaded requirements file should have a shape of ({n}, {1}).")
-                    st.stop()
-            except Exception as e:
-                st.error("An error occurred while loading the requirements file.")
-                st.stop()
-    else:
-        requirements_default = pd.DataFrame(np.random.randint(MIN_REQUIREMENT,MAX_REQUIREMENT, (n)), 
-                                        columns=["Requirement"],
-                                        index=[f"Agent {i+1}" for i in range(n)])
-        print(requirements_default)
-    st.session_state.requirements = requirements_default
-    return st.session_state.requirements
-
-# Load Preferences
-def load_preferences(m, n, upload_preferences = False, shuffle = False):
-    if hasattr(st.session_state, "preferences"):
-        if upload_preferences:
-            preferences_default = None
-            # Load the user-uploaded preferences file
-            try:
-                preferences_default = pd.read_csv(
-                    upload_preferences, index_col=0)
-                if preferences_default.shape != (n, m):
-                    x, y = preferences_default.shape
-                    st.session_state.preferences.iloc[:x,
-                                                      :y] = preferences_default
-                else:
-                    st.session_state.preferences = pd.DataFrame(preferences_default,
-                                                                columns=st.session_state.preferences.columns,
-                                                                index=st.session_state.preferences.index)
-                return st.session_state.preferences
-            except Exception as e:
-                st.error(f"An error occurred while loading the preferences file.")
-                logging.debug("file uploding error: ", e)
-                st.stop()
-                
-        old_n = st.session_state.preferences.shape[0]
-        old_m = st.session_state.preferences.shape[1]     
-   
-        if shuffle:
-            random_ranks = generate_random_integers_array(m,n)
-            st.session_state.preferences = pd.DataFrame(random_ranks,
-                                                                   columns=[
-                                                          f"Item {i+1}" for i in range(m)],
-                                                          index=[f"Agent {i+1}" for i in range(n)])
-            print(st.session_state.preferences)
-            return st.session_state.preferences
-        
-        
-        if n <= old_n and m <= old_m:
-            st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
-            return st.session_state.preferences
-        elif n > old_n:
-            st.session_state.preferences = pd.concat([st.session_state.preferences,
-                                                      pd.DataFrame(generate_random_integers_array(m,n - old_n),
-                                                                   columns=[
-                                                          f"Item {i+1}" for i in range(m)],
-                                                          index=[f"Agent {i+1}" for i in range(old_n, n)])],
-                                                     axis=0)
-            return st.session_state.preferences
-        elif m > old_m:
-            st.session_state.preferences =  pd.concat([st.session_state.preferences,
-                                                      pd.DataFrame(np.random.randint(1,MAX_POINTS,(n, m - old_m)),
-                                                                   columns=[
-                                                          f"Item {i+1}" for i in range(old_m,m)],
-                                                          index=[f"Agent {i+1}" for i in range(n)])],
-                                                     axis=1)
-            return st.session_state.preferences
-        else:
-            random_ranks = generate_random_integers_array(m,n)
-            st.session_state.preferences = pd.DataFrame(random_ranks, columns=[f"Item {i+1}" for i in range(m)],
-                                                        index=[f"Agent {i+1}" for i in range(n)])
-            return st.session_state.preferences
-
-    if upload_preferences:
-        preferences_default = None
-        # Load the user-uploaded preferences file
-        try:
-            preferences_default = pd.read_csv(upload_preferences)
-            if preferences_default.shape != (n, m):
-                st.error(
-                    f"The uploaded preferences file should have a shape of ({n}, {m}).")
-                st.stop()
-        except Exception as e:
-            st.error("An error occurred while loading the preferences file.")
-            st.stop()
-    else:
-        random_ranks = generate_random_integers_array(m,n)
-        preferences_default = pd.DataFrame(random_ranks,
-                                                                   columns=[
-                                                          f"Item {i+1}" for i in range(m)],
-                                                          index=[f"Agent {i+1}" for i in range(n)])
-    st.session_state.preferences = preferences_default
-    return st.session_state.preferences
-
-
-# Preference Change Callback: used in Streamlit widget on_click / on_change
-def change_callback(table):
-    for col in table.columns:
-        table[col] = table[col].apply(
-            lambda x: int(float(x)))
-    return table
-
-def preference_change_callback(preferences):
-    st.session_state.preferences = change_callback(preferences)
-
-def capacity_change_callback(capacities):
-    st.session_state.capacities = change_callback(capacities)
-
-def requirement_change_callback(requirements):
-    st.session_state.requirements = change_callback(requirements)
-
-# Algorithm Implementation
-def algorithm(m, n, capacities, requirements, preferences, compensation=False):
-    pref_dict = {}
-    capa_dict = {}
-    req_dict = {}
-    agents_conflicts = {}
-    items_conflicts = {}
-    print("requirements: ", requirements)
-    print("capacities: ", capacities)
-    for i in range(n):
-        pref_dict[f"Agent {i+1}"] = {}
-        req_dict[f"Agent {i+1}"] = requirements[i,0]
-        agents_conflicts[f"Agent {i+1}"] = {}
-        for j in range(m):
-            pref_dict[f"Agent {i+1}"][f"Item {j+1}"] = preferences[i,j]
-    for i in range(m):
-        capa_dict[f"Item {i+1}"] = capacities[i,0]
-        items_conflicts[f"Item {i+1}"] = {}
-        
-    print("agents req: ",req_dict)
-    print("items capa: ", capa_dict)
-    print("pref: ", pref_dict)
-    print("items conf: ", items_conflicts)
-    print("agents conf: ",agents_conflicts)
-    instance = fairpyx.Instance(
-        agent_capacities=req_dict, 
-        valuations=pref_dict,
-        item_capacities=capa_dict,
-        item_conflicts=items_conflicts,
-        agent_conflicts=agents_conflicts,
-        )
-
-    algorithm = fairpyx.algorithms.iterated_maximum_matching
-    # string_explanation_logger = fairpyx.StringsExplanationLogger(instance.agents)
-    string_explanation_logger = fairpyx.StringsExplanationLogger({
-        agent for agent in instance.agents
-    },language='he', mode='w', encoding="utf-8")
-    
-    allocation = fairpyx.divide(algorithm=algorithm, instance=instance, explanation_logger=string_explanation_logger, adjust_utilities=compensation)
-    return allocation,string_explanation_logger, instance
-
-# Checker Function for Algorithm - 
-def algorithm_checker(instance,allocation):
-    matrix:fairpyx.AgentBundleValueMatrix = fairpyx.AgentBundleValueMatrix(instance, allocation)
-    result_vector = [["Utilitarian value", matrix.utilitarian_value()],
-                      ["Egalitarian value", matrix.egalitarian_value()],
-                       ["Max envy", matrix.max_envy()],
-                         ["Mean envy", matrix.mean_envy()]]
-    logging.debug('Result Vector:', result_vector)
-    return result_vector
+#--- Page elements ---#
 
 # Set page configuration
 st.set_page_config(
@@ -336,6 +29,7 @@ st.set_page_config(
     layout="wide",
 )
 
+# Set page style
 st.markdown(
     """
     <style>
@@ -403,9 +97,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Page title
 st.markdown('<h1 class="header">Fast and Efficient Matching</h1>',
             unsafe_allow_html=True)
 
+# Page sidebar - User guide
 # Insert header image
 st.sidebar.image("./resource/students.jpg", use_column_width=True,)
 
@@ -454,17 +150,23 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
-# Add input components
+# Divide the page to 3 columns.
 col1, col2, col3 = st.columns(3)
+
+#--- Input components ---#
+# n agents and m items
 n = col1.number_input("Number of Agents (n)",
                       min_value=MIN_AGENTS, max_value=MAX_AGENTS, step=1)
 m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
                       max_value=MAX_ITEMS, value=MIN_ITEMS, step=1)
 
+
+# Upload input as csv file buttons
 upload_preferences = None
 upload_capacities = None
 upload_requirements = None
 
+# Locate the upload buttons
 with col1:
     if st.checkbox("⭐ Upload Local Capacities CSV"):
         upload_capacities = st.file_uploader(
@@ -476,21 +178,105 @@ with col2:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({m}, {1})", type=['csv'])
+
+# Shuffle data button
+shuffle = st.button('Shuffle All Data')
+
+# Table Change Callback: used in Streamlit widget on_click / on_change
+def change_callback(table):
+    for col in table.columns:
+        table[col] = table[col].apply(
+            lambda x: int(float(x)))
+    return table
         
-# Agent Preferences
+#--- Item capacities ---#
 st.write("📊 Items Capacities (10-100, copyable from local sheets):")
 
-shuffle = st.button('Shuffle All Data')
-# Capacities
-#shuffle_capa = st.button('Shuffle Capacities')
+# Load Capacities - handle table initialization and changes
+def load_capacities(m, upload_capacities = False, shuffle = False):
+    MAX_CAPACITY = 100
+    MIN_CAPACITY = 10
 
+    if hasattr(st.session_state, "capacities"): # if capacities table is exist
+        if upload_capacities:                   # if user clicked on upload button
+            capacities_default = None
+            # Load the user-uploaded capacities file
+            try:
+                capacities_default = pd.read_csv(
+                    upload_capacities, index_col=0)
+                
+                if capacities_default.shape != (m,1): # if size doesn't match the input
+                    x, y = capacities_default.shape
+                    st.session_state.capacities.iloc[:x,
+                                                      :y] = capacities_default
+                else:
+                    st.session_state.capacities = pd.DataFrame(capacities_default,
+                                                                columns=st.session_state.capacities.columns,
+                                                                index=st.session_state.capacities.index)
+                return st.session_state.capacities
+            
+            except Exception as e:
+                st.error(f"An error occurred while loading the capacities file.")
+                logging.debug("file uploding error: ", e)
+                st.stop()
+                
+        old_m = st.session_state.capacities.shape[0]     # the previous number of items (before changes)
+        
+        if shuffle:
+            # Create m random values in range (min-max)
+            random_ranks = np.random.randint(MIN_CAPACITY, MAX_CAPACITY,(m))
+            # Apply the random ranks to the capacities table
+            st.session_state.capacities = pd.DataFrame(random_ranks,
+                                                                   columns=[
+                                                          "Capacity"],
+                                                          index=[f"Item {i+1}" for i in range(m)])
+            return st.session_state.capacities
+        
+        # if user decrease the number of items
+        if m <= old_m:
+            st.session_state.capacities = st.session_state.capacities.iloc[:m, :1]
+            return st.session_state.capacities
+        # if user increae the number of items
+        elif m > old_m:
+            st.session_state.capacities = pd.concat([st.session_state.capacities,
+                                                      pd.DataFrame(np.random.randint(MIN_CAPACITY, MAX_CAPACITY, (m - old_m,1)),
+                                                                   columns=["Capacity"],
+                                                          index=[f"Item {i+1}" for i in range(old_m, m)])],
+                                                     )
+            return st.session_state.capacities
+    # if the table isn't exist and the user wants to upload a csv file
+    if upload_capacities:
+            capacities_default = None
+            # Load the user-uploaded capacities file
+            try:
+                capacities_default = pd.read_csv(upload_capacities)
+                if capacities_default.shape != (m, 1):
+                    st.error(
+                        f"The uploaded capacities file should have a shape of ({m}, {1}).")
+                    st.stop()
+            except Exception as e:
+                st.error("An error occurred while loading the capacities file.")
+                st.stop()
+    else:
+        # Create m random values in range (min-max) and insert them to a data frame
+        capacities_default = pd.DataFrame(np.random.randint(MIN_CAPACITY,MAX_CAPACITY, (m)), 
+                                        columns=["Capacity"],
+                                        index=[f"Item {i+1}" for i in range(m)])
+
+    st.session_state.capacities = capacities_default
+    return st.session_state.capacities
+
+# Loading the capacities table (initial/after changes)
 with st.spinner("Loading..."):
     capacities=  load_capacities(m,upload_capacities,shuffle)
     for col in capacities.columns:
-        print("for: ",capacities[col].map(str))
         capacities[col] = capacities[col].map(str)
-    print("capa:\n",capacities)
 
+# Capacities Change Callback: used in Streamlit widget on_click / on_change
+def capacity_change_callback(capacities):
+    st.session_state.capacities = change_callback(capacities)
+
+# Capacities table as editor 
 edited_capa = st.data_editor(capacities,
                               key="capa_editor",
                               column_config={
@@ -519,12 +305,14 @@ edited_capa = st.data_editor(capacities,
                                   capacity_change_callback, capacities),
                               )
 
+# Convert the editor changes from str to float
 with st.spinner('Updating...'):
     for col in edited_capa.columns:
         edited_capa[col] = edited_capa[col].apply(
             lambda x: int(float(x)))
     st.session_state.capacities = edited_capa
 
+# Apply the changes
 capacities = edited_capa.values
 
 # Download capacities as CSV
@@ -533,16 +321,84 @@ b64 = base64.b64encode(capacities_csv.encode()).decode()
 href = f'<a href="data:file/csv;base64,{b64}" download="capacities.csv">Download capacities CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
 
-# Requirements
-
-#shuffle_req = st.button('Shuffle Requirements')
+#--- Agents Requirements (same as thr capacities except the size [n instead of m]) ---#
 st.write("📊 Agent Requirements (0-10, copyable from local sheets):")
+
+# Load Requirements 
+def load_requirements(n, upload_requirements = False, shuffle = False):
+    MAX_REQUIREMENT = 10
+    MIN_REQUIREMENT = 1
+    if hasattr(st.session_state, "requirements"):
+        if upload_requirements:
+            requirements_default = None
+            # Load the user-uploaded requirements file
+            try:
+                requirements_default = pd.read_csv(
+                    upload_requirements, index_col=0)
+                if requirements_default.shape != (n,1):
+                    x, y = requirements_default.shape
+                    st.session_state.requirements.iloc[:x,
+                                                      :y] = requirements_default
+                else:
+                    st.session_state.requirements = pd.DataFrame(requirements_default,
+                                                                columns=st.session_state.requirements.columns,
+                                                                index=st.session_state.requirements.index)
+                return st.session_state.requirements
+            except Exception as e:
+                st.error(f"An error occurred while loading the requirements file.")
+                logging.debug("file uploding error: ", e)
+                st.stop()
+                
+        old_n = st.session_state.requirements.shape[0]     
+   
+        if shuffle:
+            random_ranks = np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT,(n))
+            st.session_state.requirements = pd.DataFrame(random_ranks,
+                                                                   columns=[
+                                                          "Requirement"],
+                                                          index=[f"Agent {i+1}" for i in range(n)])
+            return st.session_state.requirements
+        
+        
+        if n <= old_n:
+            st.session_state.requirements = st.session_state.requirements.iloc[:n, :1]
+            return st.session_state.requirements
+        elif n > old_n:
+            st.session_state.requirements = pd.concat([st.session_state.requirements,
+                                                      pd.DataFrame(np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT, (n - old_n,1)),
+                                                                   columns=[
+                                                          "Requirement"],
+                                                          index=[f"Agent {i+1}" for i in range(old_n, n)])],
+                                                     )
+            return st.session_state.requirements
+        
+    if upload_requirements:
+            requirements_default = None
+            # Load the user-uploaded requirements file
+            try:
+                requirements_default = pd.read_csv(upload_requirements)
+                if requirements_default.shape != (n, 1):
+                    st.error(
+                        f"The uploaded requirements file should have a shape of ({n}, {1}).")
+                    st.stop()
+            except Exception as e:
+                st.error("An error occurred while loading the requirements file.")
+                st.stop()
+    else:
+        requirements_default = pd.DataFrame(np.random.randint(MIN_REQUIREMENT,MAX_REQUIREMENT, (n)), 
+                                        columns=["Requirement"],
+                                        index=[f"Agent {i+1}" for i in range(n)])
+    st.session_state.requirements = requirements_default
+    return st.session_state.requirements
+
 
 with st.spinner("Loading..."):
     requirements=  load_requirements(n,upload_requirements,shuffle)
     for col in requirements.columns:
-        print("for: ",requirements[col].map(str))
         requirements[col] = requirements[col].map(str)
+
+def requirement_change_callback(requirements):
+    st.session_state.requirements = change_callback(requirements)
 
 edited_req = st.data_editor(requirements,
                               key="req_editor",
@@ -586,21 +442,120 @@ b64 = base64.b64encode(requirements_csv.encode()).decode()
 href = f'<a href="data:file/csv;base64,{b64}" download="requirements.csv">Download requirements CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
 
-# Preferences
+
+
+#--- Preferences ---#
+
 st.write("📊 Agent Preferences (0-100, copyable from local sheets):")
-#shuffle_pref = st.button('Shuffle Rankings')
+
+# Helper - generate random values for the preferences table; each row sum is equal to MAXPOINTS.
+def generate_random_integers_array(m,n):
+    preferences = []
+    for i in range(n):
+        random_array = np.random.randint(0, 100, m)
+        scaled_array = random_array / random_array.sum() * MAX_POINTS
+        rounded_array = np.round(scaled_array).astype(int)
+        rounded_array[-1] += MAX_POINTS - rounded_array.sum()
+        preferences.append(random_array)
+    return preferences
+
+# Load Preferences
+def load_preferences(m, n, upload_preferences = False, shuffle = False):
+    if hasattr(st.session_state, "preferences"):
+        if upload_preferences:
+            preferences_default = None
+            # Load the user-uploaded preferences file
+            try:
+                preferences_default = pd.read_csv(
+                    upload_preferences, index_col=0)
+                if preferences_default.shape != (n, m):
+                    x, y = preferences_default.shape
+                    st.session_state.preferences.iloc[:x,
+                                                      :y] = preferences_default
+                else:
+                    st.session_state.preferences = pd.DataFrame(preferences_default,
+                                                                columns=st.session_state.preferences.columns,
+                                                                index=st.session_state.preferences.index)
+                return st.session_state.preferences
+            except Exception as e:
+                st.error(f"An error occurred while loading the preferences file.")
+                logging.debug("file uploding error: ", e)
+                st.stop()
+                
+        old_n = st.session_state.preferences.shape[0] # the previous number of agents
+        old_m = st.session_state.preferences.shape[1] # the previous number of items
+   
+        if shuffle: # shuffle button clicked
+            random_ranks = generate_random_integers_array(m,n)
+            st.session_state.preferences = pd.DataFrame(random_ranks,
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])
+            return st.session_state.preferences
+        
+        # if n or m are deacresed
+        if n <= old_n and m <= old_m:
+            st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
+            return st.session_state.preferences
+        # if user increase n
+        elif n > old_n:
+            # add one more row to preferences table
+            st.session_state.preferences = pd.concat([st.session_state.preferences,
+                                                      pd.DataFrame(generate_random_integers_array(m,n - old_n),
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(m)],
+                                                          index=[f"Agent {i+1}" for i in range(old_n, n)])],
+                                                     axis=0)
+            return st.session_state.preferences
+        # if user increase m
+        elif m > old_m:
+            # add one more column to preferences table
+            st.session_state.preferences =  pd.concat([st.session_state.preferences,
+                                                      pd.DataFrame(np.random.randint(1,MAX_POINTS,(n, m - old_m)),
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(old_m,m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])],
+                                                     axis=1)
+            return st.session_state.preferences
+        else:
+            random_ranks = generate_random_integers_array(m,n) # generate new random values
+            st.session_state.preferences = pd.DataFrame(random_ranks, columns=[f"Item {i+1}" for i in range(m)],
+                                                        index=[f"Agent {i+1}" for i in range(n)])
+            return st.session_state.preferences
+
+    if upload_preferences:
+        preferences_default = None
+        # Load the user-uploaded preferences file
+        try:
+            preferences_default = pd.read_csv(upload_preferences)
+            if preferences_default.shape != (n, m):
+                st.error(
+                    f"The uploaded preferences file should have a shape of ({n}, {m}).")
+                st.stop()
+        except Exception as e:
+            st.error("An error occurred while loading the preferences file.")
+            st.stop()
+    else:
+        random_ranks = generate_random_integers_array(m,n) # generate new random values
+        # apply the random ranks to the table
+        preferences_default = pd.DataFrame(random_ranks,
+                                                                   columns=[
+                                                          f"Item {i+1}" for i in range(m)],
+                                                          index=[f"Agent {i+1}" for i in range(n)])
+    st.session_state.preferences = preferences_default
+    return st.session_state.preferences
 
 with st.spinner("Loading..."):
     preferences = load_preferences(m, n, shuffle=shuffle)
     for col in preferences.columns:
         preferences[col] = preferences[col].map(str)
 
-
 preferences = load_preferences(m, n, upload_preferences)
 for col in preferences.columns:
     preferences[col] = preferences[col].map(str)
 
-
+def preference_change_callback(preferences):
+    st.session_state.preferences = change_callback(preferences)
 
 edited_prefs = st.data_editor(preferences,
                               key="pref_editor",
@@ -631,14 +586,11 @@ edited_prefs = st.data_editor(preferences,
                                   preference_change_callback, preferences),
                               )
 
-
 with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
             lambda x: int(float(x)))
     st.session_state.preferences = edited_prefs
-
-
 
 preferences = edited_prefs.values
 
@@ -648,8 +600,9 @@ b64 = base64.b64encode(preferences_csv.encode()).decode()
 href = f'<a href="data:file/csv;base64,{b64}" download="preferences.csv">Download Preferences CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
 
-
+# compensation button - optional for this algorithm
 compensation = st.checkbox("Use compensation")
+
 # Add expandable information card
 with st.expander("ℹ️ Information", expanded=False):
     st.markdown(
@@ -722,6 +675,54 @@ with st.expander("ℹ️ Information", expanded=False):
     )
 
 
+# Running Algorithm
+
+# Algorithm Implementation
+def algorithm(m, n, capacities, requirements, preferences, compensation=False):
+    pref_dict = {}
+    capa_dict = {}
+    req_dict = {}
+    agents_conflicts = {}
+    items_conflicts = {}
+
+    for i in range(n):
+        pref_dict[f"Agent {i+1}"] = {}
+        req_dict[f"Agent {i+1}"] = requirements[i,0]
+        agents_conflicts[f"Agent {i+1}"] = {}
+        for j in range(m):
+            pref_dict[f"Agent {i+1}"][f"Item {j+1}"] = preferences[i,j]
+    for i in range(m):
+        capa_dict[f"Item {i+1}"] = capacities[i,0]
+        items_conflicts[f"Item {i+1}"] = {}
+        
+    instance = fairpyx.Instance(
+        agent_capacities=req_dict, 
+        valuations=pref_dict,
+        item_capacities=capa_dict,
+        item_conflicts=items_conflicts,
+        agent_conflicts=agents_conflicts,
+        )
+
+    algorithm = fairpyx.algorithms.iterated_maximum_matching
+    # string_explanation_logger = fairpyx.StringsExplanationLogger(instance.agents)
+    string_explanation_logger = fairpyx.StringsExplanationLogger({
+        agent for agent in instance.agents
+    },language='he', mode='w', encoding="utf-8")
+    
+    allocation = fairpyx.divide(algorithm=algorithm, instance=instance, explanation_logger=string_explanation_logger, adjust_utilities=compensation)
+    return allocation,string_explanation_logger, instance
+
+# Checker Function for Algorithm
+def algorithm_checker(instance,allocation):
+    matrix:fairpyx.AgentBundleValueMatrix = fairpyx.AgentBundleValueMatrix(instance, allocation)
+    result_vector = [["Utilitarian value", matrix.utilitarian_value()],
+                      ["Egalitarian value", matrix.egalitarian_value()],
+                       ["Max envy", matrix.max_envy()],
+                         ["Mean envy", matrix.mean_envy()]]
+    logging.debug('Result Vector:', result_vector)
+    return result_vector
+
+
 start_algo = st.button("⏳ Run Iterated Maximum Matching Algorithm")
 if start_algo:
     with st.spinner('Executing...'):
@@ -734,14 +735,12 @@ if start_algo:
     outcomes,explanations, instance = algorithm(m, n, capacities,requirements,preferences, compensation)
     end_time = time.time()
     elapsed_time = end_time - start_time
-    print("outcomes: ",outcomes)
     st.write("🎉 Outcomes:")
     outcomes_list = []
     for i in range(n):
         outcomes_items = outcomes[f"Agent {i+1}"]
         outcomes_str = ", ".join([item for item in outcomes_items])
         outcomes_list.append([f"Agent {i+1}"]+[outcomes_str]+[explanations.agent_string(f'Agent {i+1}')])
-    print(outcomes_list)
     items_head = ['Items', 'Explantion']
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent']+items_head)
 
@@ -785,15 +784,3 @@ if start_algo:
     # Print timing results
     st.write(f"⏱️ Timing Results:")
     st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
-# Sidebar
-# # ..
-
-# Download Outcomes as JSON
-# ...
-
-# Community Contribution Guidelines
-# ...
-
-# Main function (optional)
-# if __name__ == "__main__":
-#     main()
