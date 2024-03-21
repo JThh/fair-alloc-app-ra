@@ -136,7 +136,7 @@ st.sidebar.markdown(
 
     <ol>
         <li>Specify the number of agents (n) and items (m) using the number input boxes.</li>
-        <li>Choose to either upload a capacities/requirements/preferences file or edit the capacities/requirements/preferences.</li>
+        <li>Choose to either upload a items_capacities/agents_capacities/preferences file or edit the items_capacities/agents_capacities/preferences.</li>
         <li>Specify whether the algorithm uses compensation. </li>
         <li>Click the 'Run Algorithm' button to start the algorithm.</li>
         <li>You can download the outcomes as a CSV file using the provided links.</li>
@@ -163,17 +163,17 @@ m = col2.number_input("Number of Items (m)", min_value=MIN_ITEMS,
 
 # Upload input as csv file buttons
 upload_preferences = None
-upload_capacities = None
-upload_requirements = None
+upload_items_capacities = None
+upload_agents_capacities = None
 
 # Locate the upload buttons
 with col1:
-    if st.checkbox("⭐ Upload Local Capacities CSV"):
-        upload_capacities = st.file_uploader(
-            f"Upload Capacities of shape ({m}, {1})", type=['csv']) 
-    if st.checkbox("⭐ Upload Local Requirements CSV"):
-        upload_requirements = st.file_uploader(
-            f"Upload Requirements of shape ({m}, {1})", type=['csv'])       
+    if st.checkbox("⭐ Upload Local Items Capacities CSV"):
+        upload_items_capacities = st.file_uploader(
+            f"Upload Items Capacities of shape ({m}, {1})", type=['csv']) 
+    if st.checkbox("⭐ Upload Local Agents Capacities CSV"):
+        upload_agents_capacities = st.file_uploader(
+            f"Upload Agents Capacities of shape ({m}, {1})", type=['csv'])       
 with col2:
     if st.checkbox("⭐ Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
@@ -189,100 +189,100 @@ def change_callback(table):
             lambda x: int(float(x)))
     return table
         
-#--- Item capacities ---#
+#--- Items items_capacities ---#
 st.write("📊 Items Capacities (10-100, copyable from local sheets):")
 
-# Load Capacities - handle table initialization and changes
-def load_capacities(m, upload_capacities = False, shuffle = False):
+# Load Items Capacities - handle table initialization and changes
+def load_items_capacities(m, upload_items_capacities = False, shuffle = False):
     MAX_CAPACITY = 100
     MIN_CAPACITY = 10
 
-    if hasattr(st.session_state, "capacities"): # if capacities table is exist
-        if upload_capacities:                   # if user clicked on upload button
-            capacities_default = None
-            # Load the user-uploaded capacities file
+    if hasattr(st.session_state, "items_capacities"): # if items_capacities table is exist
+        if upload_items_capacities:                   # if user clicked on upload button
+            items_capacities_default = None
+            # Load the user-uploaded items_capacities file
             try:
-                capacities_default = pd.read_csv(
-                    upload_capacities, index_col=0)
+                items_capacities_default = pd.read_csv(
+                    upload_items_capacities, index_col=0)
                 
-                if capacities_default.shape != (m,1): # if size doesn't match the input
-                    x, y = capacities_default.shape
-                    st.session_state.capacities.iloc[:x,
-                                                      :y] = capacities_default
+                if items_capacities_default.shape != (m,1): # if size doesn't match the input
+                    x, y = items_capacities_default.shape
+                    st.session_state.items_capacities.iloc[:x,
+                                                      :y] = items_capacities_default
                 else:
-                    st.session_state.capacities = pd.DataFrame(capacities_default,
-                                                                columns=st.session_state.capacities.columns,
-                                                                index=st.session_state.capacities.index)
-                return st.session_state.capacities
+                    st.session_state.items_capacities = pd.DataFrame(items_capacities_default,
+                                                                columns=st.session_state.items_capacities.columns,
+                                                                index=st.session_state.items_capacities.index)
+                return st.session_state.items_capacities
             
             except Exception as e:
-                st.error(f"An error occurred while loading the capacities file.")
-                logging.debug("file uploding error: ", e)
+                st.error(f"An error occurred while loading the items capacities file.")
+                logging.debug("file uploading error: ", e)
                 st.stop()
                 
-        old_m = st.session_state.capacities.shape[0]     # the previous number of items (before changes)
+        old_m = st.session_state.items_capacities.shape[0]     # the previous number of items (before changes)
         
         if shuffle:
             # Create m random values in range (min-max)
             random_ranks = np.random.randint(MIN_CAPACITY, MAX_CAPACITY,(m))
-            # Apply the random ranks to the capacities table
-            st.session_state.capacities = pd.DataFrame(random_ranks,
+            # Apply the random ranks to the items_capacities table
+            st.session_state.items_capacities = pd.DataFrame(random_ranks,
                                                                    columns=[
-                                                          "Capacity"],
+                                                          "Item Capacity"],
                                                           index=[f"Item {i+1}" for i in range(m)])
-            return st.session_state.capacities
+            return st.session_state.items_capacities
         
         # if user decrease the number of items
         if m <= old_m:
-            st.session_state.capacities = st.session_state.capacities.iloc[:m, :1]
-            return st.session_state.capacities
-        # if user increae the number of items
+            st.session_state.items_capacities = st.session_state.items_capacities.iloc[:m, :1]
+            return st.session_state.items_capacities
+        # if user increase the number of items
         elif m > old_m:
-            st.session_state.capacities = pd.concat([st.session_state.capacities,
+            st.session_state.items_capacities = pd.concat([st.session_state.items_capacities,
                                                       pd.DataFrame(np.random.randint(MIN_CAPACITY, MAX_CAPACITY, (m - old_m,1)),
-                                                                   columns=["Capacity"],
+                                                                   columns=["Item Capacity"],
                                                           index=[f"Item {i+1}" for i in range(old_m, m)])],
                                                      )
-            return st.session_state.capacities
+            return st.session_state.items_capacities
     # if the table isn't exist and the user wants to upload a csv file
-    if upload_capacities:
-            capacities_default = None
-            # Load the user-uploaded capacities file
+    if upload_items_capacities:
+            items_capacities_default = None
+            # Load the user-uploaded items_capacities file
             try:
-                capacities_default = pd.read_csv(upload_capacities)
-                if capacities_default.shape != (m, 1):
+                items_capacities_default = pd.read_csv(upload_items_capacities)
+                if items_capacities_default.shape != (m, 1):
                     st.error(
-                        f"The uploaded capacities file should have a shape of ({m}, {1}).")
+                        f"The uploaded items capacities file should have a shape of ({m}, {1}).")
                     st.stop()
             except Exception as e:
-                st.error("An error occurred while loading the capacities file.")
+                st.error("An error occurred while loading the items capacities file.")
                 st.stop()
     else:
         # Create m random values in range (min-max) and insert them to a data frame
-        capacities_default = pd.DataFrame(np.random.randint(MIN_CAPACITY,MAX_CAPACITY, (m)), 
-                                        columns=["Capacity"],
+        items_capacities_default = pd.DataFrame(np.random.randint(MIN_CAPACITY,MAX_CAPACITY, (m)), 
+                                        columns=["Item Capacity"],
                                         index=[f"Item {i+1}" for i in range(m)])
 
-    st.session_state.capacities = capacities_default
-    return st.session_state.capacities
+    st.session_state.items_capacities = items_capacities_default
+    return st.session_state.items_capacities
 
-# Loading the capacities table (initial/after changes)
+# Loading the items_capacities table (initial/after changes)
 with st.spinner("Loading..."):
-    capacities=  load_capacities(m,upload_capacities,shuffle)
-    for col in capacities.columns:
-        capacities[col] = capacities[col].map(str)
+    items_capacities=  load_items_capacities(m,upload_items_capacities,shuffle)
+    for col in items_capacities.columns:
+        items_capacities[col] = items_capacities[col].map(str)
 
-# Capacities Change Callback: used in Streamlit widget on_click / on_change
-def capacity_change_callback(capacities):
-    st.session_state.capacities = change_callback(capacities)
+# Items Capacities Change Callback: used in Streamlit widget on_click / on_change
+def item_capacity_change_callback(items_capacities):
+    st.session_state.items_capacities = change_callback(items_capacities)
 
-# Capacities table as editor 
-edited_capa = st.data_editor(capacities,
-                              key="capa_editor",
+# Items Capacities table as editor 
+edited_item_capa = st.data_editor(items_capacities,
+                              key="item_capa_editor",
                               column_config={
-                                  f"Capacity": st.column_config.TextColumn(
-                                      f"Capacity",
-                                      help=f"Course's Capcity",
+                                  f"Item Capacity": st.column_config.TextColumn(
+                                      f"Item Capacity",
+                                      help=f"Item Capacity",
                                       max_chars=4,
                                       validate=r"^(?:10|[1-9]\d{0,2}|0)$",
                                       # width='small',  # Set the desired width here
@@ -302,110 +302,110 @@ edited_capa = st.data_editor(capacities,
                                   ),
                               },
                               on_change=partial(
-                                  capacity_change_callback, capacities),
+                                  item_capacity_change_callback, items_capacities),
                               )
 
 # Convert the editor changes from str to float
 with st.spinner('Updating...'):
-    for col in edited_capa.columns:
-        edited_capa[col] = edited_capa[col].apply(
+    for col in edited_item_capa.columns:
+        edited_item_capa[col] = edited_item_capa[col].apply(
             lambda x: int(float(x)))
-    st.session_state.capacities = edited_capa
+    st.session_state.items_capacities = edited_item_capa
 
 # Apply the changes
-capacities = edited_capa.values
+items_capacities = edited_item_capa.values
 
-# Download capacities as CSV
-capacities_csv = edited_capa.to_csv()
-b64 = base64.b64encode(capacities_csv.encode()).decode()
-href = f'<a href="data:file/csv;base64,{b64}" download="capacities.csv">Download capacities CSV</a>'
+# Download items_capacities as CSV
+items_capacities_csv = edited_item_capa.to_csv()
+b64 = base64.b64encode(items_capacities_csv.encode()).decode()
+href = f'<a href="data:file/csv;base64,{b64}" download="items_capacities.csv">Download Items Capacities CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
 
-#--- Agents Requirements (same as thr capacities except the size [n instead of m]) ---#
-st.write("📊 Agent Requirements (0-10, copyable from local sheets):")
+#--- Agents Capacities (same as thr items_capacities except the size [n instead of m]) ---#
+st.write("📊 Agents Capacities (0-10, copyable from local sheets):")
 
-# Load Requirements 
-def load_requirements(n, upload_requirements = False, shuffle = False):
-    MAX_REQUIREMENT = 10
-    MIN_REQUIREMENT = 1
-    if hasattr(st.session_state, "requirements"):
-        if upload_requirements:
-            requirements_default = None
-            # Load the user-uploaded requirements file
+# Load Agents Capacities 
+def load_agents_capacities(n, upload_agents_capacities = False, shuffle = False):
+    MAX_CAPACITY = 10
+    MIN_CAPACITY = 1
+    if hasattr(st.session_state, "agents_capacities"):
+        if upload_agents_capacities:
+            agents_capacities_default = None
+            # Load the user-uploaded agents_capacities file
             try:
-                requirements_default = pd.read_csv(
-                    upload_requirements, index_col=0)
-                if requirements_default.shape != (n,1):
-                    x, y = requirements_default.shape
-                    st.session_state.requirements.iloc[:x,
-                                                      :y] = requirements_default
+                agents_capacities_default = pd.read_csv(
+                    upload_agents_capacities, index_col=0)
+                if agents_capacities_default.shape != (n,1):
+                    x, y = agents_capacities_default.shape
+                    st.session_state.agents_capacities.iloc[:x,
+                                                      :y] = agents_capacities_default
                 else:
-                    st.session_state.requirements = pd.DataFrame(requirements_default,
-                                                                columns=st.session_state.requirements.columns,
-                                                                index=st.session_state.requirements.index)
-                return st.session_state.requirements
+                    st.session_state.agents_capacities = pd.DataFrame(agents_capacities_default,
+                                                                columns=st.session_state.agents_capacities.columns,
+                                                                index=st.session_state.agents_capacities.index)
+                return st.session_state.agents_capacities
             except Exception as e:
-                st.error(f"An error occurred while loading the requirements file.")
-                logging.debug("file uploding error: ", e)
+                st.error(f"An error occurred while loading the agents_capacities file.")
+                logging.debug("file uploading error: ", e)
                 st.stop()
                 
-        old_n = st.session_state.requirements.shape[0]     
+        old_n = st.session_state.agents_capacities.shape[0]     
    
         if shuffle:
-            random_ranks = np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT,(n))
-            st.session_state.requirements = pd.DataFrame(random_ranks,
+            random_ranks = np.random.randint(MIN_CAPACITY, MAX_CAPACITY,(n))
+            st.session_state.agents_capacities = pd.DataFrame(random_ranks,
                                                                    columns=[
-                                                          "Requirement"],
+                                                          "Agent Capacity"],
                                                           index=[f"Agent {i+1}" for i in range(n)])
-            return st.session_state.requirements
+            return st.session_state.agents_capacities
         
         
         if n <= old_n:
-            st.session_state.requirements = st.session_state.requirements.iloc[:n, :1]
-            return st.session_state.requirements
+            st.session_state.agents_capacities = st.session_state.agents_capacities.iloc[:n, :1]
+            return st.session_state.agents_capacities
         elif n > old_n:
-            st.session_state.requirements = pd.concat([st.session_state.requirements,
-                                                      pd.DataFrame(np.random.randint(MIN_REQUIREMENT, MAX_REQUIREMENT, (n - old_n,1)),
+            st.session_state.agents_capacities = pd.concat([st.session_state.agents_capacities,
+                                                      pd.DataFrame(np.random.randint(MIN_CAPACITY, MAX_CAPACITY, (n - old_n,1)),
                                                                    columns=[
-                                                          "Requirement"],
+                                                          "Agent Capacity"],
                                                           index=[f"Agent {i+1}" for i in range(old_n, n)])],
                                                      )
-            return st.session_state.requirements
+            return st.session_state.agents_capacities
         
-    if upload_requirements:
-            requirements_default = None
-            # Load the user-uploaded requirements file
+    if upload_agents_capacities:
+            agents_capacities_default = None
+            # Load the user-uploaded agents_capacities file
             try:
-                requirements_default = pd.read_csv(upload_requirements)
-                if requirements_default.shape != (n, 1):
+                agents_capacities_default = pd.read_csv(upload_agents_capacities)
+                if agents_capacities_default.shape != (n, 1):
                     st.error(
-                        f"The uploaded requirements file should have a shape of ({n}, {1}).")
+                        f"The uploaded agents_capacities file should have a shape of ({n}, {1}).")
                     st.stop()
             except Exception as e:
-                st.error("An error occurred while loading the requirements file.")
+                st.error("An error occurred while loading the agents capacities file.")
                 st.stop()
     else:
-        requirements_default = pd.DataFrame(np.random.randint(MIN_REQUIREMENT,MAX_REQUIREMENT, (n)), 
-                                        columns=["Requirement"],
+        agents_capacities_default = pd.DataFrame(np.random.randint(MIN_CAPACITY,MAX_CAPACITY, (n)), 
+                                        columns=["Agent Capacity"],
                                         index=[f"Agent {i+1}" for i in range(n)])
-    st.session_state.requirements = requirements_default
-    return st.session_state.requirements
+    st.session_state.agents_capacities = agents_capacities_default
+    return st.session_state.agents_capacities
 
 
 with st.spinner("Loading..."):
-    requirements=  load_requirements(n,upload_requirements,shuffle)
-    for col in requirements.columns:
-        requirements[col] = requirements[col].map(str)
+    agents_capacities=  load_agents_capacities(n,upload_agents_capacities,shuffle)
+    for col in agents_capacities.columns:
+        agents_capacities[col] = agents_capacities[col].map(str)
 
-def requirement_change_callback(requirements):
-    st.session_state.requirements = change_callback(requirements)
+def agent_capacity_change_callback(agents_capacities):
+    st.session_state.agents_capacities = change_callback(agents_capacities)
 
-edited_req = st.data_editor(requirements,
-                              key="req_editor",
+edited_agent_capa = st.data_editor(agents_capacities,
+                              key="agent_capa_editor",
                               column_config={
-                                  f"Requirement": st.column_config.TextColumn(
-                                      f"Requirement",
-                                      help=f"Student's Requirement",
+                                  f"Capacity": st.column_config.TextColumn(
+                                      f"Agent Capacity",
+                                      help=f"' ",
                                       max_chars=4,
                                       validate=r"^(?:10|[1-9]\d{0,2}|0)$",
                                       # width='small',  # Set the desired width here
@@ -425,21 +425,21 @@ edited_req = st.data_editor(requirements,
                                   ),
                               },
                               on_change=partial(
-                                  requirement_change_callback, requirements),
+                                  agent_capacity_change_callback, agents_capacities),
                               )
 
 with st.spinner('Updating...'):
-    for col in edited_req.columns:
-        edited_req[col] = edited_req[col].apply(
+    for col in edited_agent_capa.columns:
+        edited_agent_capa[col] = edited_agent_capa[col].apply(
             lambda x: int(float(x)))
-    st.session_state.requirements = edited_req
+    st.session_state.agents_capacities = edited_agent_capa
 
-requirements = edited_req.values
+agents_capacities = edited_agent_capa.values
 
-# Download requirements as CSV
-requirements_csv = edited_req.to_csv()
-b64 = base64.b64encode(requirements_csv.encode()).decode()
-href = f'<a href="data:file/csv;base64,{b64}" download="requirements.csv">Download requirements CSV</a>'
+# Download agents_capacities as CSV
+agents_capacities_csv = edited_agent_capa.to_csv()
+b64 = base64.b64encode(agents_capacities_csv.encode()).decode()
+href = f'<a href="data:file/csv;base64,{b64}" download="agents_capacities.csv">Download Agents Capacities CSV</a>'
 st.markdown(href, unsafe_allow_html=True)
 
 
@@ -479,7 +479,7 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
                 return st.session_state.preferences
             except Exception as e:
                 st.error(f"An error occurred while loading the preferences file.")
-                logging.debug("file uploding error: ", e)
+                logging.debug("file uploading error: ", e)
                 st.stop()
                 
         old_n = st.session_state.preferences.shape[0] # the previous number of agents
@@ -493,7 +493,7 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
                                                           index=[f"Agent {i+1}" for i in range(n)])
             return st.session_state.preferences
         
-        # if n or m are deacresed
+        # if n or m are decreased
         if n <= old_n and m <= old_m:
             st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
             return st.session_state.preferences
@@ -637,7 +637,7 @@ with st.expander("ℹ️ Information", expanded=False):
             <h3 class="information-card-header">Algorithm Overview</h3>
             <p class="information-card-text">
                 <div> The algorithm proceeds in rounds. </div>
-                <div> In each round, the algorithm finds a maximum-weight matching between the agents with remaining capacities, and the items with remaining capacities, and allocates each matched item to its matched agent. </div>
+                <div> In each round, the algorithm finds a maximum-weight matching between the agents with remaining items_capacities, and the items with remaining items_capacities, and allocates each matched items to its matched agent. </div>
                 <div> If an agent does not win their maximum match in the present round, the difference between the maximum and the actual match are moved to the next-best option as a compensation, to increase their chances to win it in the next rounds. </div>
             </p>
             <!--
@@ -678,7 +678,7 @@ with st.expander("ℹ️ Information", expanded=False):
 # Running Algorithm
 
 # Algorithm Implementation
-def algorithm(m, n, capacities, requirements, preferences, compensation=False):
+def algorithm(m, n, items_capacities, agents_capacities, preferences, compensation=False):
     pref_dict = {}
     capa_dict = {}
     req_dict = {}
@@ -687,12 +687,12 @@ def algorithm(m, n, capacities, requirements, preferences, compensation=False):
 
     for i in range(n):
         pref_dict[f"Agent {i+1}"] = {}
-        req_dict[f"Agent {i+1}"] = requirements[i,0]
+        req_dict[f"Agent {i+1}"] = agents_capacities[i,0]
         agents_conflicts[f"Agent {i+1}"] = {}
         for j in range(m):
             pref_dict[f"Agent {i+1}"][f"Item {j+1}"] = preferences[i,j]
     for i in range(m):
-        capa_dict[f"Item {i+1}"] = capacities[i,0]
+        capa_dict[f"Item {i+1}"] = items_capacities[i,0]
         items_conflicts[f"Item {i+1}"] = {}
         
     instance = fairpyx.Instance(
@@ -707,7 +707,7 @@ def algorithm(m, n, capacities, requirements, preferences, compensation=False):
     # string_explanation_logger = fairpyx.StringsExplanationLogger(instance.agents)
     string_explanation_logger = fairpyx.StringsExplanationLogger({
         agent for agent in instance.agents
-    },language='he', mode='w', encoding="utf-8")
+    },language='en', mode='w', encoding="utf-8")
     
     allocation = fairpyx.divide(algorithm=algorithm, instance=instance, explanation_logger=string_explanation_logger, adjust_utilities=compensation)
     return allocation,string_explanation_logger, instance
@@ -732,16 +732,16 @@ if start_algo:
             time.sleep(n * m * 0.01)
 
     start_time = time.time()
-    outcomes,explanations, instance = algorithm(m, n, capacities,requirements,preferences, compensation)
+    outcomes,explanations, instance = algorithm(m, n, items_capacities,agents_capacities,preferences, compensation)
     end_time = time.time()
     elapsed_time = end_time - start_time
     st.write("🎉 Outcomes:")
     outcomes_list = []
     for i in range(n):
         outcomes_items = outcomes[f"Agent {i+1}"]
-        outcomes_str = ", ".join([item for item in outcomes_items])
+        outcomes_str = ", ".join([items for items in outcomes_items])
         outcomes_list.append([f"Agent {i+1}"]+[outcomes_str]+[explanations.agent_string(f'Agent {i+1}')])
-    items_head = ['Items', 'Explantion']
+    items_head = ['Items', 'Explanation']
     outcomes_df = pd.DataFrame(outcomes_list, columns=['Agent']+items_head)
 
 
