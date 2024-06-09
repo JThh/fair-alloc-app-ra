@@ -132,14 +132,14 @@ st.sidebar.markdown(
     <h3 style="color: {theme_colors['guide-color']};">Follow these steps to use the app:</h3>
 
     <ol>
-        <li>Specify the number of students (n) and courses (m) using the number input boxes.</li>
-        <li>Choose to either upload a courses_capacities / students_capacities / preferences file or edit the courses_capacities / students_capacities / preferences.</li>
-        <li>Specify whether the algorithm uses compensation. </li>
-        <li>Click the 'Run Algorithm' button to start the algorithm.</li>
-        <li>You can download the outcomes as a CSV file using the provided links.</li>
+        <li>Specify number of students and courses using the number input boxes;</li>
+        <li>Choose to either upload local preferences file or edit the preferences in table;</li>
+        <li>Decide whether the algorithm should use compensation (see <i>Iterated Maximum Matching Adjusted</i>);</li>
+        <li>Click the 'Run Algorithm' button to start the algorithm;</li>
+        <li>Download the outcomes as a CSV file.</li>
     </ol>
 
-    <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only and may not reflect real-world scenarios.</em></p>
+    <p><em><strong>Disclaimer:</strong> The generated outcomes are for demonstration purposes only.</em></p>
 
     <p><em>Image Credit: <a href="https://www.freepik.com/free-vector/intelligent-pupils-studying-classroom_9649994.htm#fromView=search&page=1&position=41&uuid=820ff6c0-3cb7-413c-ae4d-859e748356dc">Image Source</a></em>.</p>
     </div>
@@ -168,19 +168,19 @@ col1, col2, col3 = st.columns(3)
 
 # Locate the upload buttons
 with col1:
-    if st.checkbox("Upload Local Courses Capacities CSV"):
+    if st.checkbox("Upload Courses Capacities CSV"):
         upload_courses_capacities = st.file_uploader(
             f"Upload Courses Capacities of shape ({m}, {1})", type=['csv'])   
 with col2:
-    if st.checkbox("Upload Local Students Capacities CSV"):
+    if st.checkbox("Upload Students Capacities CSV"):
         upload_students_capacities = st.file_uploader(
             f"Upload Students Capacities of shape ({m}, {1})", type=['csv'])   
 with col3:
-    if st.checkbox("Upload Local Preferences CSV"):
+    if st.checkbox("Upload Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({m}, {1})", type=['csv'])
 # Shuffle data button
-shuffle = st.button('Shuffle All Inputs')
+shuffle = st.button('Randomize All Inputs')
 
 # Table Change Callback: used in Streamlit widget on_click / on_change
 def change_callback(table):
@@ -621,40 +621,33 @@ with st.expander("ℹ️ Information", expanded=False):
             <p class="information-card-text">
                 <div>
                     In the course allocation problem, a university administrator seeks to
-                    efficiently and fairly <br/>
-                    allocate seats (items) in over-demanded courses
-                    among students (agents) with heterogeneous preferences.
+                    <b>efficiently and fairly</b> allocate seats (or items) in over-demanded courses among students (or agents) with heterogeneous preferences.
                 </div>
             </p>
             <h3 class="information-card-header">Algorithms</h3>
             <ul class="information-card-text">
-                <li>Iterated Maximum Matching Unadjusted: this is Algorithm 1 from the following paper:
-                    <p class="information-card-citation">
-                        - Johannes Brustle, Jack Dippel, Vishnu V. Narayan, Mashbat Suzuki, Adrian Vetta (2020) <br/>
-                        - "One Dollar Each Eliminates Envy" <br/>
-                        - Proceedings of the 21st ACM Conference on Economics and Computation. 2020 <br/>
-                    </p>
-                    It iteratively runs a maximum-weight matching between the set of students with remaining capacity and the set of courses with remaining capacity.
+                <li><b>Iterated Maximum Matching Unadjusted</b>: it iteratively runs a maximum-weight matching between the set of students with remaining capacity and the set of courses with remaining capacity.
                 </li>
-                <li>Iterated Maximum Matching Adjusted: similar to Iterated Maximum Matching, with an additional 'compensation' mechanism: 
+                <li><b>Iterated Maximum Matching Adjusted</b>: similar to Iterated Maximum Matching, with an additional 'compensation' mechanism: 
                    at each round, for every student who did not get the maximum possible utility for that round, we add the difference in utilities to the next-best course,
                    to increase the chances of getting this course in the next round.
                 </li>
-                <li>Utilitarian Matching: 
+                <li><b>Utilitarian Matching</b>: 
                 this algorithm selects the allocation that maximizes the sum of utilities of all students (the "utilitarian welfare"). It is efficient, but may be unfair.
                 </li>
-                <li>Round Robin: the students are arranged in an arbitrary order; each student in turn picks a course; then another round begins, until all students take all the courses they need.
+                <li><b>Round Robin</b>: the students are arranged in an arbitrary order; each student in turn picks a course; then another round begins, until all students take all the courses they need.
                 </li>
-                <li>Bidirectional Round Robin  (also called Draft):
+                <li><b>Bidirectional Round Robin</b>  (also called Draft):
                 the students are arranged in an arbitrary order; each student in turn picks a course; then the order of the students is reversed, and another round begins; until all students take all the courses they need.
                 </li>
-                <li>Serial Dictatorship: this simulates the current situation in course allocation, in which the agents who come first take their optimal bundle, 
+                <li><b>Serial Dictatorship</b>: this simulates the current situation in course allocation, in which the agents who come first take their optimal bundle, 
                 whereas the agents who come later can only choose from the remaining courses. The outcome is usually very unfair.
                 </li>
             </ul>
             <p class="information-card-citation">
-                    Credit: The algorithms are implemented in <a href="https://github.com/ariel-research/fairpyx">fairpyx</a>.
-                    </p>
+                Credit: The algorithm implementations are from <a href="https://github.com/ariel-research/fairpyx">fairpyx</a>.<br>
+                Johannes Brustle, Jack Dippel, Vishnu V. Narayan, Mashbat Suzuki, Adrian Vetta (2020) "One Dollar Each Eliminates Envy",  Proceedings of the 21st ACM Conference on Economics and Computation. 2020
+            </p>
         </div>
         """,
         unsafe_allow_html=True
@@ -737,7 +730,7 @@ algo_names = st.multiselect(
    placeholder="Select Algorithm...",
 )
 
-start_algo = st.button(f"⏳ Run Algorithm")
+start_algo = st.button(f"⏳ Run Course Allocation Algorithm")
 if start_algo:
     with st.spinner('Executing...'):
         if n * m * 0.01 > 3:
@@ -760,7 +753,7 @@ if start_algo:
                     )
         (allocation, explanation) = values            
         if explanation:
-            courses_head+= ['Explanation']
+            courses_head+= ['Explanation (expand to see more)']
             for i in range(n):
                 outcomes_list[i] = [f"Student {i+1}"]
                 outcomes_courses = allocation[f"Student {i+1}"]
@@ -814,8 +807,8 @@ if start_algo:
                    )
 
     # Print timing results
-    st.write(f"⏱️ Timing Results:")
-    st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
+    # st.write(f"⏱️ Timing Results:")
+    # st.write(f"Elapsed Time: {elapsed_time:.4f} seconds")
 
 
     
