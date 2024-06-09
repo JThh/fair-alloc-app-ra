@@ -168,19 +168,19 @@ col1, col2, col3 = st.columns(3)
 
 # Locate the upload buttons
 with col1:
-    if st.checkbox("⭐ Upload Local Courses Capacities CSV"):
+    if st.checkbox("Upload Local Courses Capacities CSV"):
         upload_courses_capacities = st.file_uploader(
             f"Upload Courses Capacities of shape ({m}, {1})", type=['csv'])   
 with col2:
-    if st.checkbox("⭐ Upload Local Students Capacities CSV"):
+    if st.checkbox("Upload Local Students Capacities CSV"):
         upload_students_capacities = st.file_uploader(
             f"Upload Students Capacities of shape ({m}, {1})", type=['csv'])   
 with col3:
-    if st.checkbox("⭐ Upload Local Preferences CSV"):
+    if st.checkbox("Upload Local Preferences CSV"):
         upload_preferences = st.file_uploader(
             f"Upload Preferences of shape ({m}, {1})", type=['csv'])
 # Shuffle data button
-shuffle = st.button('Shuffle All Data')
+shuffle = st.button('Shuffle All Inputs')
 
 # Table Change Callback: used in Streamlit widget on_click / on_change
 def change_callback(table):
