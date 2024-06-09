@@ -451,7 +451,7 @@ def generate_random_integers_array(m,n):
 
 # Load Preferences
 def load_preferences(m, n, upload_preferences = False, shuffle = False):
-    if hasattr(st.session_state, "preferences"):
+    if hasattr(st.session_state, "preferences2"):
         if upload_preferences:
             preferences_default = None
             # Load the user-uploaded preferences file
@@ -460,58 +460,58 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
                     upload_preferences, index_col=0)
                 if preferences_default.shape != (n, m):
                     x, y = preferences_default.shape
-                    st.session_state.preferences.iloc[:x,
+                    st.session_state.preferences2.iloc[:x,
                                                       :y] = preferences_default
                 else:
-                    st.session_state.preferences = pd.DataFrame(preferences_default,
-                                                                columns=st.session_state.preferences.columns,
-                                                                index=st.session_state.preferences.index)
-                return st.session_state.preferences
+                    st.session_state.preferences2 = pd.DataFrame(preferences_default,
+                                                                columns=st.session_state.preferences2.columns,
+                                                                index=st.session_state.preferences2.index)
+                return st.session_state.preferences2
             except Exception as e:
                 st.error(f"An error occurred while loading the preferences file.")
                 logging.debug("file uploading error: ", e)
                 st.stop()
                 
-        old_n = st.session_state.preferences.shape[0] # the previous number of students
-        old_m = st.session_state.preferences.shape[1] # the previous number of courses
+        old_n = st.session_state.preferences2.shape[0] # the previous number of students
+        old_m = st.session_state.preferences2.shape[1] # the previous number of courses
    
         if shuffle: # shuffle button clicked
             random_ranks = generate_random_integers_array(m,n)
-            st.session_state.preferences = pd.DataFrame(random_ranks,
+            st.session_state.preferences2 = pd.DataFrame(random_ranks,
                                                                    columns=[
                                                           f"Course {i+1}" for i in range(m)],
                                                           index=[f"Student {i+1}" for i in range(n)])
-            return st.session_state.preferences
+            return st.session_state.preferences2
         
         # if n or m are decreased
         if n <= old_n and m <= old_m:
-            st.session_state.preferences = st.session_state.preferences.iloc[:n, :m]
-            return st.session_state.preferences
+            st.session_state.preferences2 = st.session_state.preferences2.iloc[:n, :m]
+            return st.session_state.preferences2
         # if user increase n
         elif n > old_n:
             # add one more row to preferences table
-            st.session_state.preferences = pd.concat([st.session_state.preferences,
+            st.session_state.preferences2 = pd.concat([st.session_state.preferences2,
                                                       pd.DataFrame(generate_random_integers_array(m,n - old_n),
                                                                    columns=[
                                                           f"Course {i+1}" for i in range(m)],
                                                           index=[f"Student {i+1}" for i in range(old_n, n)])],
                                                      axis=0)
-            return st.session_state.preferences
+            return st.session_state.preferences2
         # if user increase m
         elif m > old_m:
             # add one more column to preferences table
-            st.session_state.preferences =  pd.concat([st.session_state.preferences,
+            st.session_state.preferences2 =  pd.concat([st.session_state.preferences2,
                                                       pd.DataFrame(np.random.randint(1,MAX_POINTS,(n, m - old_m)),
                                                                    columns=[
                                                           f"Course {i+1}" for i in range(old_m,m)],
                                                           index=[f"Student {i+1}" for i in range(n)])],
                                                      axis=1)
-            return st.session_state.preferences
+            return st.session_state.preferences2
         else:
             random_ranks = generate_random_integers_array(m,n) # generate new random values
-            st.session_state.preferences = pd.DataFrame(random_ranks, columns=[f"Course {i+1}" for i in range(m)],
+            st.session_state.preferences2 = pd.DataFrame(random_ranks, columns=[f"Course {i+1}" for i in range(m)],
                                                         index=[f"Student {i+1}" for i in range(n)])
-            return st.session_state.preferences
+            return st.session_state.preferences2
 
     if upload_preferences:
         preferences_default = None
@@ -532,8 +532,8 @@ def load_preferences(m, n, upload_preferences = False, shuffle = False):
                                                                    columns=[
                                                           f"Course {i+1}" for i in range(m)],
                                                           index=[f"Student {i+1}" for i in range(n)])
-    st.session_state.preferences = preferences_default
-    return st.session_state.preferences
+    st.session_state.preferences2 = preferences_default
+    return st.session_state.preferences2
 
 with st.spinner("Loading..."):
     preferences = load_preferences(m, n, shuffle=shuffle)
@@ -545,7 +545,7 @@ for col in preferences.columns:
     preferences[col] = preferences[col].map(str)
 
 def preference_change_callback(preferences):
-    st.session_state.preferences = change_callback(preferences)
+    st.session_state.preferences2 = change_callback(preferences)
 
 edited_prefs = st.data_editor(preferences,
                               key="pref_editor",
@@ -575,7 +575,7 @@ with st.spinner('Updating...'):
     for col in edited_prefs.columns:
         edited_prefs[col] = edited_prefs[col].apply(
             lambda x: int(float(x)))
-    st.session_state.preferences = edited_prefs
+    st.session_state.preferences2 = edited_prefs
 
 preferences = edited_prefs.values
 
