@@ -234,7 +234,7 @@ st.markdown('<h1 class="header">Rank Maximal Matching</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/applicants.jpg", use_column_width=True,)
+st.sidebar.image("./resource/applicants.jpg", use_container_width=True,)
 
 st.sidebar.title("User Guide")
 

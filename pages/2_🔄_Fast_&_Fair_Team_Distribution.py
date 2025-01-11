@@ -252,7 +252,7 @@ st.markdown('<h1 class="header">Fast & Fair Team Distribution</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/football.jpg", use_column_width=True)
+st.sidebar.image("./resource/football.jpg", use_container_width=True)
 st.sidebar.title("User Guide")
 
 # Define theme colors based on light and dark mode

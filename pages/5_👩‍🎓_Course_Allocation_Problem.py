@@ -100,7 +100,7 @@ st.markdown('<h1 class="header">Efficient and Fair Course Allocation</h1>',
 
 # Page sidebar - User guide
 # Insert header image
-st.sidebar.image("./resource/students.jpg", use_column_width=True,)
+st.sidebar.image("./resource/students.jpg", use_container_width=True,)
 
 st.sidebar.title("User Guide")
 
