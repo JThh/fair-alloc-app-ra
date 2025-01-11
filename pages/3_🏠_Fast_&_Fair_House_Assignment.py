@@ -233,7 +233,7 @@ st.markdown('<h1 class="header">Fast & Fair House Assignment</h1>',
             unsafe_allow_html=True)
 
 # Insert header image
-st.sidebar.image("./resource/houses.png", use_column_width=True)
+st.sidebar.image("./resource/houses.png", use_container_width=True)
 
 st.sidebar.title("User Guide")
 
